@@ -1,0 +1,292 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+    overflow-x: hidden;
+    touch-action: pan-y;
+    background-color: #1e9672;
+    position: relative;
+    animation: colorShift 10s ease infinite;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 80%,
+            rgba(255, 255, 255, 0.1) 0%,
+            transparent 50%),
+        radial-gradient(circle at 80% 20%,
+            rgba(255, 255, 255, 0.2) 0%,
+            transparent 50%);
+    animation: particles 20s linear infinite;
+    z-index: -1;
+    pointer-events: none;
+}
+
+@keyframes colorShift {
+    0% {
+        background-color: #1e9672;
+    }
+
+    33% {
+        background-color: #145944;
+    }
+
+    66% {
+        background-color: #1c8e6c;
+    }
+
+    100% {
+        background-color: #1e9672;
+    }
+}
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+
+
+/* logo empresa header */
+.logoheader {
+    height: 80%;
+}
+
+.bloco {
+    border-radius: 10px;
+    margin-left: 35%;
+    margin-right: 35%;
+    padding-bottom: 1%;
+    background: rgba(255, 255, 255, 0.474);
+
+    /* 2. The frosted blur effect */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    /* For Safari support */
+
+    /* 3. Subtle glass edges */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.31);
+}
+
+.logo {
+    padding-top: 0.5%;
+    display: flex;
+    justify-self: center;
+    height: auto;
+    width: 10%;
+    padding-bottom: 0.5%;
+}
+
+.title {
+    color: #24213e;
+    padding-top: 4%;
+    text-align: center;
+}
+
+.footerdiv {
+    width: 80%;
+    height: 2px;
+    background-color: #ffff;
+    margin: 5% auto;
+}
+
+/* todos os inputs */
+.input-floating {
+    position: relative;
+    margin-top: 6%;
+}
+
+.input-floating input {
+    display: block;
+    justify-self: center;
+    width: 90%;
+    height: 53px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 0 20px 0 10px;
+    font-size: 16px;
+    background: #fafafa;
+    box-sizing: border-box;
+}
+
+.input-floating input:focus {
+    outline: none;
+    border-color: #1e9672;
+}
+
+.input-floating label {
+    position: absolute;
+    left: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #888;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #fafafa00;
+    padding: 0 8px;
+    font-weight: 500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.input-floating input:focus~label,
+.input-floating input:valid~label {
+    top: 5px;
+    font-size: 12px;
+    color: #1e9672;
+}
+
+/* icones de verificado e rejeitado */
+#icone3 {
+    color: #f50000;
+    display: none;
+    top: 30%;
+    position: absolute;
+    right: 8%;
+}
+
+#icone4 {
+    color: #00ffb3;
+    display: none;
+    top: 30%;
+    position: absolute;
+    right: 8%;
+}
+
+#icone5 {
+    color: #f50000;
+    display: none;
+    top: 30%;
+    position: absolute;
+    right: 8%;
+}
+
+#icone6 {
+    color: #00ffb3;
+    display: none;
+    top: 30%;
+    position: absolute;
+    right: 8%;
+}
+
+/* input senha */
+
+.input-floating-senha {
+    position: relative;
+    margin-top: 6%;
+}
+
+.input-floating-senha input {
+    display: flex;
+    justify-self: center;
+    width: 90%;
+    height: 43px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px 10px 0px 0px;
+    padding: 0 0px 0 20px;
+    font-size: 16px;
+    background: #fafafa;
+    box-sizing: border-box;
+}
+
+.input-floating-senha input:focus {
+    outline: none;
+    border-color: #1e9672;
+    ;
+    background: white;
+}
+
+.input-floating-senha label {
+    position: absolute;
+    left: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #888;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #fafafa00;
+    padding: 0 8px;
+    font-weight: 500;
+    display: block;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.input-floating-senha input:focus+i+label,
+.input-floating-senha input:valid+i+label {
+    top: 5px;
+    font-size: 12px;
+    color: #1e9672;
+    background: rgba(255, 255, 255, 0);
+}
+
+/* icone/botao da senha */
+.icone {
+    color: #1e9672;
+    font-size: 130%;
+    cursor: pointer;
+    position: absolute;
+    right: 8%;
+    top: 30%;
+    transition: all 0.5s ease;
+}
+
+.icone:hover {
+    color: #145944
+}
+
+/* barra de progresso senha */
+.progress-container {
+    display: flex;
+    justify-self: center;
+    width: 90%;
+    background-color: #dbcaca;
+    border-radius: 0px 0px 10px 10px;
+    height: 10px;
+    margin-bottom: 4%;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #dc3545;
+    border-radius: 0px 0px 10px 10px;
+    transition: width 0.5s ease, background-color 0.3s ease;
+}
+
+.botao {
+    font-size: 160%;
+    border-radius: 100px;
+    display: flex;
+    justify-content: center;
+    background-color: #1e9672;
+    text-align: center;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    margin-left: 32%;
+    margin-right: 32%;
+    margin-top: 6%;
+    color: #ffff;
+    transition: 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.botao:hover {
+    background-color: #145944;
+}
+
+.outro {
+    color: #0000009e;
+    text-align: center;
+    padding-top: 1%;
+    font-size: 90%;
+    text-decoration-line: underline;
+}
