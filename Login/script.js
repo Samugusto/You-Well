@@ -1,3 +1,42 @@
+// === LOADING COM SEU SPINNER ===
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. BLOQUEIA TELA
+    document.body.classList.add('loading-locked');
+    const header = document.getElementById('header');
+    if (header) header.classList.add('loading-hidden');
+    
+    // 2. PREVINE SCROLL
+    const blockScroll = (e) => e.preventDefault();
+    ['wheel', 'touchmove'].forEach(event => {
+        document.addEventListener(event, blockScroll, { passive: false });
+    });
+    
+    // 3. ESPERA TUDO E REMOVE LOADING
+    window.addEventListener('load', function() {
+        setTimeout(hideLoader, 1000); // 1s mínimo + fade
+    });
+});
+
+function hideLoader() {
+    // Remove loader
+    const loader = document.getElementById('loader');
+    loader.classList.add('hidden');
+    
+    // Desbloqueia
+    setTimeout(() => {
+        document.body.classList.remove('loading-locked');
+        const header = document.getElementById('header');
+        if (header) header.classList.remove('loading-hidden');
+        
+        // Remove bloqueios
+        ['wheel', 'touchmove'].forEach(event => {
+            document.removeEventListener(event, blockScroll);
+        });
+        
+        loader.remove();
+    }, 800);
+}
+
 let nome = document.querySelector("#nome");/* input nome */
 let cadastrar = document.querySelector("#cadastrar"); /* botao cadastrar */
 
@@ -9,9 +48,15 @@ let botao2 = document.querySelector("#icone4")//verificação nome incorreto
 let botao3 = document.querySelector("#icone5")
 let botao4 = document.querySelector("#icone6")
 
+/* ícone do setor */
+let botao5 = document.querySelector("#icone7")
+let botao6 = document.querySelector("#icone8")
+
 /* input senha confirmar no caso */
 let confirm = document.querySelector("#confirmar")
 
+/* input setor */
+let sector = document.querySelector("#setor")
 
 // CHAMAR IMEDIATAMENTE quando digitar
 document.getElementById("senha").addEventListener("keyup", function () {
@@ -55,19 +100,38 @@ cadastrar.addEventListener("click", function () {
         nome.style.borderColor = "#00ffb3"; // Verde
     }
 
-    if (senha.value.trim() === "" && password.length <= 5) {
+    if (senha.value.trim() === "") {
         senha.style.borderColor = "#f50000"; // Vermelho
     } else {
         senha.style.borderColor = "#00ffb3"; // Verde
     }
 
-    if (senha.value != confirm.value) {
-        confirm.style.borderColor = "#f50000"
+    if (senha.value === "" || confirm.value === "") {
+        confirm.style.borderColor = "#f50000";
+        senha.style.borderColor = "#f50000";
         botao3.style.display = "block";
         botao4.style.display = "none";
-    } if (senha.value == confirm.value) {
+    }
+
+    else if (senha.value === confirm.value) {
         confirm.style.borderColor = "#00ffb3";
+        senha.style.borderColor = "#00ffb3";
         botao4.style.display = "block";
         botao3.style.display = "none";
+    }
+    else {
+        confirm.style.borderColor = "#f50000";
+        senha.style.borderColor = "#f50000";
+        botao3.style.display = "block";
+        botao4.style.display = "none";
+    }
+    if (sector.value.trim() === "") {
+        sector.style.borderColor = "#f50000"; // Vermelho
+        botao5.style.display = "block";
+        botao6.style.display = "none";
+    } else {
+        sector.style.borderColor = "#00ffb3"; // Verde
+        botao6.style.display = "block";
+        botao5.style.display = "none";
     }
 });
