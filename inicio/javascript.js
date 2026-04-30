@@ -123,12 +123,11 @@ function hideLoader() {
         loader.style.display = 'none';
         loader.remove();
         
-        // ✅ REACTIVA ANIMAÇÕES
+
         reactivateAnimations();
     }, 800);
 }
 
-// RESTO DO CÓDIGO IGUAL...
 function reactivateAnimations() {
     initHeaderObserver();
     initMotivadorObserver();

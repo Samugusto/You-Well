@@ -164,37 +164,6 @@ body::before {
     right: 8%;
 }
 
-#icone5 {
-    color: #f50000;
-    display: none;
-    top: 30%;
-    position: absolute;
-    right: 8%;
-}
-
-#icone6 {
-    color: #00ffb3;
-    display: none;
-    top: 30%;
-    position: absolute;
-    right: 8%;
-}
-
-#icone7 {
-    color: #f50000;
-    display: none;
-    top: 30%;
-    position: absolute;
-    right: 8%;
-}
-
-#icone8 {
-    color: #00ffb3;
-    display: none;
-    top: 30%;
-    position: absolute;
-    right: 8%;
-}
 
 /* input senha */
 
@@ -207,9 +176,9 @@ body::before {
     display: flex;
     justify-self: center;
     width: 90%;
-    height: 43px;
+    height: 53px;
     border: 2px solid #e0e0e0;
-    border-radius: 10px 10px 0px 0px;
+    border-radius: 10px;
     padding: 0 0px 0 20px;
     font-size: 16px;
     background: #fafafa;
