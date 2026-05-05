@@ -3,6 +3,10 @@ body {
     overflow-x: hidden;
     touch-action: pan-y;
     background-color: #1e9672;
+    background-image: url('img/Sem\ título2.png'); /* Imagem de fundo */
+    background-position: -20% 350%; /* Posiciona no canto esquerdo superior */
+    background-repeat: no-repeat; /* Não repete */
+    background-size: 50%; /* Aumenta para 150%, causando corte nas beiradas */
     position: relative;
     animation: colorShift 10s ease infinite;
 }
@@ -56,6 +60,7 @@ body::before {
 }
 
 .bloco {
+    margin-top: 4%;
     border-radius: 10px;
     margin-left: 35%;
     margin-right: 35%;
@@ -72,20 +77,14 @@ body::before {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.31);
 }
 
-.logo {
-    padding-top: 0.5%;
-    display: flex;
-    justify-self: center;
-    height: auto;
-    width: 10%;
-    padding-bottom: 0.5%;
-}
+
 
 .title {
     color: #24213e;
     padding-top: 4%;
     text-align: center;
 }
+
 .title2 {
     font-size: 100%;
     color: #24213e98;
@@ -283,6 +282,24 @@ body::before {
     transition: width 0.5s ease, background-color 0.3s ease;
 }
 
+#req-maiuscula {
+    font-size: 80%;
+    display: flex;
+    justify-self: center;
+}
+
+#req-caracteres {
+    font-size: 80%;
+    display: flex;
+    justify-self: center;
+}
+
+#req-especial {
+    font-size: 80%;
+    display: flex;
+    justify-self: center;
+}
+
 .botao {
     font-size: 160%;
     border-radius: 100px;
@@ -312,6 +329,7 @@ body::before {
     text-decoration-line: underline;
     cursor: pointer;
 }
+
 body.loading-locked {
     overflow: hidden !important;
     height: 100vh !important;
@@ -327,7 +345,8 @@ body.loading-locked {
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    background: #145944 !important; /* Verde escuro */
+    background: #145944 !important;
+    /* Verde escuro */
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
@@ -343,8 +362,13 @@ body.loading-locked {
 }
 
 @keyframes spinImage {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 #loader.hidden {

@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('load', function() {
         setTimeout(hideLoader, 1000); // 1s mínimo + fade
     });
+
+    // Inicializar botão desabilitado e cores dos requisitos
+    validatePasswordAndToggleButton();
 });
 
 function hideLoader() {
@@ -63,18 +66,21 @@ document.getElementById("senha").addEventListener("keyup", function () {
     let password = this.value;
     let progressBar = document.getElementById("progress-bar");
 
-    let lengthPercent = Math.min(100, Math.round((password.length / 7) * 100));
+    let lengthPercent = Math.min(100, Math.round((password.length / 8) * 100)); // Alterado para 8
     progressBar.style.width = lengthPercent + "%";
 
     if (password.length === 0) {
         progressBar.style.backgroundColor = "#ced4da";
-    } else if (password.length <= 5) {
+    } else if (password.length < 8) {
         progressBar.style.backgroundColor = "#ff0019";
-    } else if (password.length === 6) {
+    } else if (!/[A-Z]/.test(password) || !/[@#\$%\^&\*\(\)_\+\-=\[\]\{\};':"\\|,.<>\/?]/.test(password)) {
         progressBar.style.backgroundColor = "#ffbf00";
     } else {
         progressBar.style.backgroundColor = "#00ffb3";
     }
+
+    // Validar senha e desabilitar botão se necessário
+    validatePasswordAndToggleButton();
 });
 
 /* botão mostrar ou ocultar senha */
@@ -88,8 +94,43 @@ botaoSenha.addEventListener("click", function () {
     }
 });
 
+function validatePassword(password) {
+    // Pelo menos 8 caracteres, uma maiúscula e um caracter especial
+    const minLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasSpecialChar = /[@#\$%\^&\*\(\)_\+\-=\[\]\{\};':"\\|,.<>\/?]/.test(password);
+    return minLength && hasUpperCase && hasSpecialChar;
+}
+
+function validatePasswordAndToggleButton() {
+    const password = senha.value;
+    const isValid = validatePassword(password);
+    const button = document.getElementById("cadastrar");
+    if (isValid) {
+        button.style.pointerEvents = 'auto';
+        button.style.opacity = '1';
+    } else {
+        button.style.pointerEvents = 'none';
+        button.style.opacity = '0.5';
+    }
+
+    // Mudar cores dos requisitos
+    const reqMaiuscula = document.getElementById("req-maiuscula");
+    const reqCaracteres = document.getElementById("req-caracteres");
+    const reqEspecial = document.getElementById("req-especial");
+
+    reqMaiuscula.style.color = /[A-Z]/.test(password) ? "#00ffb3" : "#f50000";
+    reqCaracteres.style.color = password.length >= 8 ? "#00ffb3" : "#f50000";
+    reqEspecial.style.color = /[@#\$%\^&\*\(\)_\+\-=\[\]\{\};':"\\|,.<>\/?]/.test(password) ? "#00ffb3" : "#f50000";
+}
 
 cadastrar.addEventListener("click", function () {
+    // Verificar senha primeiro
+    if (!validatePassword(senha.value)) {
+        alert("A senha deve ter pelo menos 8 caracteres, uma letra maiúscula e um caracter especial como @ ou #.");
+        return;
+    }
+
     if (nome.value.trim() === "") {
         botao1.style.display = "block";
         botao2.style.display = "none";
