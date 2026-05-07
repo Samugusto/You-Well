@@ -4,7 +4,7 @@ body {
     touch-action: pan-y;
     background-color: #1e9672;
     background-image: url('img/Sem\ título2.png'); /* Imagem de fundo */
-    background-position: -20% 350%; /* Posiciona no canto esquerdo superior */
+    background-position: -20% 3.9%; /* Posiciona no canto esquerdo superior */
     background-repeat: no-repeat; /* Não repete */
     background-size: 50%; /* Aumenta para 150%, causando corte nas beiradas */
     position: relative;
@@ -61,18 +61,19 @@ body::before {
 
 .bloco {
     margin-top: 4%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding-left: 0.2%;
+    padding-right: 0.2%;
+    padding-bottom: 1%;
     border-radius: 10px;
     margin-left: 35%;
     margin-right: 35%;
     padding-bottom: 1%;
     background: rgba(255, 255, 255, 0.474);
-
-    /* 2. The frosted blur effect */
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    /* For Safari support */
-
-    /* 3. Subtle glass edges */
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.31);
 }
@@ -266,7 +267,7 @@ body::before {
 /* barra de progresso senha */
 .progress-container {
     display: flex;
-    justify-self: center;
+    margin: 0 auto;  /* 👈 centraliza horizontal */
     width: 90%;
     background-color: #dbcaca;
     border-radius: 0px 0px 10px 10px;
@@ -282,22 +283,11 @@ body::before {
     transition: width 0.5s ease, background-color 0.3s ease;
 }
 
-#req-maiuscula {
+/* textos verificadores do campo senha */
+#req-especial, #req-caracteres, #req-maiuscula{
     font-size: 80%;
     display: flex;
-    justify-self: center;
-}
-
-#req-caracteres {
-    font-size: 80%;
-    display: flex;
-    justify-self: center;
-}
-
-#req-especial {
-    font-size: 80%;
-    display: flex;
-    justify-self: center;
+    margin-left: 6%;
 }
 
 .botao {
@@ -311,7 +301,7 @@ body::before {
     padding-bottom: 2%;
     margin-left: 32%;
     margin-right: 32%;
-    margin-top: 6%;
+    margin-top: 12%;
     color: #ffff;
     transition: 0.3s ease-in-out;
     cursor: pointer;

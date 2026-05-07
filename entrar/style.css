@@ -3,6 +3,10 @@ body {
     overflow-x: hidden;
     touch-action: pan-y;
     background-color: #1e9672;
+    background-image: url('img/Sem\ título2.png'); /* Imagem de fundo */
+    background-position: -20% 2%; /* Posiciona no canto esquerdo superior */
+    background-repeat: no-repeat; /* Não repete */
+    background-size: 50%; /* Aumenta para 150%, causando corte nas beiradas */
     position: relative;
     animation: colorShift 10s ease infinite;
 }
@@ -56,29 +60,20 @@ body::before {
 }
 
 .bloco {
-    border-radius: 10px;
-    margin-left: 35%;
-    margin-right: 35%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 30%; /* 👈 define o tamanho que quiser */
+    margin: 12% auto; /* 👈 centraliza horizontalmente e mantém o margin-top */
+    padding-left: 0.2%;
+    padding-right: 0.2%;
     padding-bottom: 1%;
+    border-radius: 10px;
     background: rgba(255, 255, 255, 0.474);
-
-    /* 2. The frosted blur effect */
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    /* For Safari support */
-
-    /* 3. Subtle glass edges */
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.31);
-}
-
-.logo {
-    padding-top: 0.5%;
-    display: flex;
-    justify-self: center;
-    height: auto;
-    width: 10%;
-    padding-bottom: 0.5%;
 }
 
 .title {
