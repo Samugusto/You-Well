@@ -3,12 +3,24 @@ body {
     overflow-x: hidden;
     touch-action: pan-y;
     background-color: #1e9672;
-    background-image: url('img/Sem\ título2.png'); /* Imagem de fundo */
-    background-position: -20% 2%; /* Posiciona no canto esquerdo superior */
-    background-repeat: no-repeat; /* Não repete */
-    background-size: 50%; /* Aumenta para 150%, causando corte nas beiradas */
+    background-image: url('img/Sem\ título2.png');
+    /* Imagem de fundo */
+    background-position: -20% 2%;
+    /* Posiciona no canto esquerdo superior */
+    background-repeat: no-repeat;
+    /* Não repete */
+    background-size: 50%;
+    /* Aumenta para 150%, causando corte nas beiradas */
     position: relative;
     animation: colorShift 10s ease infinite;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+    /* garante margem vertical ao rolar */
+    box-sizing: border-box;
+}
 }
 
 body::before {
@@ -53,23 +65,16 @@ body::before {
 }
 
 
-
-/* logo empresa header */
-.logoheader {
-    height: 80%;
-}
-
 .bloco {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    width: 30%; /* 👈 define o tamanho que quiser */
-    margin: 12% auto; /* 👈 centraliza horizontalmente e mantém o margin-top */
+    width: 30%;
     padding-left: 0.2%;
     padding-right: 0.2%;
     padding-bottom: 1%;
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.474);
+    background: rgba(255, 255, 255, 0.384);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -81,6 +86,7 @@ body::before {
     padding-top: 4%;
     text-align: center;
 }
+
 .title2 {
     font-size: 100%;
     color: #24213e98;
@@ -228,24 +234,6 @@ body::before {
     color: #145944
 }
 
-/* barra de progresso senha */
-.progress-container {
-    display: flex;
-    justify-self: center;
-    width: 90%;
-    background-color: #dbcaca;
-    border-radius: 0px 0px 10px 10px;
-    height: 10px;
-    margin-bottom: 4%;
-}
-
-.progress-bar {
-    height: 100%;
-    width: 0%;
-    background-color: #dc3545;
-    border-radius: 0px 0px 10px 10px;
-    transition: width 0.5s ease, background-color 0.3s ease;
-}
 
 .botao {
     font-size: 160%;
@@ -276,6 +264,7 @@ body::before {
     text-decoration-line: underline;
     cursor: pointer;
 }
+
 body.loading-locked {
     overflow: hidden !important;
     height: 100vh !important;
@@ -291,7 +280,8 @@ body.loading-locked {
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    background: #145944 !important; /* Verde escuro */
+    background: #145944 !important;
+    /* Verde escuro */
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
@@ -307,8 +297,13 @@ body.loading-locked {
 }
 
 @keyframes spinImage {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 #loader.hidden {
@@ -320,4 +315,16 @@ body.loading-locked {
 #header.loading-hidden {
     opacity: 0 !important;
     visibility: hidden !important;
+}
+
+@media (max-width: 1068px) {
+    .bloco {
+        width: 95%;
+        min-height: 500px;
+    }
+
+    body {
+        background-size: 150%;
+        background-position: 170% 2%;
+    }
 }

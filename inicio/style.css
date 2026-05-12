@@ -13,6 +13,9 @@ body {
     overflow-x: hidden;
     touch-action: pan-y;
 }
+.responsivo{
+    flex-wrap: wrap;
+}
 
 /* Container dos botões */
 .botoes {
@@ -196,7 +199,7 @@ body {
     background-image: linear-gradient(-45deg, #ffffffd9, #1e9672, #145944d9, #145944d9, #1e9672, #ffffffd9);
     background-size: 400% 400%;
     animation: gradientBG 15s ease infinite;
-    height: 108vh;
+    height: 120vh;
 }
 
 @keyframes gradientBG {
