@@ -23,7 +23,7 @@ body {
     flex-direction: row;
     gap: 10px;
     margin-left: auto;
-    padding-right: 8%;
+    padding-right: 5%;
 }
 
 /* Header */
@@ -166,7 +166,6 @@ body {
 /* janelinha */
 .containerj {
     padding-top: 1%;
-    display: flex;
     justify-content: center;
     display: flex;
     gap: 20px;

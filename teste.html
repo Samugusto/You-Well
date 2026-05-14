@@ -1,29 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
+
 <head>
-<style>
-body {
-  margin: 0;
-  height: 100vh;
-  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: Arial, sans-serif;
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-h1 { color: white; font-size: 3em; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu Lateral Esquerdo</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    /* Para alinhar o conteúdo ao lado do menu */
+  }
+
+  .menu-lateral {
+    height: 100vh;
+    /* Altura total da tela */
+    width: 250px;
+    /* Largura do menu */
+    background-color: #333;
+    /* Cor de fundo */
+    position: fixed;
+    /* Fixa o menu na tela */
+    left: 0;
+    top: 0;
+    padding-top: 20px;
+  }
+
+  .menu-lateral ul {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  .menu-lateral ul li a {
+    display: block;
+    padding: 15px;
+    text-decoration: none;
+    color: white;
+    text-align: center;
+  }
+
+  .menu-lateral ul li a:hover {
+    background-color: #555;
+    /* Cor ao passar o mouse */
+  }
+
+  /* Espaçamento para o conteúdo não ficar atrás do menu */
+  .conteudo {
+    margin-left: 250px;
+    padding: 20px;
+    width: 100%;
+  }
+</style>
+
 <body>
-  <h1>Gradiente Mágico ✨</h1>
+
+  <!-- Menu Lateral -->
+  <nav class="menu-lateral">
+    <ul>
+      <li><a href="#">Início</a></li>
+      <li><a href="#">Produtos</a></li>
+      <li><a href="#">Serviços</a></li>
+      <li><a href="#">Contato</a></li>
+    </ul>
+  </nav>
+
+  <!-- Conteúdo Principal -->
+  <div class="conteudo">
+    <h1>Meu Site</h1>
+    <p>O menu lateral está fixo na esquerda.</p>
+  </div>
+
 </body>
+
 </html>
