@@ -184,3 +184,33 @@ function initScrollPrevent() {
         }
     }, { passive: false });
 }
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = this.getAttribute('href');
+        lenis.scrollTo(target, {
+            duration: 1.5,
+            offset: -50,
+            immediate: false,
+            lock: true
+        });
+    });
+});
+gsap.registerPlugin(ScrollTrigger);
+
+const lenis = new Lenis({
+    duration: 1.2, // Tempo da animação da rolagem
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Curva de suavização
+    smoothWheel: true
+});
+
+// Sincronizar o Lenis com o ScrollTrigger do GSAP
+lenis.on('scroll', ScrollTrigger.update);
+
+// Alimentar o "ticker" do GSAP com a animação do Lenis
+gsap.ticker.add((time) => {
+    lenis.raf(time * 1000);
+});
+
+// Desativar a suavização de lag do GSAP para evitar conflitos
+gsap.ticker.lagSmoothing(0);
