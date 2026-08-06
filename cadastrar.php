@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $con = conectar();
         
         // Verificar se usuário já existe
-        $sql_check = "SELECT id FROM usuarios WHERE nome = ?";
+        $sql_check = "SELECT id_usuario FROM usuarios WHERE nome = ?";
         $stmt_check = mysqli_prepare($con, $sql_check);
         mysqli_stmt_bind_param($stmt_check, "s", $nome);
         mysqli_stmt_execute($stmt_check);
@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
             
             // Inserir novo usuário
-            $sql_insert = "INSERT INTO usuarios (nome, senha, setor, tipo) VALUES (?, ?, ?, 'funcionario')";
+            $sql_insert = "INSERT INTO usuarios (nome, senha, papel, setor) VALUES (?, ?, ?, 'funcionario')";
             $stmt_insert = mysqli_prepare($con, $sql_insert);
             mysqli_stmt_bind_param($stmt_insert, "sss", $nome, $senha_hash, $setor);
             
