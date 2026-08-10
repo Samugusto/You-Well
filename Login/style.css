@@ -3,12 +3,10 @@ body {
     overflow-x: hidden;
     touch-action: pan-y;
     background-color: #1e9672;
-    background-image: url('img/Sem\ título2.png'); /* Imagem de fundo */
-    background-position: -20% 3.9%; /* Posiciona no canto esquerdo superior */
-    background-repeat: no-repeat; /* Não repete */
-    background-size: 50%; /* Aumenta para 150%, causando corte nas beiradas */
+    background-image: none;
     position: relative;
     animation: colorShift 10s ease infinite;
+    min-height: 100vh;
 }
 
 body::before {
@@ -27,6 +25,27 @@ body::before {
     animation: particles 20s linear infinite;
     z-index: -1;
     pointer-events: none;
+}
+
+.page-bg {
+    position: fixed;
+    left: -6%;
+    top: 0%;
+    width: 950px;
+    aspect-ratio: 1 / 1;
+    background-image: url('img/Sem\ título2.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    opacity: 0.95;
+    z-index: 0;
+    pointer-events: none;
+    transform: translateX(0) rotate(0deg);
+    transition: transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.page-bg.animate-right {
+    transform: translateX(min(100vw - 180px, 60vw)) rotate(360deg);
 }
 
 @keyframes colorShift {
