@@ -4,6 +4,10 @@
     margin: 0;
 }
 
+a {
+    text-decoration: none;
+}
+
 html {
     overflow-x: hidden;
 }
@@ -14,18 +18,21 @@ body {
     touch-action: pan-y;
 }
 
+.responsivo {
+    flex-wrap: wrap;
+}
+
 /* Container dos botões */
 .botoes {
     display: flex;
     flex-direction: row;
     gap: 10px;
     margin-left: auto;
-    padding-right: 8%;
+    padding-right: 5%;
 }
 
 /* Header */
 #header {
-    border-radius: 0px 0px 5px 5px;
     z-index: 2;
     position: fixed;
     top: 0;
@@ -33,19 +40,18 @@ body {
     width: 100%;
     height: 60px;
     opacity: 0.97;
-    background: #16946e;
-    color: white;
+    background: #ffffff;
     display: flex;
     align-items: center;
     padding: 0 30px;
     box-sizing: border-box;
     transition: top 0.3s;
+    border: 2px solid #d5d5d5;
 
 }
 
 
 .buttonenterheader {
-    border: 1px solid #1ca57c;
     align-items: center;
     display: flex;
     justify-content: center;
@@ -55,7 +61,6 @@ body {
     font-size: 100%;
     padding: 1% 6%;
     max-width: 120px;
-    background-color: #1ca57c;
     cursor: pointer;
     transition: 0.3s ease-in-out;
     white-space: nowrap;
@@ -65,9 +70,8 @@ body {
 }
 
 .buttonenterheader:hover {
-    border: 1px solid #ffff;
-    color: #ffff;
-    background-color: #145944;
+    color: #145944;
+    text-decoration: underline;
 }
 
 /* nome da empresa header */
@@ -94,7 +98,7 @@ body {
 .logo {
     position: absolute;
     z-index: 1;
-    padding-top: 5%;
+    padding-top: 1%;
     padding-left: 45%;
     width: 10%;
 }
@@ -163,7 +167,6 @@ body {
 /* janelinha */
 .containerj {
     padding-top: 1%;
-    display: flex;
     justify-content: center;
     display: flex;
     gap: 20px;
@@ -171,13 +174,13 @@ body {
 }
 
 .janelinha {
-    color: white;
-    border: 1px solid rgb(255, 255, 255);
+    color: #ffff;
+    border: 1px solid #145944;
     /* trocar cor */
     border-radius: 10px;
     margin-top: 3%;
     padding: 3%;
-    background-color: #ffffff39;
+    background-color: #14594438;
     /* trocar cor */
     padding-top: 10%;
     padding-bottom: 10%;
@@ -196,7 +199,15 @@ body {
     background-image: linear-gradient(-45deg, #ffffffd9, #1e9672, #145944d9, #145944d9, #1e9672, #ffffffd9);
     background-size: 400% 400%;
     animation: gradientBG 15s ease infinite;
-    height: 108vh;
+    height: 100vh;
+    position: relative;
+}
+.enfeite{
+    position: absolute;
+    height: 95%;
+    top: -20%;
+    left: -20%;
+    rotate: 45deg;
 }
 
 @keyframes gradientBG {
@@ -419,11 +430,8 @@ body {
     object-fit: cover;
     box-sizing: border-box;
     transition: 0.3s ease-in-out;
-}
-#perf3:hover{
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.31);
 }
-
 .icone {
     align-items: center;
     display: flex;
@@ -461,7 +469,7 @@ body {
 }
 
 .textocentro2 {
-    padding-top: 15%;
+    padding-top: 10%;
     text-align: center;
 }
 
@@ -616,15 +624,20 @@ footer {
     text-align: center;
 }
 
+.databee {
+    justify-self: center;
+    width: 25%;
+    display: flex;
+    justify-content: center;
+}
+
 .imgfoot {
     opacity: 0.8;
-    width: 2%;
+    width: 10%;
     aspect-ratio: 1;
 }
 
-a {
-    text-decoration: none;
-}
+
 
 .footerbot1 {
     padding-top: 1%;
@@ -667,6 +680,7 @@ a {
     font-family: 'Pixelify Sans', sans-serif;
     font-size: 80%;
 }
+
 
 
 /* fonte */
