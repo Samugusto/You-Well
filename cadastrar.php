@@ -65,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>YouWell - Login</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
-    <link href="style.css" rel="stylesheet">
+    <link href="styleLogin.css" rel="stylesheet">
     <link href="img/Sem título.png" rel="icon">
 </head>
 
@@ -75,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
     <div class="bloco">
-        <h1 class="title">Bem-Vindo(a)</h1>
+        <h1 class="title">Bem-Vindo(a) de volta!</h1>
         <h1 class="title2">que bom ter você conosco</h1>
         <div class="footerdiv"></div>
 
@@ -93,21 +93,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <form method="POST" action="">
             <div class="input-floating">
+                <i class="bi bi-person-badge-fill iconny"></i>
                 <input id="nome" name="nome" type="text" required><i class="bi bi-exclamation-circle" id="icone3"></i><i
                     class="bi bi-check-circle" id="icone4"></i>
                 <label for="nome">Nome Completo</label>
             </div>
 
             <div class="input-floating-senha">
+                <i class="bi bi-lock-fill iconny2"></i>
                 <input id="senha" name="senha" type="password" required id="password"><i class="bi bi-eye-fill icone" id="botaoSenha"></i>
                 <label for="senha">Senha</label>
             </div>
             <div class="progress-container">
                 <div class="progress-bar" id="progress-bar"></div>
             </div>
-            <p id="req-maiuscula">requer uma letra maiuscula</p>
-            <p id="req-caracteres">requer mais de 7 caracteres</p>
-            <p id="req-especial">requer um caracter especial (@, #, etc.)</p>
+            <p id="req-maiuscula">Requer uma letra maiúscula</p>
+            <p id="req-caracteres">Requer mais de 7 caracteres</p>
+            <p id="req-especial">Requer um caracter especial (@, #, etc.)</p>
 
             <div class="input-floating">
                 <input id="confirmar" name="confirmar_senha" type="password" required><i class="bi bi-exclamation-circle" id="icone5"></i><i
