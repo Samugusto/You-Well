@@ -68,19 +68,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouWell - Entrar</title>
-
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-</head>
+    <link rel="icon" href="img/Sem título.png"
+        </head>
 
 <body>
 
     <div class="bloco">
-
+        <div class="iconF">
+            <i class="bi bi-door-open-fill"></i>
+        </div>
         <h1 class="title">Bem-Vindo(a) de volta :)</h1>
         <h1 class="title2">acompanhe os setores da sua empresa</h1>
         <div class="footerdiv"></div>
-        <h1 class="title">Login</h1>
 
         <?php if (!empty($erro)) { ?>
             <div style="color:red; margin-bottom:15px;">
@@ -91,12 +92,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form method="POST" action="">
 
             <div class="input-floating">
+                <i class="bi bi-person-circle iconny"></i>
                 <input id="nome" name="nome" type="text" required><i class="bi bi-exclamation-circle" id="icone3"></i><i
                     class="bi bi-check-circle" id="icone4"></i>
                 <label for="nome">Nome Completo</label>
             </div>
 
             <div class="input-floating-senha">
+                <i class="bi bi-lock-fill iconny"></i>
                 <input id="senha" name="senha" type="password" required><i class="bi bi-eye-fill icone" id="botaoSenha"></i>
                 <label for="senha">Senha</label>
             </div>

@@ -63,8 +63,6 @@ body::before {
     margin: 0;
 }
 
-
-
 /* logo empresa header */
 .logoheader {
     height: 80%;
@@ -74,15 +72,31 @@ body::before {
     display: flex;
     width: 500px;
     flex-direction: column;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.474);
+    border-radius: 20px;
+    background: linear-gradient(to top, #ffffff62, #ffffff);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.31);
 }
 
-
+.iconF {
+    background: rgba(255, 255, 255, 0.151);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.112);
+    display: flex;
+    width: 80px;
+    height: 80px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 300%;
+    margin: 10px auto 0;
+    align-self: center;
+    border-radius: 20px;
+}
 
 .title {
     color: #24213e;
@@ -97,10 +111,11 @@ body::before {
 }
 
 .footerdiv {
-    width: 80%;
-    height: 2px;
+    width: 20%;
+    height: 3px;
+    border-radius: 100px;
     background-color: #145944;
-    margin: 5% auto;
+    margin: 2% auto;
 }
 
 /* todos os inputs */
@@ -133,7 +148,7 @@ body::before {
     top: 15px;
     left: 8%;
     z-index: 99;
-    color: rgba(80, 78, 78, 0.825);
+    color: #504e4ed2;
 }
 
 .input-floating label {
@@ -270,7 +285,7 @@ body::before {
 
 /* icone/botao da senha */
 .icone {
-    color: #1e9672;
+    color: #504e4ed2;
     font-size: 130%;
     cursor: pointer;
     position: absolute;
@@ -318,8 +333,7 @@ body::before {
     justify-self: center;
     align-items: center;
     background-color: #1e9672;
-    padding-top: 2%;
-    padding-bottom: 2%;
+    text-align: center;
     margin-top: 6%;
     color: #ffff;
     transition: 0.3s ease-in-out;

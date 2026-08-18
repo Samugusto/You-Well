@@ -63,7 +63,6 @@ body::before {
     margin: 0;
 }
 
-
 .bloco {
     display: flex;
     flex-direction: column;
@@ -72,12 +71,30 @@ body::before {
     padding-left: 0.2%;
     padding-right: 0.2%;
     padding-bottom: 1%;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.384);
+    border-radius: 20px;
+    background: linear-gradient(to top, #ffffff62, #ffff);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.31);
+}
+
+.iconF {
+    background: rgba(255, 255, 255, 0.151);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.112);
+    display: flex;
+    width: 80px;
+    height: 80px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 300%;
+    margin: 10px auto 0;
+    align-self: center;
+    border-radius: 20px;
 }
 
 .title {
@@ -93,16 +110,17 @@ body::before {
 }
 
 .footerdiv {
-    width: 80%;
-    height: 2px;
-    background-color: #ffff;
-    margin: 5% auto;
+    width: 20%;
+    height: 3px;
+    border-radius: 100px;
+    background-color: #145944;
+    margin: 2% auto;
 }
 
 /* todos os inputs */
 .input-floating {
     position: relative;
-    margin-top: 6%;
+    margin-top: 2%;
 }
 
 .input-floating input {
@@ -111,11 +129,12 @@ body::before {
     width: 90%;
     height: 53px;
     border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    padding: 0 20px 0 10px;
+    border-radius: 15px;
+    padding: 0 50px 0 45px;
     font-size: 16px;
-    background: #fafafa;
+    background: #fafafa83;
     box-sizing: border-box;
+    position: relative;
 }
 
 .input-floating input:focus {
@@ -123,9 +142,18 @@ body::before {
     border-color: #1e9672;
 }
 
+.iconny {
+    position: absolute;
+    font-size: 20px;
+    top: 15px;
+    left: 8%;
+    z-index: 99;
+    color: #504e4ed2;
+}
+
 .input-floating label {
     position: absolute;
-    left: 30px;
+    left: 60px;
     top: 50%;
     transform: translateY(-50%);
     font-size: 16px;
@@ -134,7 +162,7 @@ body::before {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     background: #fafafa00;
     padding: 0 8px;
-    font-weight: 500;
+    font-weight: bolder;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -166,10 +194,9 @@ body::before {
 
 
 /* input senha */
-
 .input-floating-senha {
     position: relative;
-    margin-top: 6%;
+    margin-top: 2%;
 }
 
 .input-floating-senha input {
@@ -178,18 +205,16 @@ body::before {
     width: 90%;
     height: 53px;
     border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    padding: 0 0px 0 20px;
+    border-radius: 15px;
+    padding: 0 50px 0 45px;
     font-size: 16px;
-    background: #fafafa;
+    background: #fafafa83;
     box-sizing: border-box;
 }
 
 .input-floating-senha input:focus {
     outline: none;
     border-color: #1e9672;
-    ;
-    background: white;
 }
 
 .input-floating-senha label {
@@ -202,13 +227,12 @@ body::before {
     pointer-events: none;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     background: #fafafa00;
-    padding: 0 8px;
-    font-weight: 500;
+    padding: 0 45px;
+    font-weight: bolder;
     display: block;
     justify-content: center;
     align-items: center;
 }
-
 
 .input-floating-senha input:focus+i+label,
 .input-floating-senha input:valid+i+label {
@@ -220,7 +244,7 @@ body::before {
 
 /* icone/botao da senha */
 .icone {
-    color: #1e9672;
+    color: #504e4ed2;
     font-size: 130%;
     cursor: pointer;
     position: absolute;
@@ -236,15 +260,14 @@ body::before {
 
 .botao {
     font-size: 140%;
-    border-radius: 100px;
+    border-radius: 15px;
     display: flex;
     justify-content: center;
     justify-self: center;
     align-items: center;
     background-color: #1e9672;
-    padding-top: 2%;
-    padding-bottom: 2%;
-    margin-top: 6%;
+    text-align: center;
+    margin-top: 1%;
     color: #ffff;
     transition: 0.3s ease-in-out;
     cursor: pointer;
@@ -252,6 +275,7 @@ body::before {
     height: 40px;
     outline: none;
     border: none;
+    font-weight: bolder;
 }
 
 .botao:hover {

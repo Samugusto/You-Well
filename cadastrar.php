@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $senha = $_POST["senha"];
     $confirmar_senha = $_POST["confirmar_senha"];
     $setor = trim($_POST["setor"]);
-    
+
     // Validações
     if (empty($nome) || empty($senha) || empty($confirmar_senha) || empty($setor)) {
         $erro = "Todos os campos são obrigatórios.";
@@ -24,25 +24,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $erro = "A senha deve conter pelo menos um caractere especial.";
     } else {
         $con = conectar();
-        
+
         // Verificar se usuário já existe
         $sql_check = "SELECT id_usuario FROM usuarios WHERE nome = ?";
         $stmt_check = mysqli_prepare($con, $sql_check);
         mysqli_stmt_bind_param($stmt_check, "s", $nome);
         mysqli_stmt_execute($stmt_check);
         mysqli_stmt_store_result($stmt_check);
-        
+
         if (mysqli_stmt_num_rows($stmt_check) > 0) {
             $erro = "Este nome de usuário já está cadastrado.";
         } else {
             // Hash da senha
             $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
-            
+
             // Inserir novo usuário
             $sql_insert = "INSERT INTO usuarios (nome, senha, papel, setor) VALUES (?, ?, ?, 'funcionario')";
             $stmt_insert = mysqli_prepare($con, $sql_insert);
             mysqli_stmt_bind_param($stmt_insert, "sss", $nome, $senha_hash, $setor);
-            
+
             if (mysqli_stmt_execute($stmt_insert)) {
                 $sucesso = "Cadastro realizado com sucesso! Redirecionando para o login...";
                 echo '<meta http-equiv="refresh" content="2;url=entrar.php">';
@@ -75,7 +75,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
     <div class="bloco">
-        <h1 class="title">Bem-Vindo(a) de volta!</h1>
+        <div class="iconF">
+            <i class="bi bi-door-open-fill iconT"></i>
+        </div>
+        <h1 class="title">Bem-Vindo(a)!</h1>
         <h1 class="title2">que bom ter você conosco</h1>
         <div class="footerdiv"></div>
 
@@ -93,7 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <form method="POST" action="">
             <div class="input-floating">
-                <i class="bi bi-person-badge-fill iconny"></i>
+                <i class="bi bi-person-circle iconny"></i>
                 <input id="nome" name="nome" type="text" required><i class="bi bi-exclamation-circle" id="icone3"></i><i
                     class="bi bi-check-circle" id="icone4"></i>
                 <label for="nome">Nome Completo</label>
@@ -114,19 +117,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="input-floating">
                 <input id="confirmar" name="confirmar_senha" type="password" required><i class="bi bi-exclamation-circle" id="icone5"></i><i
                     class="bi bi-check-circle" id="icone6"></i>
+                <i class="bi bi-lock-fill iconny"></i>
                 <label for="confirmar">Confirmar Senha</label>
             </div>
 
             <div class="input-floating">
                 <input id="setor" name="setor" type="number" required><i class="bi bi-exclamation-circle" id="icone7"></i><i
                     class="bi bi-check-circle" id="icone8"></i>
+                <i class="bi bi-asterisk iconny"></i>
                 <label for="setor">Setor</label>
             </div>
 
             <button type="submit" class="botao" id="cadastrar">Entrar</button>
         </form>
         <a href="entrar.php">
-            <h1 class="outro">já tem um cadastro? clique aqui!</h1>
+            <h1 class="outro">Já tem um cadastro? Clique aqui!</h1>
         </a>
     </div>
     <script src="script.js"></script>

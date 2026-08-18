@@ -119,9 +119,9 @@ function validatePasswordAndToggleButton() {
     const reqCaracteres = document.getElementById("req-caracteres");
     const reqEspecial = document.getElementById("req-especial");
 
-    reqMaiuscula.style.color = /[A-Z]/.test(password) ? "#00ffb3" : "#f50000";
-    reqCaracteres.style.color = password.length >= 8 ? "#00ffb3" : "#f50000";
-    reqEspecial.style.color = /[@#\$%\^&\*\(\)_\+\-=\[\]\{\};':"\\|,.<>\/?]/.test(password) ? "#00ffb3" : "#f50000";
+    reqMaiuscula.style.color = /[A-Z]/.test(password) ? "#145944" : "#f50000";
+    reqCaracteres.style.color = password.length >= 8 ? "#145944" : "#f50000";
+    reqEspecial.style.color = /[@#\$%\^&\*\(\)_\+\-=\[\]\{\};':"\\|,.<>\/?]/.test(password) ? "#145944" : "#f50000";
 }
 
 cadastrar.addEventListener("click", function () {
