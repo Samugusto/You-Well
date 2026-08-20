@@ -1,0 +1,186 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+:root{
+    --cor-principal: #145944;
+    --cor-hover: #1e9672;
+    --cor-textos2: #fafafa;
+}
+
+/* fonte para a página inteira */
+body {
+    font-family: 'Montserrat', sans-serif;
+    overflow-x: hidden;
+    touch-action: pan-y;
+    display: flex;
+    background-color: var(--cor-textos2);
+}
+
+.Logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4%;
+}
+
+.logo-menu {
+    display: flex;
+    width: 20%;
+    padding-bottom: 5%;
+}
+
+.tituloY{
+    color: var(--cor-textos2);
+}
+
+.menu-lateral {
+    height: 100vh;
+    width: 250px;
+    background-color: var(--cor-principal);
+    position: fixed;
+    left: 0;
+    top: 0;
+    border-radius: 0px 15px 15px 0px;
+}
+
+.menu-lateral ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.menu-lateral ul li a {
+    display: block;
+    padding: 15px;
+    text-decoration: none;
+    color: white;
+    text-align: center;
+    transition: 0.3s ease-in-out;
+}
+
+.menu-lateral ul li a:hover {
+    background-color: #1e9672;
+    margin-left: 60px;
+    margin-right: 60px;
+    border-radius: 6px;
+
+}
+
+/* Espaçamento para o conteúdo não ficar atrás do menu */
+.conteudo {
+    margin-left: 250px;
+    padding: 20px;
+    width: 100%;
+}
+
+/* Header */
+#header {
+    border-radius: 15px;
+    z-index: 2;
+    position: fixed;
+    right: 0;
+    width: 80%;
+    height: 80px;
+    background: #ffffff;
+    color: white;
+    align-items: center;
+    border: 1px solid #bababa;
+}
+
+.perfil {
+    margin-right: 3%;
+    border-radius: 50%;
+    margin-left: 2%;
+    width: 8%;
+}
+
+.user {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.nome {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    border-radius: 10px;
+    font-size: 100%;
+    color: black;
+    white-space: nowrap;
+    margin: 0;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    margin-left: auto;
+}
+
+.buttonenterheader:hover {
+    border: 1px solid #ffff;
+    color: #ffff;
+    background-color: #145944;
+}
+
+/* nome da empresa header */
+
+.empresa3 {
+    margin-left: 10%;
+    font-size: 300%;
+    font-family: 'Seona', sans-serif;
+    color: #145944;
+}
+
+.empresa4 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 250%;
+    color: #24213e;
+}
+
+/* logo empresa header */
+.logoheader {
+    height: 80%;
+}
+
+.TextoBoas {
+    padding-top: 7%;
+    display: flex;
+    justify-self: center;
+}
+.TextoOla{
+    display: flex;
+    justify-self: center;
+    font-size: 90%;
+    color: #7c7c7c;
+}
+
+.containerj {
+    padding-top: 2%;
+    justify-content: center;
+    display: flex;
+    gap: 20px;
+    /* espaço entre elas */
+}
+
+.janelinha {
+    color: rgb(126, 126, 126);
+    border: 1px solid rgb(206, 206, 206);
+    border-radius: 10px;
+    margin-top: 3%;
+    padding: 3%;
+    background-color: #ffffff;
+
+    padding-top: 10%;
+    padding-bottom: 10%;
+    padding-left: 20%;
+    padding-right: 20%;
+}
+
+.janelinha2 {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+}

@@ -10,7 +10,7 @@ $erro = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $nome = trim($_POST["nome"]);
-    $senha = trim($_POST["senha"]);
+    $senha = $_POST["senha"];
 
     $con = conectar();
 
@@ -26,8 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $usuario = mysqli_fetch_assoc($resultado);
 
-        // Senha sem criptografia
-        if ($senha == $usuario['senha']) {
+        if (password_verify($senha, $usuario['senha'])) {
 
             $_SESSION['id_usuario'] = $usuario['id_usuario'];
             $_SESSION['nome'] = $usuario['nome'];
@@ -106,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <br>
 
-            <button class="botao" id="cadastrar" type="submit">Entrar</button>
+            <button class="botao" type="submit">Entrar</button>
 
         </form>
 
