@@ -10,6 +10,13 @@ if ($_SESSION['papel'] != "gerente") {
     header("Location: entrar.php");
     exit();
 }
+
+$paginas = ['inicio', 'temperatura', 'ruido', 'alertas'];
+$pagina = $_GET['pagina'] ?? 'inicio';
+
+if (!in_array($pagina, $paginas, true)) {
+    $pagina = 'inicio';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -38,50 +45,69 @@ if ($_SESSION['papel'] != "gerente") {
                 <img src="img/Sem título2.png" class="logo-menu">
                 <h1 class="tituloY">YouWell</h1>
             </div>
-            <li><a href="#">Início</a></li>
-            <li><a href="#">Temperatura</a></li>
-            <li><a href="#">Umidade</a></li>
-            <li><a href="#">Ruído</a></li>
+            <li><a href="painel.php?pagina=inicio" class="underline-desliza"><i class="bi bi-house-fill"></i>Início</a></li>
+            <li><a href="painel.php?pagina=temperatura" class="underline-desliza"><i class="bi bi-thermometer"></i>Temperatura</a></li>
+            <li><a href="painel.php?pagina=ruido" class="underline-desliza"><i class="bi bi-volume-up-fill"></i>Ruído</a></li>
+            <li><a href="painel.php?pagina=alertas" class="underline-desliza"><i class="bi bi-exclamation-circle-fill"></i>Alertas</a></li>
         </ul>
     </nav>
 
     <!-- Conteúdo Principal -->
     <div class="conteudo">
-        <h1 class="TextoBoas">Bem-vindo, <?php echo $_SESSION['nome']; ?></h1>
-        <h1 class="TextoOla">Vigie os principais setores da empresa</h1>
-        <div class="containerj">
-            <div class="janelinha2">
-                <div class="janelinha">
-                    <span class="detalhes "></span><br>
-                    <span class="outro">Setor 1 </span>
-                </div>
-            </div>
+        <?php if ($pagina === 'inicio'): ?>
+            <h1 class="TextoBoas">Bem-vindo, <?php echo $_SESSION['nome']; ?>!</h1>
+            <h1 class="TextoOla">Vigie os principais setores da empresa</h1>
+        <?php elseif ($pagina === 'temperatura'): ?>
+            <h1 class="TextoBoas">Temperatura</h1>
+            <h1 class="TextoOla">Acompanhe a temperatura dos setores</h1>
+        <?php elseif ($pagina === 'ruido'): ?>
+            <h1 class="TextoBoas">Ruído</h1>
+            <h1 class="TextoOla">Acompanhe o nível de ruído dos setores</h1>
+        <?php else: ?>
+            <h1 class="TextoBoas">Alertas</h1>
+            <h1 class="TextoOla">Confira os alertas dos setores</h1>
+        <?php endif; ?>
 
+        <?php if ($pagina === 'inicio'): ?>
+            <div class="containerj">
             <div class="janelinha2">
                 <div class="janelinha">
-                    <span class="detalhes"></span><br>
-                    <span class="outro">Setor 2</span>
+                    <span class="outro">Setor: 1</span>
+                    <div class="divi"></div>
+                    <h1 class="info"><i class="bi bi-thermometer iconI"></i>Temperatura: (valor)</h1>
+                    <h1 class="info2"><i class="bi bi-volume-up-fill iconI"></i>Ruído: (valor)</h1>
+                    <h1 class="info2"><i class="bi bi-wind iconI"></i>Qualidade do ar: (boa?)</h1>
                 </div>
             </div>
-
             <div class="janelinha2">
                 <div class="janelinha">
-                    <span class="detalhes"></span><br>
-                    <span class="outro">Setor 3</span>
+                    <span class="outro">Setor: 1</span>
+                    <div class="divi"></div>
+                    <h1 class="info"><i class="bi bi-thermometer iconI"></i>Temperatura: (valor)</h1>
+                    <h1 class="info2"><i class="bi bi-volume-up-fill iconI"></i>Ruído: (valor)</h1>
+                    <h1 class="info2"><i class="bi bi-wind iconI"></i>Qualidade do ar: (boa?)</h1>
                 </div>
             </div>
-
             <div class="janelinha2">
                 <div class="janelinha">
-                    <span class="detalhes"></span><br>
-                    <span class="outro">Setor 4</span>
+                    <span class="outro">Setor: 1</span>
+                    <div class="divi"></div>
+                    <h1 class="info"><i class="bi bi-thermometer iconI"></i>Temperatura: (valor)</h1>
+                    <h1 class="info2"><i class="bi bi-volume-up-fill iconI"></i>Ruído: (valor)</h1>
+                    <h1 class="info2"><i class="bi bi-wind iconI"></i>Qualidade do ar: (boa?)</h1>
                 </div>
             </div>
-        </div>
+            </div>
+        <?php else: ?>
+            <div class="janelinha2">
+                <div class="janelinha">
+                    <span class="outro"><img src="https://i.pinimg.com/1200x/70/e5/74/70e574d2cbd8d4270e98177d747b1bdb.jpg"></span>
+                </div>
+            </div>
+        <?php endif; ?>
 
     </div>
     </div>
-    <a href="logout.php">Sair</a>
 
 </body>
 
