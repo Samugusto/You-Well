@@ -6,6 +6,7 @@
 
 :root {
     --cor-principal: #292b2b;
+    --cor-textosInfo: #111111a2;
     --cor-hover: #1e9672;
     --cor-fundo: #1e96721d;
     --cor-textos2: #fafafa;
@@ -25,7 +26,8 @@ body {
     align-items: center;
     justify-content: center;
     gap: 4%;
-    margin-top: 5%;
+    margin-top: 10%;
+    margin-bottom: 10%;
 }
 
 .logo-menu {
@@ -37,6 +39,11 @@ body {
 .tituloY {
     color: var(--cor-textos2);
 }
+
+.well {
+    color: var(--cor-hover);
+}
+
 
 .menu-lateral {
     height: 100vh;
@@ -51,15 +58,16 @@ body {
 
 .menu-lateral ul li {
     text-align: center;
-    padding: 15px;
+    padding: 12px;
     text-decoration: none;
     transition: 0.3s ease-in-out;
 }
 
 /* Espaçamento para o conteúdo não ficar atrás do menu */
 .conteudo {
-    flex: 1;
     margin-left: 250px;
+    width: calc(100% - 250px);
+    flex: none;
     min-width: 0;
     padding: 20px;
 }
@@ -139,25 +147,47 @@ body {
     padding-top: 7%;
     display: flex;
     justify-self: center;
+    font-size: 300%;
+}
+
+.nomeUser {
+    border-radius: 20px 5px 20px 5px;
+    color: white;
+    background-color: var(--cor-hover);
 }
 
 .TextoOla {
     display: flex;
     justify-self: center;
-    font-size: 90%;
+    font-size: 120%;
     color: #7c7c7c;
 }
 
 .containerj {
     padding-top: 2%;
     display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    justify-content: center;
+    gap: 24px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.containerj2 {
+    padding-top: 2%;
+    display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 24px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .janelinha {
     width: 100%;
-    border: 1px solid rgb(206, 206, 206);
+    min-width: 0;
+    border: 1px solid #cecece;
     border-radius: 10px;
     margin-top: 3%;
     padding: 3%;
@@ -166,16 +196,66 @@ body {
     padding-bottom: 10%;
     padding-left: 20%;
     padding-right: 20%;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
 }
 
-.info, .info2 {
-    align-items: center;
+.janelinha:hover {
+    box-shadow: 10px 10px #56a8464d;
+    border: 1px solid var(--cor-hover);
+}
+
+.graficos {
+    justify-content: center;
     display: flex;
+    margin-top: 2%;
+    gap: 80px;
+}
+
+.graficoArea {
+    border: 1px solid #cecece;
+    border-radius: 10px;
+    width: 820px;
+}
+
+.graficoPizza {
+    width: 300px;
+    border: 1px solid #cecece;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.inicioIcons {
+    justify-self: center;
+    display: flex;
+    align-items: center;
+    gap: 5%;
+    margin-bottom: 5%;
+}
+
+.info,
+.info2 {
+    display: flex;
+    align-items: center;
+    justify-self: center;
     font-size: 100%;
     gap: 8px;
-    white-space: nowrap;
+    white-space: normal;
 }
-.info2{
+
+.info3 {
+    display: grid;
+    align-items: center;
+    justify-self: center;
+    font-size: 100%;
+    gap: 8px;
+    white-space: normal;
+}
+
+.info2,
+.info {
+    color: var(--cor-textosInfo);
     margin-top: 3%;
 }
 
@@ -188,16 +268,41 @@ body {
     color: var(--cor-hover);
 }
 
-.outro {  
-    font-size: 150%;  
+.iconI2 {
+    font-size: 180%;
+    background-color: var(--cor-fundo);
+    border-radius: 6px;
+    width: 40px;
+    color: var(--cor-hover);
 }
-.divi{
+
+.iconIM {
+    font-size: 50px;
+    background-color: var(--cor-fundo);
+    border-radius: 6px;
+    width: 70px;
+    color: var(--cor-hover);
+}
+
+.outro {
+    font-size: 150%;
+}
+
+.divi {
     height: 2%;
     width: 20%;
     background-color: var(--cor-hover);
     display: flex;
     justify-self: center;
     border-radius: 100px;
+}
+
+.valores {
+    font-size: 40px;
+}
+
+.valores2 {
+    color: var(--cor-principal);
 }
 
 .janelinha2 {
@@ -208,14 +313,23 @@ body {
 }
 
 .menu-lateral ul li a.underline-desliza {
+    width: 180px;
+    height: 40px;
+    align-items: center;
     position: relative;
     text-decoration: none;
     color: #e5e5e5;
     font-size: 20px;
     font-weight: bold;
-    display: inline-block;
-    padding-left: 0;
-    padding-right: 0;
+    display: inline-flex;
+    justify-content: center;
+    gap: 9px;
+}
+
+.menu-lateral ul li a.underline-desliza:focus,
+.menu-lateral ul li a.underline-desliza.active {
+    background-color: var(--cor-hover);
+    border-radius: 15px;
 }
 
 .underline-desliza::after {
@@ -231,8 +345,15 @@ body {
     transition: transform 0.25s ease-out;
 }
 
-.underline-desliza:hover::after {
+.underline-desliza:hover::after,
+.underline-desliza:focus::after,
+.underline-desliza.active::after {
     transform: scaleX(1);
+}
+
+.underline-desliza:focus::after,
+.underline-desliza.active::after {
+    transform: scaleX(0);
 }
 
 @media (max-width: 1100px) {

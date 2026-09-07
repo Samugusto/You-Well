@@ -83,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="footerdiv"></div>
 
         <?php if (!empty($erro)) { ?>
-            <div style="color:red; margin-bottom:15px;">
+            <div style="background-color: #ff4444; color: white; padding: 10px; margin: 10px; border-radius: 5px; text-align: center;">
                 <?php echo $erro; ?>
             </div>
         <?php } ?>
