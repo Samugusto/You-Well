@@ -153,13 +153,94 @@ if (!in_array($pagina, $paginas, true)) {
                 <div class="containerj">
                     <div class="janelinha2">
                         <div class="janelinha">
-                            <span class="outro">Setor: 1</span>
+                            <div class="containerQIIO">
+                                <div class="quadradoIcon">
+                                    <i class="bi bi-building iconS"></i>
+                                </div>
+                                <span class="outro">Setor: 1</span>
+                            </div>
                             <div class="divi"></div>
-                            <h1 class="info"><i class="bi bi-thermometer iconI2"></i>Temperatura: <span class="valores2">(valor)</span></h1>
-
-                            <h1 class="info2"><i class="bi bi-volume-up-fill iconI"></i>Ruído: <span class="valores2">(valor)</span></h1>
-
-                            <h1 class="info2"><i class="bi bi-wind iconI2"></i>Qualidade do ar: <span class="valores2">(valor)</span></h1>
+                            <div class="quadradoInfo">
+                                <h1 class="textoInfom">Temperatura:</h1>
+                                <h1 class="textoInfomD">(valor)</h1>
+                            </div>
+                            <div class="quadradoInfo">
+                                <h1 class="textoInfom">Ruído:</h1>
+                                <h1 class="textoInfomD">(valor)</h1>
+                            </div>
+                            <div class="quadradoInfo">
+                                <h1 class="textoInfom">Ar:</h1>
+                                <h1 class="textoInfomD">(valor)</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="janelinha2">
+                        <div class="janelinha">
+                            <div class="containerQIIO">
+                                <div class="quadradoIcon">
+                                    <i class="bi bi-building iconS"></i>
+                                </div>
+                                <span class="outro">Setor: 2</span>
+                            </div>
+                            <div class="divi"></div>
+                            <div class="quadradoInfo">
+                                <h1 class="textoInfom">Temperatura:</h1>
+                                <h1 class="textoInfomD">(valor)</h1>
+                            </div>
+                            <div class="quadradoInfo">
+                                <h1 class="textoInfom">Ruído:</h1>
+                                <h1 class="textoInfomD">(valor)</h1>
+                            </div>
+                            <div class="quadradoInfo">
+                                <h1 class="textoInfom">Ar:</h1>
+                                <h1 class="textoInfomD">(valor)</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="janelinha2">
+                        <div class="janelinha">
+                            <div class="containerQIIO">
+                                <div class="quadradoIcon">
+                                    <i class="bi bi-building iconS"></i>
+                                </div>
+                                <span class="outro">Setor: 3</span>
+                            </div>
+                            <div class="divi"></div>
+                            <div class="quadradoInfo">
+                                <h1 class="textoInfom">Temperatura:</h1>
+                                <h1 class="textoInfomD">(valor)</h1>
+                            </div>
+                            <div class="quadradoInfo">
+                                <h1 class="textoInfom">Ruído:</h1>
+                                <h1 class="textoInfomD">(valor)</h1>
+                            </div>
+                            <div class="quadradoInfo">
+                                <h1 class="textoInfom">Ar:</h1>
+                                <h1 class="textoInfomD">(valor)</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="janelinha2">
+                        <div class="janelinha">
+                            <div class="containerQIIO">
+                                <div class="quadradoIcon">
+                                    <i class="bi bi-building iconS"></i>
+                                </div>
+                                <span class="outro">Setor: 4</span>
+                            </div>
+                            <div class="divi"></div>
+                            <div class="quadradoInfo">
+                                <h1 class="textoInfom">Temperatura:</h1>
+                                <h1 class="textoInfomD">(valor)</h1>
+                            </div>
+                            <div class="quadradoInfo">
+                                <h1 class="textoInfom">Ruído:</h1>
+                                <h1 class="textoInfomD">(valor)</h1>
+                            </div>
+                            <div class="quadradoInfo">
+                                <h1 class="textoInfom">Ar:</h1>
+                                <h1 class="textoInfomD">(valor)</h1>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -246,10 +327,10 @@ if (!in_array($pagina, $paginas, true)) {
                         </div>
                     </div>
                 </div>
-                <?php elseif ($pagina === 'ruido'): ?>
-                    <div class="janelinhaR">
-                        Valor definido como alto:
-                    </div>
+            <?php elseif ($pagina === 'ruido'): ?>
+                <div class="janelinhaR">
+                    Valor definido como alto:
+                </div>
             <?php else: ?>
                 <div class="janelinha2">
                     <div class="janelinha">

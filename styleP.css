@@ -247,6 +247,25 @@ body.menu-recolhido .conteudo {
     border-bottom: 10px solid var(--cor-hover-destaque);
 }
 
+.containerQIIO{
+    gap: 5%;
+    display: flex;
+    align-items: center;
+}
+
+.quadradoIcon{
+    border-radius: 10px;
+    width: 50px;
+    height: auto;
+    background-color: var(--cor-hover);
+
+}
+
+.iconS{
+    color: white;
+    font-size: 40px;
+}
+
 .janelinhaR {
     display: flex;
     justify-self: center;
@@ -378,6 +397,22 @@ body.menu-recolhido .conteudo {
     display: flex;
     justify-self: center;
     border-radius: 100px;
+}
+
+.quadradoInfo{
+    padding: 4%;
+    border-radius: 10px;
+    margin-top: 5%;
+    background-color: #dcdcdc;
+}
+
+.textoInfom{
+    font-size: 15px;
+    color: var(--cor-textosInfo);
+}
+
+.textoInfomD{
+    font-size: 23px;
 }
 
 .valores {
