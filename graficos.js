@@ -110,14 +110,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // PEGANDO O CANVAS DOS GRÁFICOS
     // ======================================================
 
-    // Seleciona o canvas do gráfico de pizza
-    const ctxPizza = document.getElementById('pizza').getContext('2d');
-    const ctxArea = document.getElementById('area').getContext('2d');
-    // ======================================================
-    // GRÁFICO DE PIZZA
-    // ======================================================
+    // Seleciona todos os canvases, incluindo os gráficos de cada setor.
+    const canvasesPizza = document.querySelectorAll('canvas[id^="pizza"]');
+    const canvasesArea = document.querySelectorAll('canvas[id^="area"]');
 
-    const pizza = new Chart(ctxPizza, {
+    const pizzas = [];
+    canvasesPizza.forEach(canvas => pizzas.push(new Chart(canvas, {
         type: 'pie',
 
         data: {
@@ -148,28 +146,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         }
-    });
+    })));
 
-    const area = new Chart(ctxArea, {
-
-        // Tipo linha
+    const areas = [];
+    canvasesArea.forEach(canvas => areas.push(new Chart(canvas, {
         type: 'line',
 
         data: {
-
             labels: getLabels(),
 
             datasets: [{
-
                 label: 'Média de todos os setores',
-
                 data: getMed(),
-
                 backgroundColor: 'rgba(30, 150, 114, 0.25)',
                 borderColor: '#1e9672',
                 borderWidth: 3,
-
-                // Preenche a área abaixo da linha
                 fill: true
             }]
         },
@@ -185,7 +176,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         }
-    });
+    })));
+
+    // ======================================================
+    // GRÁFICO DE PIZZA
+    // ======================================================
 
     // ======================================================
     // FUNÇÃO PARA ATUALIZAR OS GRÁFICOS
@@ -194,14 +189,18 @@ document.addEventListener("DOMContentLoaded", () => {
     function atualizarGraficos() {
 
         // Atualiza gráfico pizza
-        pizza.data.labels = getLabels();
-        pizza.data.datasets[0].data = getMed();
-        pizza.data.datasets[0].backgroundColor = getMedColors(getMed());
-        pizza.update();
+        pizzas.forEach(pizza => {
+            pizza.data.labels = getLabels();
+            pizza.data.datasets[0].data = getMed();
+            pizza.data.datasets[0].backgroundColor = getMedColors(getMed());
+            pizza.update();
+        });
 
         // Atualiza gráfico área
-        area.data.labels = getLabels();
-        area.data.datasets[0].data = getMed();
-        area.update();
+        areas.forEach(area => {
+            area.data.labels = getLabels();
+            area.data.datasets[0].data = getMed();
+            area.update();
+        });
     }
 });

@@ -4,9 +4,16 @@
     box-sizing: border-box;
 }
 
+a {
+    text-decoration: none;
+    color: var(--cor-textos);
+}
+
 :root {
     --cor-principal: #292b2b;
     --cor-textosInfo: #111111a2;
+    --cor-textos: #000;
+    --cor-hover-destaque: #0beeaa;
     --cor-hover: #1e9672;
     --cor-fundo: #1e96721d;
     --cor-textos2: #fafafa;
@@ -54,6 +61,7 @@ body {
     top: 0;
     border-radius: 0px 15px 15px 0px;
     z-index: 2;
+    transition: width 0.25s ease, transform 0.25s ease;
 }
 
 .menu-lateral ul li {
@@ -70,6 +78,39 @@ body {
     flex: none;
     min-width: 0;
     padding: 20px;
+    transition: margin-left 0.25s ease, width 0.25s ease;
+}
+
+.menu-toggle {
+    position: fixed;
+    right: 160px;
+    top: 18px;
+    width: 44px;
+    height: 44px;
+    border: 1px solid #cecece;
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--cor-principal);
+    cursor: pointer;
+    font-size: 1.25rem;
+    z-index: 10;
+    transition: 0.2s ease-in-out;
+}
+
+.menu-toggle:hover {
+    color: var(--cor-hover);
+    border-color: var(--cor-hover);
+}
+
+body.menu-recolhido .menu-lateral {
+    width: 0;
+    transform: translateX(-100%);
+    overflow: hidden;
+}
+
+body.menu-recolhido .conteudo {
+    margin-left: 0;
+    width: 100%;
 }
 
 /* Header */
@@ -187,8 +228,8 @@ body {
 .janelinha {
     width: 100%;
     min-width: 0;
-    border: 1px solid #cecece;
-    border-radius: 10px;
+    border: 1px solid var(--cor-hover);
+    border-radius: 20px;
     margin-top: 3%;
     padding: 3%;
     background-color: #ffffff;
@@ -198,11 +239,41 @@ body {
     padding-right: 20%;
     cursor: pointer;
     transition: 0.2s ease-in-out;
+    border-top: 10px solid var(--cor-hover) ;
 }
 
 .janelinha:hover {
-    box-shadow: 10px 10px #56a8464d;
+    border: 1px solid var(--cor-hover-destaque);
+    border-bottom: 10px solid var(--cor-hover-destaque);
+}
+
+.janelinhaR {
+    display: flex;
+    justify-self: center;
+    width: 50%;
+    min-width: 0;
+    border: 1px solid #cecece;
+    border-radius: 20px;
+    margin-top: 3%;
+    padding: 3%;
+    background-color: #ffffff;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+    border-left: 6px solid var(--cor-hover);
+}
+
+.janelinhaR:hover {
+    box-shadow: 10px 10px #56a846a5;
     border: 1px solid var(--cor-hover);
+}
+
+.colunaG {
+    display: grid;
+}
+
+.tituloSetor {
+    margin-top: 5%;
+    text-align: center;
 }
 
 .graficos {
@@ -214,16 +285,28 @@ body {
 
 .graficoArea {
     border: 1px solid #cecece;
-    border-radius: 10px;
+    border-radius: 20px;
     width: 820px;
+    transition: 0.2s ease-in-out;
+}
+
+.graficoArea:hover {
+    box-shadow: 10px 10px #56a846a5;
+    border: 1px solid var(--cor-hover);
 }
 
 .graficoPizza {
     width: 300px;
     border: 1px solid #cecece;
-    border-radius: 10px;
+    border-radius: 20px;
     display: flex;
     align-items: center;
+    transition: 0.2s ease-in-out;
+}
+
+.graficoPizza:hover {
+    box-shadow: 10px 10px #56a846a5;
+    border: 1px solid var(--cor-hover);
 }
 
 .inicioIcons {
@@ -313,13 +396,13 @@ body {
 }
 
 .menu-lateral ul li a.underline-desliza {
-    width: 180px;
+    width: 200px;
     height: 40px;
     align-items: center;
     position: relative;
     text-decoration: none;
     color: #e5e5e5;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: bold;
     display: inline-flex;
     justify-content: center;
