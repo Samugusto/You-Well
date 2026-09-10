@@ -82,9 +82,7 @@ body {
 }
 
 .menu-toggle {
-    position: fixed;
-    right: 160px;
-    top: 18px;
+    margin-left: auto;
     width: 44px;
     height: 44px;
     border: 1px solid #cecece;
@@ -93,7 +91,6 @@ body {
     color: var(--cor-principal);
     cursor: pointer;
     font-size: 1.25rem;
-    z-index: 10;
     transition: 0.2s ease-in-out;
 }
 
@@ -135,6 +132,7 @@ body.menu-recolhido .conteudo {
 
 .user {
     display: flex;
+    align-items: center;
     flex-direction: row;
     gap: 10px;
     position: absolute;
@@ -144,8 +142,6 @@ body.menu-recolhido .conteudo {
 }
 
 .nome {
-    align-items: center;
-    display: flex;
     justify-content: center;
     text-align: center;
     border-radius: 10px;
@@ -155,7 +151,6 @@ body.menu-recolhido .conteudo {
     margin: 0;
     flex-shrink: 0;
     box-sizing: border-box;
-    margin-left: auto;
 }
 
 .buttonenterheader:hover {

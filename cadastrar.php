@@ -10,6 +10,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $senha = $_POST["senha"];
     $confirmar_senha = $_POST["confirmar_senha"];
     $setor = trim($_POST["setor"]);
+    $imagem_cropada = $_POST["imagem_cropada"] ?? "";
+
+    if (!empty($imagem_cropada)) {
+        $base64 = preg_replace('#^data:image/\w+;base64,#i', '', $imagem_cropada);
+        $imagem_data = base64_decode($base64);
+
+        if ($imagem_data !== false) {
+            $pasta_uploads = __DIR__ . '/uploads';
+            if (!is_dir($pasta_uploads)) {
+                mkdir($pasta_uploads, 0777, true);
+            }
+
+            $nome_imagem = 'perfil_' . uniqid() . '.jpg';
+            $caminho_imagem = $pasta_uploads . '/' . $nome_imagem;
+            file_put_contents($caminho_imagem, $imagem_data);
+        }
+    }
 
     // Validações
     if (empty($nome) || empty($senha) || empty($confirmar_senha) || empty($setor)) {
@@ -65,6 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>YouWell - Register</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
     <link href="styleLogin.css" rel="stylesheet">
     <link href="img/Sem título.png" rel="icon">
 </head>
@@ -114,6 +132,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <p id="req-caracteres">Requer mais de 7 caracteres</p>
             <p id="req-especial">Requer um caracter especial (@, #, etc.)</p>
 
+            <!-- Campo da foto de perfil -->
+            <div class="custom-file">
+                <label for="campoImg" class="custom-file-label">Escolher ficheiro</label>
+                <input type="file" id="campoImg" name="imagem" accept="image/*">
+                <span id="file-name" class="custom-file-name">Envie sua foto de perfil.</span>
+            </div>
+
+            <input type="hidden" name="imagem_cropada" id="imagemCropada">
+            <!--------------->
+
             <div class="input-floating">
                 <input id="confirmar" name="confirmar_senha" type="password" required><i class="bi bi-exclamation-circle" id="icone5"></i><i
                     class="bi bi-check-circle" id="icone6"></i>
@@ -135,6 +163,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </a>
     </div>
     <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+
+    <!-- Área do pop-up -->
+    <div id="cropModal" class="crop-modal" style="display:none;">
+        <div class="crop-modal-content">
+            <h3>Ajustar imagem</h3>
+            <div class="cropper-box">
+                <img id="cropImage" src="" alt="Imagem para recortar">
+            </div>
+            <div class="crop-actions">
+                <button type="button" id="confirmCrop" class="botaoS">Salvar imagem</button>
+                <button type="button" id="cancelCrop" class="botaoC botao-cancelar">Cancelar</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

@@ -35,12 +35,12 @@ if (!in_array($pagina, $paginas, true)) {
 </head>
 
 <body>
-    <button class="menu-toggle" type="button" aria-label="Esconder menu" aria-expanded="true">
-        <i class="bi bi-layout-sidebar-inset"></i>
-    </button>
-
+    
     <header id="header">
         <div class="user">
+            <button class="menu-toggle" type="button" aria-label="Esconder menu" aria-expanded="true">
+                <i class="bi bi-layout-sidebar-inset"></i>
+            </button>
             <h1 class="nome"><?php echo $_SESSION['nome']; ?></h1> <img
                 src="https://i.pinimg.com/736x/d2/19/82/d219824d3a0235f27c9e083605aac144.jpg" class="perfil">
         </div>
