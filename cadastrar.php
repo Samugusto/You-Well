@@ -12,19 +12,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $setor = trim($_POST["setor"]);
     $imagem_cropada = $_POST["imagem_cropada"] ?? "";
 
+    $foto_perfil = null;
+
     if (!empty($imagem_cropada)) {
         $base64 = preg_replace('#^data:image/\w+;base64,#i', '', $imagem_cropada);
-        $imagem_data = base64_decode($base64);
+        $imagem_data = base64_decode($base64, true);
 
-        if ($imagem_data !== false) {
+        if ($imagem_data !== false && @getimagesizefromstring($imagem_data) !== false) {
             $pasta_uploads = __DIR__ . '/uploads';
             if (!is_dir($pasta_uploads)) {
-                mkdir($pasta_uploads, 0777, true);
+                mkdir($pasta_uploads, 0755, true);
             }
 
-            $nome_imagem = 'perfil_' . uniqid() . '.jpg';
+            $nome_imagem = 'perfil_' . bin2hex(random_bytes(16)) . '.jpg';
             $caminho_imagem = $pasta_uploads . '/' . $nome_imagem;
-            file_put_contents($caminho_imagem, $imagem_data);
+            if (file_put_contents($caminho_imagem, $imagem_data) !== false) {
+                $foto_perfil = 'uploads/' . $nome_imagem;
+            }
         }
     }
 
@@ -56,9 +60,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
             // Inserir novo usuário
-            $sql_insert = "INSERT INTO usuarios (nome, senha, papel, setor) VALUES (?, ?, ?, 'funcionario')";
+            $papel = 'funcionario';
+            $sql_insert = "INSERT INTO usuarios (nome, senha, papel, setor, foto_perfil) VALUES (?, ?, ?, ?, ?)";
             $stmt_insert = mysqli_prepare($con, $sql_insert);
-            mysqli_stmt_bind_param($stmt_insert, "sss", $nome, $senha_hash, $setor);
+            mysqli_stmt_bind_param($stmt_insert, "sssss", $nome, $senha_hash, $papel, $setor, $foto_perfil);
 
             if (mysqli_stmt_execute($stmt_insert)) {
                 $sucesso = "Cadastro realizado com sucesso! Redirecionando para o login...";
@@ -112,7 +117,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         <?php endif; ?>
 
-        <form method="POST" action="">
+        <form method="POST" action="" enctype="multipart/form-data">
             <div class="input-floating">
                 <i class="bi bi-person-circle iconny"></i>
                 <input id="nome" name="nome" type="text" required><i class="bi bi-exclamation-circle" id="icone3"></i><i
