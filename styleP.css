@@ -83,7 +83,7 @@ body {
 
 .menu-toggle {
     margin-left: auto;
-    width: 44px;
+    width: 55px;
     height: 44px;
     border: 1px solid #cecece;
     border-radius: 8px;
@@ -127,7 +127,7 @@ body.menu-recolhido .conteudo {
     margin-right: 3%;
     border-radius: 50%;
     margin-left: 2%;
-    width: 8%;
+    width: 70px;
 }
 
 .user {

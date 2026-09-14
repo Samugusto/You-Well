@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once "conexao.php";
 
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: entrar.php");
@@ -9,6 +10,21 @@ if (!isset($_SESSION['id_usuario'])) {
 if ($_SESSION['papel'] != "gerente") {
     header("Location: entrar.php");
     exit();
+}
+
+$con = conectar();
+$sql_usuario = "SELECT foto_perfil FROM usuarios WHERE id_usuario = ?";
+$stmt_usuario = mysqli_prepare($con, $sql_usuario);
+mysqli_stmt_bind_param($stmt_usuario, "i", $_SESSION['id_usuario']);
+mysqli_stmt_execute($stmt_usuario);
+$resultado_usuario = mysqli_stmt_get_result($stmt_usuario);
+$usuario = mysqli_fetch_assoc($resultado_usuario);
+mysqli_stmt_close($stmt_usuario);
+mysqli_close($con);
+
+$fotoPerfil = null;
+if ($usuario && !empty($usuario['foto_perfil'])) {
+    $fotoPerfil = 'data:image/jpeg;base64,' . base64_encode($usuario['foto_perfil']);
 }
 
 $paginas = ['inicio', 'setores', 'temperatura', 'ruido', 'qualidadear', 'alertas'];
@@ -35,14 +51,18 @@ if (!in_array($pagina, $paginas, true)) {
 </head>
 
 <body>
-    
+
     <header id="header">
         <div class="user">
             <button class="menu-toggle" type="button" aria-label="Esconder menu" aria-expanded="true">
                 <i class="bi bi-layout-sidebar-inset"></i>
             </button>
-            <h1 class="nome"><?php echo $_SESSION['nome']; ?></h1> <img
-                src="https://i.pinimg.com/736x/d2/19/82/d219824d3a0235f27c9e083605aac144.jpg" class="perfil">
+            <h1 class="nome"><?php echo $_SESSION['nome']; ?></h1>
+            <?php if (!empty($fotoPerfil)): ?>
+                <img src="<?php echo $fotoPerfil; ?>" class="perfil" alt="Foto do perfil">
+            <?php else: ?>
+                <img src="https://i.pinimg.com/736x/96/1e/3e/961e3e38d18a0010f64986dc18fdf320.jpg" class="perfil" alt="Sem foto de perfil">
+            <?php endif; ?>
         </div>
     </header>
 

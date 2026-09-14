@@ -33,23 +33,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['papel'] = $usuario['papel'];
             $_SESSION['setor'] = $usuario['setor'];
 
-
-
             if ($usuario['papel'] == "admin") {
-
                 header("Location: adm.php");
                 exit();
             } elseif ($usuario['papel'] == "gerente") {
-
                 header("Location: painel.php");
                 exit();
             } else {
-
                 $erro = "Tipo de usuário inválido.";
             }
         } else {
-
-            $erro = "Senha incorreta.";
+            $erro = "Usuário ou senha inválidos.";
         }
     } else {
 

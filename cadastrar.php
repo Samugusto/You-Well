@@ -6,29 +6,21 @@ $erro = "";
 $sucesso = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nome = trim($_POST["nome"]);
-    $senha = $_POST["senha"];
-    $confirmar_senha = $_POST["confirmar_senha"];
-    $setor = trim($_POST["setor"]);
+    $nome = trim($_POST["nome"] ?? "");
+    $senha = $_POST["senha"] ?? "";
+    $confirmar_senha = $_POST["confirmar_senha"] ?? "";
+    $setor = trim($_POST["setor"] ?? "");
     $imagem_cropada = $_POST["imagem_cropada"] ?? "";
 
     $foto_perfil = null;
 
-    if (!empty($imagem_cropada)) {
-        $base64 = preg_replace('#^data:image/\w+;base64,#i', '', $imagem_cropada);
+    if (!empty($imagem_cropada) && strpos($imagem_cropada, 'data:image/') === 0) {
+        $base64 = preg_replace('#^data:image/[^;]+;base64,#i', '', $imagem_cropada);
+        $base64 = str_replace([' ', "\n", "\r", "\t"], '', $base64);
         $imagem_data = base64_decode($base64, true);
 
         if ($imagem_data !== false && @getimagesizefromstring($imagem_data) !== false) {
-            $pasta_uploads = __DIR__ . '/uploads';
-            if (!is_dir($pasta_uploads)) {
-                mkdir($pasta_uploads, 0755, true);
-            }
-
-            $nome_imagem = 'perfil_' . bin2hex(random_bytes(16)) . '.jpg';
-            $caminho_imagem = $pasta_uploads . '/' . $nome_imagem;
-            if (file_put_contents($caminho_imagem, $imagem_data) !== false) {
-                $foto_perfil = 'uploads/' . $nome_imagem;
-            }
+            $foto_perfil = $imagem_data;
         }
     }
 
@@ -61,9 +53,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Inserir novo usuário
             $papel = 'funcionario';
-            $sql_insert = "INSERT INTO usuarios (nome, senha, papel, setor, foto_perfil) VALUES (?, ?, ?, ?, ?)";
-            $stmt_insert = mysqli_prepare($con, $sql_insert);
-            mysqli_stmt_bind_param($stmt_insert, "sssss", $nome, $senha_hash, $papel, $setor, $foto_perfil);
+
+            if ($foto_perfil === null) {
+                $sql_insert = "INSERT INTO usuarios (nome, senha, papel, setor, foto_perfil) VALUES (?, ?, ?, ?, NULL)";
+                $stmt_insert = mysqli_prepare($con, $sql_insert);
+                mysqli_stmt_bind_param($stmt_insert, "ssss", $nome, $senha_hash, $papel, $setor);
+            } else {
+                $sql_insert = "INSERT INTO usuarios (nome, senha, papel, setor, foto_perfil) VALUES (?, ?, ?, ?, ?)";
+                $stmt_insert = mysqli_prepare($con, $sql_insert);
+                $foto_perfil_db = null;
+                mysqli_stmt_bind_param($stmt_insert, "ssssb", $nome, $senha_hash, $papel, $setor, $foto_perfil_db);
+                mysqli_stmt_send_long_data($stmt_insert, 4, $foto_perfil);
+            }
 
             if (mysqli_stmt_execute($stmt_insert)) {
                 $sucesso = "Cadastro realizado com sucesso! Redirecionando para o login...";

@@ -192,7 +192,18 @@
     const hiddenCropInput = document.getElementById('imagemCropada');
     const confirmCropButton = document.getElementById('confirmCrop');
     const cancelCropButton = document.getElementById('cancelCrop');
+    const formCadastro = document.querySelector('form');
     let cropper = null;
+
+    if (formCadastro) {
+        formCadastro.addEventListener('submit', function (event) {
+            if (inputImagem && inputImagem.files && inputImagem.files.length > 0 && hiddenCropInput && !hiddenCropInput.value) {
+                event.preventDefault();
+                alert('Recorte a imagem antes de enviar.');
+                cropModal.style.display = 'flex';
+            }
+        });
+    }
 
     if (inputImagem && labelImagem && nomeArquivo) {
         inputImagem.addEventListener('change', function () {
