@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animação de Linha SVG</title>
+    <!-- Carregando Tailwind CSS para estilização rápida do layout e botão -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        @keyframes desenharLinha {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .animar-desenho {
+            animation: desenharLinha 2.5s ease-in-out forwards;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen font-sans text-gray-800">
+
+    <svg viewBox="0 0 400 150" class="w-full h-auto mb-8 bg-gray-50 rounded-lg border border-gray-100 drop-shadow-sm">
+        <path id="linha-ondulada" d="M 20 75 C 60 -10, 100 160, 140 75 S 220 -10, 260 75 S 340 160, 380 75" fill="none"
+            stroke="#3b82f6" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" class="animar-desenho"/>
+    </svg>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const linha = document.getElementById('linha-ondulada');
+            const botaoRepetir = document.getElementById('btn-repetir');
+            const comprimentoTotal = linha.getTotalLength();
+            linha.style.strokeDasharray = comprimentoTotal;
+            linha.style.strokeDashoffset = comprimentoTotal;
+        });
+    </script>
+</body>
+
+</html>

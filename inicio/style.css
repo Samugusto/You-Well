@@ -4,6 +4,11 @@
     margin: 0;
 }
 
+:root {
+    --cor-textos: #ffff;
+    --cor-textos2: #6d6b6b;
+}
+
 a {
     text-decoration: none;
 }
@@ -16,6 +21,16 @@ body {
     font-family: 'Montserrat', sans-serif;
     overflow-x: hidden;
     touch-action: pan-y;
+}
+
+@keyframes desenharLinha {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.animar-desenho {
+    animation: desenharLinha 2.5s ease-in-out forwards;
 }
 
 .responsivo {
@@ -38,7 +53,7 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: 60px;
+    height: 70px;
     opacity: 0.97;
     background: #ffffff;
     display: flex;
@@ -78,8 +93,7 @@ body {
 
 .empresa3 {
     margin-left: 10%;
-    font-size: 300%;
-    font-family: 'Seona', sans-serif;
+    font-size: 250%;
     color: #145944;
 }
 
@@ -101,67 +115,6 @@ body {
     padding-top: 1%;
     padding-left: 45%;
     width: 10%;
-}
-
-/* nome empresa */
-.empresa {
-    font-size: 460%;
-    font-family: 'Seona', sans-serif;
-    color: #145944;
-}
-
-.empresa2 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 400%;
-    color: #24213e;
-}
-
-/* frase motivacional */
-.frase {
-    color: #ffff;
-    font-size: 180%;
-    text-align: center;
-}
-
-/* frase */
-.frase2 {
-    color: #ffffffc6;
-    margin-left: 25%;
-    text-align: center;
-    width: 50%;
-    font-size: 140%;
-
-}
-
-/* botão entrar*/
-.buttonenter {
-    display: inline-block;
-    color: white;
-    border-radius: 10px;
-    background-color: #ffffff86;
-    border: 2px solid #ffff;
-    /* mudar cor */
-    font-size: 150%;
-    padding-top: 1%;
-    padding-bottom: 1%;
-    padding-left: 2%;
-    padding-right: 2%;
-    margin-top: 3%;
-    margin-right: 10px;
-    display: inline-block;
-    transition: 0.3s ease-in-out;
-    cursor: pointer;
-}
-
-.buttonenter:hover {
-    background-color: #19d59d;
-    /* mudar cor */
-}
-
-/* detalhe */
-.detalhes {
-    font-size: 300%;
-
 }
 
 /* janelinha */
@@ -196,18 +149,84 @@ body {
 
 /* fundo */
 .fundo {
-    background-image: linear-gradient(-45deg, #ffffffd9, #1e9672, #145944d9, #145944d9, #1e9672, #ffffffd9);
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
+    gap: 4%;
+    justify-content: center;
+    align-items: center;
     height: 100vh;
     position: relative;
+    display: flex;
 }
-.enfeite{
+
+.linha {
     position: absolute;
-    height: 95%;
-    top: -20%;
-    left: -20%;
+    left: 7%;
+    top: -10%;
+    rotate: -45deg;
+    transform: translate(-50%, -50%);
+    width: min(42vw, 920px);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.linha2 {
+    position: absolute;
+    right: -20%;
+    top: 50%;
     rotate: 45deg;
+    transform: translate(-50%, -50%);
+    width: min(42vw, 920px);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.svg-linha {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.linha-ondulada {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.linha-ondulada-1 {
+    stroke: #145944;
+}
+
+.linha-ondulada-2 {
+    stroke: #145944;
+    opacity: 0.8;
+}
+
+.textos {
+    position: relative;
+    z-index: 1;
+    display: grid;
+}
+
+.nomeEmpresa {
+    color: #145944;
+    font-size: 70px;
+}
+
+.nomeEm {
+    color: #24213e;
+}
+
+.delta {
+    font-size: 30px;
+}
+
+.deltaM {
+    color: var(--cor-textos2);
+    font-size: 15px;
+}
+
+.imgshow {
+    width: 500px;
+    height: 500px;
 }
 
 @keyframes gradientBG {
@@ -265,7 +284,7 @@ body {
 
 /* frases */
 .frases {
-    color: #0000009a;
+    color: var(--cor-textos2);
     margin-top: 2%;
     margin-left: 30%;
     width: 40%;
@@ -432,6 +451,7 @@ body {
     transition: 0.3s ease-in-out;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.31);
 }
+
 .icone {
     align-items: center;
     display: flex;
