@@ -170,7 +170,10 @@ function initMotivadorObserver() {
         motivadorObserver.observe(el);
     });
 
-    const elementos = document.querySelectorAll(".botao-animado");
+    const elementos = document.querySelectorAll(
+        ".botao-animado, .botao-animado-direita, .botao-animado-esquerda"
+    );
+
     elementos.forEach((el, index) => {
         el.style.transitionDelay = `${index * 0.2}s`;
         motivadorObserver.observe(el);

@@ -7,6 +7,7 @@
 :root {
     --cor-textos: #ffff;
     --cor-textos2: #6d6b6b;
+    --cor-hover: #d5d1d1d3;
 }
 
 a {
@@ -164,7 +165,7 @@ body {
     rotate: -45deg;
     transform: translate(-50%, -50%);
     width: min(42vw, 920px);
-    z-index: 0;
+    z-index: 2;
     pointer-events: none;
 }
 
@@ -175,7 +176,7 @@ body {
     rotate: 45deg;
     transform: translate(-50%, -50%);
     width: min(42vw, 920px);
-    z-index: 0;
+    z-index: 2;
     pointer-events: none;
 }
 
@@ -216,12 +217,78 @@ body {
 }
 
 .delta {
+    margin-bottom: 3%;
     font-size: 30px;
+}
+
+.destaque{
+    color: #1e9672;
+    background-color: #1e96723b;
+    border-radius: 10px;
 }
 
 .deltaM {
     color: var(--cor-textos2);
     font-size: 15px;
+}
+
+.botoesF {
+    margin-top: 2%;
+    display: flex;
+    gap: 3%;
+}
+
+.botaoEnn {
+    position: relative;
+}
+
+.botaoEn {
+    align-items: center;
+    width: 120px;
+    font-weight: bolder;
+    color: var(--cor-textos);
+    background-color: #145944;
+    border-style: none;
+    padding: 10%;
+    padding-right: 25%;
+    font-size: 20px;
+    border-radius: 20px;
+    transition: 0.2s ease-in-out;
+}
+
+.botaoEnn:hover .botaoEn {
+    cursor: pointer;
+    background-color: var(--cor-hover);
+    color: #145944;
+}
+
+.botaoEnn:hover .iconeEn {
+    cursor: pointer;
+    color: #145944;
+}
+
+.iconeEn {
+    top: 25%;
+    font-size: 20px;
+    left: 75%;
+    color: var(--cor-textos);
+    position: absolute;
+    transition: 0.2s ease-in-out;
+}
+
+.botaoinfo {
+    border: 2px solid #d5d3d3;
+    padding: 2%;
+    font-size: 20px;
+    border-radius: 20px;
+    font-weight: bolder;
+    transition: 0.2s ease-in-out;
+    cursor: pointer;
+    background-color: #f1efef;
+}
+
+.botaoinfo:hover{
+    background-color: #d5d3d3;
 }
 
 .imgshow {
@@ -607,6 +674,28 @@ body {
     transition: all 0.6s ease;
 }
 
+.botao-animado-direita {
+    opacity: 0;
+    transform: translateX(60px);
+}
+
+.botao-animado-direita.ativo {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 0.6s ease;
+}
+
+.botao-animado-esquerda {
+    opacity: 0;
+    transform: translateX(-60px);
+}
+
+.botao-animado-esquerda.ativo {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 0.6s ease;
+}
+
 .texto2 {
     color: #ffffffc2;
     text-align: center;
@@ -621,7 +710,6 @@ footer {
 }
 
 .footernome {
-    font-family: 'Seona', sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -766,7 +854,9 @@ body.loading-locked {
 
 .loading-locked *:not(#loader *) .motivador,
 .loading-locked *:not(#loader *) .motivador2,
-.loading-locked *:not(#loader *) .botao-animado {
+.loading-locked *:not(#loader *) .botao-animado,
+.loading-locked *:not(#loader *) .botao-animado-direita,
+.loading-locked *:not(#loader *) .botao-animado-esquerda {
     opacity: 0 !important;
     transform: translateY(50px) !important;
 }
