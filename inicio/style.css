@@ -217,7 +217,7 @@ body {
 }
 
 .delta {
-    margin-bottom: 3%;
+    margin-bottom: 1%;
     font-size: 30px;
 }
 
@@ -225,6 +225,14 @@ body {
     color: #1e9672;
     background-color: #1e96723b;
     border-radius: 10px;
+}
+
+.divissor{
+    background-color: #145944;
+    padding: 0.4%;
+    border-radius: 100px;
+    width: 240px;
+    margin-bottom: 2%;
 }
 
 .deltaM {
@@ -287,13 +295,55 @@ body {
     background-color: #f1efef;
 }
 
+.iconespai{
+    display: flex;
+}
+
+.icones{
+    gap: 2%;
+    align-items: center;
+    display: flex;
+    padding: 4%;
+}
+
+.textosI{
+    display: grid;
+}
+
+.subtext{
+    font-size: 100%;
+    color: var(--cor-textos2);
+}
+
+.iconF{
+    background-color: #16946e;
+    color: var(--cor-textos);
+    font-size: 250%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100px;
+}
+
 .botaoinfo:hover{
     background-color: #d5d3d3;
 }
 
-.imgshow {
+.divimgshow {
+    width: 380px;
+    height: 370px;
+    background: linear-gradient(to bottom, #145944, #16946e);
+    border-radius: 50px 10px 50px 10px;
+    position: relative;
+}
+
+.imgshow{
+    position: absolute;
+    top: -35%;
+    right: -5%;
     width: 500px;
-    height: 500px;
 }
 
 @keyframes gradientBG {
