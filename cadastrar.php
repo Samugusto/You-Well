@@ -52,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
             // Inserir novo usuário
-            $papel = 'funcionario';
+            $papel = 'gerente';
 
             if ($foto_perfil === null) {
                 $sql_insert = "INSERT INTO usuarios (nome, senha, papel, setor, foto_perfil) VALUES (?, ?, ?, ?, NULL)";

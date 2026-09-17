@@ -119,7 +119,7 @@ if (!in_array($pagina, $paginas, true)) {
                                 <span class="outro">Temperatura média</span>
                             </div>
                             <div class="divi"></div>
-                            <h1 class="info3">Temperatura geral: <span class="valores">β</span></h1>
+                            <h1 class="info3">Temperatura geral: <span class="valores">23°</span></h1>
                         </div>
                     </div>
                 </a>
@@ -131,7 +131,7 @@ if (!in_array($pagina, $paginas, true)) {
                                 <span class="outro">Ruído médio</span>
                             </div>
                             <div class="divi"></div>
-                            <h1 class="info3">Ruído geral: <span class="valores">β</span></h1>
+                            <h1 class="info3">Ruído geral: <span class="valores">24 db</span></h1>
                         </div>
                     </div>
                 </a>
@@ -143,7 +143,7 @@ if (!in_array($pagina, $paginas, true)) {
                                 <span class="outro">Média do ar</span>
                             </div>
                             <div class="divi"></div>
-                            <h1 class="info3">Qualidade geral: <span class="valores">(boa?)</span></h1>
+                            <h1 class="info3">Qualidade geral: <span class="valores">Boa</span></h1>
                         </div>
                     </div>
                 </a>

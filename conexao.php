@@ -1,9 +1,9 @@
 <?php
 function conectar() {
     // Configurações do banco no outro computador
-    $host = "localhost";  //trocar IP quando o banco estiver ativo ;)
+    $host = "10.140.169.9";  //trocar IP quando o banco estiver ativo ;)
     $user = "root";
-    $password = ""; //senha 123456
+    $password = "123456"; //senha 123456
     $database = "monitoramento_ambiente";
     $PORT = 3306;
     

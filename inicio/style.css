@@ -952,3 +952,227 @@ body.loading-locked {
     visibility: hidden !important;
     pointer-events: none !important;
 }
+
+/* Layout para telas pequenas */
+@media (max-width: 768px) {
+    #header {
+        height: auto;
+        min-height: 58px;
+        padding: 8px 14px;
+        gap: 8px;
+    }
+
+    .iconF{
+        width: 50px;
+    }
+
+    .logoheader {
+        width: 34px;
+        height: auto;
+    }
+
+    .empresa3,
+    .empresa4 {
+        font-size: 150%;
+        margin-left: 0;
+    }
+
+    .botoes {
+        gap: 4px;
+        padding-right: 0;
+    }
+
+    .buttonenterheader {
+        font-size: 70%;
+        padding: 6px 4px;
+        white-space: normal;
+    }
+
+    .fundo {
+        height: auto;
+        min-height: 100vh;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 36px;
+        padding: 110px 22px 50px;
+        box-sizing: border-box;
+    }
+
+    .textos {
+        width: 100%;
+    }
+
+    .nomeEmpresa {
+        font-size: clamp(42px, 14vw, 70px);
+    }
+
+    .delta {
+        font-size: clamp(22px, 7vw, 30px);
+    }
+
+    .deltaM {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .deltaM br {
+        display: none;
+    }
+
+    .botoesF {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .iconespai {
+        flex-direction: column;
+    }
+
+    .icones {
+        padding: 4% 0;
+    }
+
+    .divimgshow {
+        width: min(100%, 380px);
+        height: 350px;
+        margin: 0 auto;
+    }
+
+    .imgshow {
+        top: -18%;
+        right: -4%;
+        width: min(125%, 500px);
+    }
+
+    .linha,
+    .linha2 {
+        width: 100vw;
+        opacity: 0.45;
+    }
+
+    .linha {
+        left: 0;
+        top: 5%;
+    }
+
+    .linha2 {
+        right: -45%;
+        top: 55%;
+    }
+
+    .more,
+    .more2 {
+        margin-left: 22px;
+        margin-right: 22px;
+        font-size: 120%;
+        padding: 12px 8px;
+    }
+
+    .titulo {
+        font-size: clamp(28px, 8vw, 42px);
+        padding: 0 18px;
+    }
+
+    .frases {
+        width: auto;
+        margin: 18px 22px 0;
+        font-size: 105%;
+        line-height: 1.5;
+    }
+
+    .searruma {
+        flex-direction: column;
+        gap: 0;
+        padding: 0 22px;
+        box-sizing: border-box;
+    }
+
+    .container,
+    .container2,
+    .container3,
+    .container4 {
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 18px;
+    }
+
+    .container,
+    .container2,
+    .container3 {
+        padding: 24px 18px;
+    }
+
+    #perf,
+    #perf2,
+    #perf3 {
+        width: 92px;
+        font-size: 300%;
+    }
+
+    .nome,
+    .nome2,
+    .nome3 {
+        font-size: 120%;
+    }
+
+    .icone {
+        width: 34px;
+        margin-left: 42px;
+    }
+
+    .numero {
+        font-size: 220%;
+    }
+
+    .textocentro {
+        padding: 12px 22px 0;
+    }
+
+    .container4 {
+        padding: 14px;
+    }
+
+    .motivador {
+        font-size: clamp(28px, 9vw, 48px);
+        padding: 50px 22px 0;
+    }
+
+    .motivador2 {
+        padding: 0 22px;
+        font-size: 110%;
+        line-height: 1.5;
+    }
+
+    .centralizador {
+        flex-direction: column;
+        padding: 0 22px;
+    }
+
+    .texto2 {
+        font-size: 100%;
+    }
+
+    .footernome {
+        font-size: 220%;
+    }
+
+    .imagemfoot {
+        width: 8%;
+    }
+
+    .detalhess,
+    .proje,
+    .footerbot {
+        padding-left: 22px;
+        padding-right: 22px;
+        line-height: 1.5;
+    }
+
+    .databee {
+        width: 100%;
+    }
+
+    .footerbot1 {
+        font-size: 190%;
+    }
+}
