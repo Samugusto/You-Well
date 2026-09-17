@@ -221,13 +221,20 @@ body {
     font-size: 30px;
 }
 
-.destaque{
+.destaque {
     color: #1e9672;
-    background-color: #1e96723b;
     border-radius: 10px;
+    background-image: linear-gradient(#1e967200, #1e967200);
+    background-repeat: no-repeat;
+    background-position: left center;
+    margin: 0;
 }
 
-.divissor{
+.destaque.esticar-ativo {
+    animation: esticar-direita 1s ease-in forwards;
+}
+
+.divissor {
     background-color: #145944;
     padding: 0.4%;
     border-radius: 100px;
@@ -244,6 +251,7 @@ body {
     margin-top: 2%;
     display: flex;
     gap: 3%;
+    align-items: center;
 }
 
 .botaoEnn {
@@ -295,39 +303,67 @@ body {
     background-color: #f1efef;
 }
 
-.iconespai{
+.iconespai {
     display: flex;
 }
 
-.icones{
-    gap: 2%;
+.icones {
+    gap: 5%;
     align-items: center;
     display: flex;
     padding: 4%;
 }
 
-.textosI{
+.textosI {
     display: grid;
 }
 
-.subtext{
-    font-size: 100%;
+.text3 {
+    width: fit-content;
+    display: inline-block;
+    color: #1e9672;
+    background-image: linear-gradient(#1e967200, #1e967200);
+    background-repeat: no-repeat;
+    background-position: left center;
+    font-size: 200%;
+    margin: 0;
+    border-radius: 10px;
+}
+
+.text3.esticar-ativo {
+    animation: esticar-direita 0.5s ease-in forwards;
+}
+
+@keyframes esticar-direita {
+    0% {
+        background-size: 0% 100%;
+        background-image: linear-gradient(#1e96723b, #1e96723b);
+    }
+
+    100% {
+        background-image: linear-gradient(#1e96723b, #1e96723b);
+        background-size: 100% 100%;
+    }
+}
+
+.subtext {
+    font-size: 80%;
     color: var(--cor-textos2);
 }
 
-.iconF{
+.iconF {
     background-color: #16946e;
     color: var(--cor-textos);
-    font-size: 250%;
+    font-size: 160%;
     width: 60px;
-    height: 60px;
+    height: 45px;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 100px;
+    border-radius: 200px;
 }
 
-.botaoinfo:hover{
+.botaoinfo:hover {
     background-color: #d5d3d3;
 }
 
@@ -339,7 +375,7 @@ body {
     position: relative;
 }
 
-.imgshow{
+.imgshow {
     position: absolute;
     top: -35%;
     right: -5%;

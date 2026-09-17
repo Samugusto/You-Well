@@ -158,6 +158,28 @@ function initMotivadorObserver() {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('ativo');
+
+                const text3 = entry.target.querySelector('.text3');
+                if (text3) {
+                    const estilos = getComputedStyle(entry.target);
+                    const duracao = converterTempoParaMs(estilos.transitionDuration);
+                    const atraso = converterTempoParaMs(estilos.transitionDelay);
+
+                    setTimeout(() => {
+                        text3.classList.add('esticar-ativo');
+                    }, duracao + atraso);
+                }
+                const destaque = entry.target.querySelector('.destaque');
+                if (destaque) {
+                    const estilos = getComputedStyle(entry.target);
+                    const duracao = converterTempoParaMs(estilos.transitionDuration);
+                    const atraso = converterTempoParaMs(estilos.transitionDelay);
+
+                    setTimeout(() => {
+                        destaque.classList.add('esticar-ativo');
+                    }, duracao + atraso);
+                }
+
                 setTimeout(() => {
                     entry.target.style.transitionDelay = "0s";
                 }, 600);
@@ -178,6 +200,11 @@ function initMotivadorObserver() {
         el.style.transitionDelay = `${index * 0.2}s`;
         motivadorObserver.observe(el);
     });
+}
+
+function converterTempoParaMs(tempo) {
+    const valor = parseFloat(tempo);
+    return tempo.includes('ms') ? valor : valor * 1000;
 }
 
 function initScrollPrevent() {
