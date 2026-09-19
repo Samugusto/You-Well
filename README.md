@@ -4,7 +4,7 @@
   <h3>Sub-empresa da <a href="https://devsbee.com.br/">DataBee</a> </h3>
 </div>
   <h1>Sobre a Youwell</h1>
-<h3>Youwell é uma plataforma digital (WEB) para o monitoramento de setores empresariais em industriais para a garantia da segurança dos colaboradores usando como base sensores de temperatura, umidade, ruído e qualidade do ar, tendo informações essenciais para a empresa administrar cada setor.</h3>
+<h3>Youwell é uma plataforma digital (WEB) para o monitoramento de setores empresariais em industriais para a garantia da segurança dos colaboradores usando como base sensores de temperatura, ruído e qualidade do ar, tendo informações essenciais para a empresa administrar cada setor.</h3>
 
 <h1>Equipe:</h1>
 
