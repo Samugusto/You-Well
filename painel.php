@@ -47,7 +47,7 @@ if (!in_array($pagina, $paginas, true)) {
     <link href="styleP.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="graficos.js"></script>
-    <script src="menu.js"></script>
+    <script src="menu.js?v=2"></script>
 </head>
 
 <body>
@@ -57,7 +57,12 @@ if (!in_array($pagina, $paginas, true)) {
             <button class="menu-toggle" type="button" aria-label="Esconder menu" aria-expanded="true">
                 <i class="bi bi-layout-sidebar-inset"></i>
             </button>
-            <h1 class="nome"><?php echo $_SESSION['nome']; ?></h1>
+            <div class="infos">
+                <h1 class="nome"><?php echo $_SESSION['nome']; ?></h1>
+                <span class="papel-usuario">
+                    <?php echo htmlspecialchars($_SESSION['papel'], ENT_QUOTES, 'UTF-8'); ?>
+                </span>
+            </div>
             <?php if (!empty($fotoPerfil)): ?>
                 <img src="<?php echo $fotoPerfil; ?>" class="perfil" alt="Foto do perfil">
             <?php else: ?>

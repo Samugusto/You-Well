@@ -10,7 +10,8 @@ a {
 }
 
 :root {
-    --cor-principal: #292b2b;
+    --cor-menu: #044d37;
+    --cor-hover-botao: #124536;
     --cor-textosInfo: #111111a2;
     --cor-textos: #000;
     --cor-hover-destaque: #0beeaa;
@@ -55,18 +56,18 @@ body {
 .menu-lateral {
     height: 100vh;
     width: 250px;
-    background-color: var(--cor-principal);
+    background-color: var(--cor-menu);
     position: fixed;
     left: 0;
     top: 0;
-    border-radius: 0px 15px 15px 0px;
     z-index: 2;
-    transition: width 0.25s ease, transform 0.25s ease;
+    overflow: hidden;
+    transition: transform 0.25s ease;
 }
 
 .menu-lateral ul li {
     text-align: center;
-    padding: 12px;
+    padding: 2px;
     text-decoration: none;
     transition: 0.3s ease-in-out;
 }
@@ -88,7 +89,7 @@ body {
     border: 1px solid #cecece;
     border-radius: 8px;
     background: #ffffff;
-    color: var(--cor-principal);
+    color: var(--cor-textos);
     cursor: pointer;
     font-size: 1.25rem;
     transition: 0.2s ease-in-out;
@@ -100,9 +101,7 @@ body {
 }
 
 body.menu-recolhido .menu-lateral {
-    width: 0;
     transform: translateX(-100%);
-    overflow: hidden;
 }
 
 body.menu-recolhido .conteudo {
@@ -141,6 +140,10 @@ body.menu-recolhido .conteudo {
     transform: translateY(-50%);
 }
 
+.infos {
+    display: grid;
+}
+
 .nome {
     justify-content: center;
     text-align: center;
@@ -151,6 +154,11 @@ body.menu-recolhido .conteudo {
     margin: 0;
     flex-shrink: 0;
     box-sizing: border-box;
+}
+
+.papel-usuario {
+    font-size: 11px;
+    color: var(--cor-textosInfo);
 }
 
 .buttonenterheader:hover {
@@ -234,7 +242,7 @@ body.menu-recolhido .conteudo {
     padding-right: 20%;
     cursor: pointer;
     transition: 0.2s ease-in-out;
-    border-top: 10px solid var(--cor-hover) ;
+    border-top: 10px solid var(--cor-hover);
 }
 
 .janelinha:hover {
@@ -242,13 +250,13 @@ body.menu-recolhido .conteudo {
     border-bottom: 10px solid var(--cor-hover-destaque);
 }
 
-.containerQIIO{
+.containerQIIO {
     gap: 5%;
     display: flex;
     align-items: center;
 }
 
-.quadradoIcon{
+.quadradoIcon {
     border-radius: 10px;
     width: 50px;
     height: auto;
@@ -256,7 +264,7 @@ body.menu-recolhido .conteudo {
 
 }
 
-.iconS{
+.iconS {
     color: white;
     font-size: 40px;
 }
@@ -304,10 +312,6 @@ body.menu-recolhido .conteudo {
     transition: 0.2s ease-in-out;
 }
 
-.graficoArea:hover {
-    box-shadow: 10px 10px #56a846a5;
-    border: 1px solid var(--cor-hover);
-}
 
 .graficoPizza {
     width: 300px;
@@ -316,11 +320,6 @@ body.menu-recolhido .conteudo {
     display: flex;
     align-items: center;
     transition: 0.2s ease-in-out;
-}
-
-.graficoPizza:hover {
-    box-shadow: 10px 10px #56a846a5;
-    border: 1px solid var(--cor-hover);
 }
 
 .inicioIcons {
@@ -394,19 +393,19 @@ body.menu-recolhido .conteudo {
     border-radius: 100px;
 }
 
-.quadradoInfo{
+.quadradoInfo {
     padding: 4%;
     border-radius: 10px;
     margin-top: 5%;
     background-color: #dcdcdc;
 }
 
-.textoInfom{
+.textoInfom {
     font-size: 15px;
     color: var(--cor-textosInfo);
 }
 
-.textoInfomD{
+.textoInfomD {
     font-size: 23px;
 }
 
@@ -437,6 +436,7 @@ body.menu-recolhido .conteudo {
     display: inline-flex;
     justify-content: center;
     gap: 9px;
+    transition: 0.1s ease-in-out;
 }
 
 .menu-lateral ul li a.underline-desliza:focus,
@@ -445,37 +445,159 @@ body.menu-recolhido .conteudo {
     border-radius: 15px;
 }
 
-.underline-desliza::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    transform: scaleX(0);
-    height: 2px;
-    bottom: -2px;
-    left: 0;
-    background-color: var(--cor-hover);
-    transform-origin: bottom left;
-    transition: transform 0.25s ease-out;
-}
-
-.underline-desliza:hover::after,
-.underline-desliza:focus::after,
-.underline-desliza.active::after {
-    transform: scaleX(1);
-}
-
-.underline-desliza:focus::after,
-.underline-desliza.active::after {
-    transform: scaleX(0);
+.underline-desliza:hover {
+    background-color: var(--cor-hover-botao);
+    border-radius: 15px;
 }
 
 @media (max-width: 1100px) {
     .containerj {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
+    .containerj2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .graficos {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+        gap: 24px;
+        width: 100%;
+    }
+
+    .graficoArea,
+    .graficoPizza {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .janelinha {
+        padding-left: 10%;
+        padding-right: 10%;
+    }
 }
 
 @media (max-width: 700px) {
+    .menu-lateral {
+        width: 100vw;
+        max-width: 100%;
+        z-index: 5;
+    }
+
+    .menu-lateral ul {
+        width: 100%;
+    }
+
+    .menu-lateral ul li a.underline-desliza {
+        width: min(200px, calc(100vw - 32px));
+    }
+
+    .menu-toggle {
+        width: 40px;
+        height: 40px;
+        position: fixed;
+        top: 0px;
+        left: -50px;
+        pointer-events: auto;
+    }
+
+    .conteudo {
+        margin-left: 0;
+        width: 100%;
+        padding: 16px;
+    }
+
+    #header {
+        height: 40px;
+        border-radius: 0 0 12px 12px;
+        z-index: 6;
+        pointer-events: none;
+    }
+
+    .user {
+        right: 12px;
+        gap: 6px;
+    }
+
+    .infos {
+        max-width: calc(100vw - 150px);
+    }
+
+    .nome {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.9rem;
+    }
+
+    .papel-usuario {
+        font-size: 0.65rem;
+    }
+
+    .perfil {
+        width: 40px;
+        margin-right: 0;
+        margin-left: 0;
+    }
+
+    .TextoBoas {
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: center;
+        padding-top: 88px;
+        text-align: center;
+        font-size: clamp(1.8rem, 8vw, 2.6rem);
+    }
+
+    .TextoOla {
+        line-height: 1.4;
+        padding: 0 8px;
+        text-align: center;
+        font-size: 1rem;
+    }
+
+    .containerj,
+    .containerj2 {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    .janelinha {
+        margin-top: 16px;
+        padding: 10% 8%;
+    }
+
+    .containerQIIO {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .outro {
+        font-size: 1.15rem;
+    }
+
+    .graficos {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 24px;
+    }
+
+    .graficoArea,
+    .graficoPizza {
+        width: 100%;
+    }
+
+    .graficoPizza {
+        min-height: 280px;
+    }
+
+    .janelinhaR {
+        width: 100%;
+    }
+
     .containerj {
         grid-template-columns: minmax(0, 1fr);
     }
