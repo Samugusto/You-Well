@@ -109,8 +109,16 @@ if (!in_array($pagina, $paginas, true)) {
             <h1 class="TextoBoas">Qualidade do Ar</h1>
             <h1 class="TextoOla">Acompanhe o nível do ar dos setores</h1>
         <?php else: ?>
-            <h1 class="TextoBoas">Alertas</h1>
-            <h1 class="TextoOla">Confira os alertas dos setores</h1>
+            <div class="linhaflex">
+                <div class="coluna">
+                    <h1 class="TextoBoas">Alertas</h1>
+                    <h1 class="TextoOla">Confira os alertas dos setores e faça downloads dos relatórios semanais</h1>
+                </div>
+                <button class="relatorio">
+                    <i class="bi bi-download" aria-hidden="true"></i>
+                    <span>Baixar Relatório</span>
+                </button>
+            </div>
         <?php endif; ?>
 
         <!-- Página início -->
@@ -118,7 +126,7 @@ if (!in_array($pagina, $paginas, true)) {
             <div class="containerj2">
                 <a href=" painel.php?pagina=temperatura">
                     <div class="janelinha2">
-                        <div class="janelinha">
+                        <div class="janelinhaW">
                             <div class="inicioIcons">
                                 <i class="bi bi-thermometer iconIM"></i>
                                 <span class="outro">Temperatura média</span>
@@ -130,7 +138,7 @@ if (!in_array($pagina, $paginas, true)) {
                 </a>
                 <a href=" painel.php?pagina=ruido">
                     <div class="janelinha2">
-                        <div class="janelinha">
+                        <div class="janelinhaW">
                             <div class="inicioIcons">
                                 <i class="bi bi-volume-up-fill iconIM"></i>
                                 <span class="outro">Ruído médio</span>
@@ -142,7 +150,7 @@ if (!in_array($pagina, $paginas, true)) {
                 </a>
                 <a href=" painel.php?pagina=qualidadear">
                     <div class="janelinha2">
-                        <div class="janelinha">
+                        <div class="janelinhaW">
                             <div class="inicioIcons">
                                 <i class="bi bi-wind iconIM"></i>
                                 <span class="outro">Média do ar</span>
@@ -291,7 +299,8 @@ if (!in_array($pagina, $paginas, true)) {
                             </div>
                         </div>
                     </div>
-                    <h1 class="tituloSetor">Setor 3</h1>
+                    <div class="linha"></div>
+                    <h1 class="tituloSetor">Setor 2</h1>
                     <div class="graficos">
                         <div class="graficoArea">
                             <div class="col-md-12">
@@ -311,7 +320,8 @@ if (!in_array($pagina, $paginas, true)) {
                             </div>
                         </div>
                     </div>
-                    <h1 class="tituloSetor">Setor 4</h1>
+                    <div class="linha"></div>
+                    <h1 class="tituloSetor">Setor 3</h1>
                     <div class="graficos">
                         <div class="graficoArea">
                             <div class="col-md-12">
@@ -331,7 +341,8 @@ if (!in_array($pagina, $paginas, true)) {
                             </div>
                         </div>
                     </div>
-                    <h1 class="tituloSetor">Setor 5</h1>
+                    <div class="linha"></div>
+                    <h1 class="tituloSetor">Setor 4</h1>
                     <div class="graficos">
                         <div class="graficoArea">
                             <div class="col-md-12">
@@ -353,8 +364,104 @@ if (!in_array($pagina, $paginas, true)) {
                     </div>
                 </div>
             <?php elseif ($pagina === 'ruido'): ?>
-                <div class="janelinhaR">
-                    Valor definido como alto:
+                <div class="colunaG">
+                    <h1 class="tituloSetor">Setor 1</h1>
+                    <div class="graficos">
+                        <div class="graficoArea">
+                            <div class="col-md-12">
+                                <div class="card p-3">
+                                    <canvas id="area-setor-1"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="graficoPizza">
+                            <div class="col-md-6">
+                                <div class="row g-4">
+                                    <div class="card p-3">
+                                        <canvas id="pizza-setor-1"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="linha"></div>
+                    <h1 class="tituloSetor">Setor 2</h1>
+                    <div class="graficos">
+                        <div class="graficoArea">
+                            <div class="col-md-12">
+                                <div class="card p-3">
+                                    <canvas id="area-setor-3"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="graficoPizza">
+                            <div class="col-md-6">
+                                <div class="row g-4">
+                                    <div class="card p-3">
+                                        <canvas id="pizza-setor-3"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="linha"></div>
+                    <h1 class="tituloSetor">Setor 3</h1>
+                    <div class="graficos">
+                        <div class="graficoArea">
+                            <div class="col-md-12">
+                                <div class="card p-3">
+                                    <canvas id="area-setor-4"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="graficoPizza">
+                            <div class="col-md-6">
+                                <div class="row g-4">
+                                    <div class="card p-3">
+                                        <canvas id="pizza-setor-4"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="linha"></div>
+                    <h1 class="tituloSetor">Setor 4</h1>
+                    <div class="graficos">
+                        <div class="graficoArea">
+                            <div class="col-md-12">
+                                <div class="card p-3">
+                                    <canvas id="area-setor-5"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="graficoPizza">
+                            <div class="col-md-6">
+                                <div class="row g-4">
+                                    <div class="card p-3">
+                                        <canvas id="pizza-setor-5"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            <?php elseif ($pagina === 'alertas') : ?>
+                <div class="janelinhaA">
+                    <h1>Setor 1</h1>
+                    <h1 class="deta">Crítico: Problemas relacionados a temperatura do setor: 40°C</h1>
+                </div>
+                <div class="janelinhaA">
+                    <h1>Setor 2</h1>
+                    <h1 class="deta">Crítico: Problemas relacionados ao ruído do setor: 180 db</h1>
+                </div>
+                <div class="janelinhaM">
+                    <h1>Setor 3</h1>
+                    <h1 class="deta">Avisos: Ajustes relacionados a qualidade do ar do setor: Estável</h1>
                 </div>
             <?php else: ?>
                 <div class="janelinha2">

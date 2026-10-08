@@ -16,8 +16,13 @@ a {
     --cor-textos: #000;
     --cor-hover-destaque: #0beeaa;
     --cor-hover: #1e9672;
+    --cor-hoverB: #1e96727c;
     --cor-fundo: #1e96721d;
     --cor-textos2: #fafafa;
+    --cor-alerta: #bf1c1c;
+    --cor-alertafundo: #bf1c1c1d;
+    --cor-mid: #e2e82e;
+    --cor-midfundo: #e2e82e18;
 }
 
 /* fonte para a página inteira */
@@ -190,7 +195,6 @@ body.menu-recolhido .conteudo {
 .TextoBoas {
     padding-top: 7%;
     display: flex;
-    justify-self: center;
     font-size: 300%;
 }
 
@@ -202,9 +206,59 @@ body.menu-recolhido .conteudo {
 
 .TextoOla {
     display: flex;
-    justify-self: center;
     font-size: 120%;
     color: #7c7c7c;
+    width: 80%;
+}
+
+.relatorio{
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 300;
+    color: white;
+    font-size: 20px;
+    border-style: none;
+    background: linear-gradient(to bottom, var(--cor-hover-botao), var(--cor-hover));
+    height: 40px;
+    width: 220px;
+    padding: 0;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: width 0.25s ease, transform 0.25s ease, padding-left 0.25s ease;
+}
+
+.relatorio i {
+    position: absolute;
+    left: 18px;
+    opacity: 0;
+    transform: translateX(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.relatorio:hover,
+.relatorio:focus-visible {
+    width: 280px;
+    padding-left: 30px;
+    transform: translateX(-20px);
+}
+
+.relatorio:hover i,
+.relatorio:focus-visible i {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.linhaflex{
+    align-items: center;
+    margin-top: 60px;
+    display: flex;
+    gap: 550px;
+}
+
+.coluna{
+    display: grid;
 }
 
 .containerj {
@@ -222,7 +276,6 @@ body.menu-recolhido .conteudo {
     padding-top: 2%;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 24px;
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
@@ -248,6 +301,24 @@ body.menu-recolhido .conteudo {
 .janelinha:hover {
     border: 1px solid var(--cor-hover-destaque);
     border-bottom: 10px solid var(--cor-hover-destaque);
+}
+
+.janelinhaW {
+    width: 92%;
+    min-width: 0;
+    border: 1px solid var(--cor-hover);
+    border-radius: 20px;
+    margin-top: 3%;
+    padding: 3%;
+    background-color: #ffffff;
+    padding-top: 10%;
+    padding-bottom: 10%;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+}
+
+.janelinhaW:hover {
+    border: 1px solid var(--cor-hover-destaque);
 }
 
 .containerQIIO {
@@ -285,8 +356,56 @@ body.menu-recolhido .conteudo {
 }
 
 .janelinhaR:hover {
-    box-shadow: 10px 10px #56a846a5;
     border: 1px solid var(--cor-hover);
+}
+
+.janelinhaA {
+    font-size: 12px;
+    color: var(--cor-alerta);
+    display: grid;
+    justify-self: center;
+    width: 50%;
+    min-width: 0;
+    border: 1px solid #cecece;
+    border-radius: 20px;
+    margin-top: 1%;
+    padding: 3%;
+    background-color: #ffffff;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+    border-left: 6px solid var(--cor-alerta);
+    background-color: var(--cor-alertafundo);
+}
+
+.janelinhaA:hover {
+    border: 1px solid var(--cor-alerta);
+}
+
+.janelinhaM {
+    font-size: 12px;
+    color: var(--cor-mid);
+    display: grid;
+    justify-self: center;
+    width: 50%;
+    min-width: 0;
+    border: 1px solid #cecece;
+    border-radius: 20px;
+    margin-top: 1%;
+    padding: 3%;
+    background-color: #ffffff;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+    border-left: 6px solid var(--cor-mid);
+    background-color: var(--cor-midfundo);
+}
+
+.janelinhaM:hover {
+    border: 1px solid var(--cor-mid);
+}
+
+.deta {
+    font-size: 16px;
+    color: var(--cor-textosInfo);
 }
 
 .colunaG {
@@ -302,7 +421,7 @@ body.menu-recolhido .conteudo {
     justify-content: center;
     display: flex;
     margin-top: 2%;
-    gap: 80px;
+    gap: 30px;
 }
 
 .graficoArea {
@@ -322,12 +441,21 @@ body.menu-recolhido .conteudo {
     transition: 0.2s ease-in-out;
 }
 
+.linha {
+    margin-top: 70px;
+    border-radius: 100px;
+    width: 100%;
+    height: 1.5px;
+    background-color: #0000003b;
+    justify-self: center;
+}
+
 .inicioIcons {
     justify-self: center;
     display: flex;
     align-items: center;
-    gap: 5%;
-    margin-bottom: 5%;
+    gap: 0%;
+    margin-bottom: 0%;
 }
 
 .info,
@@ -391,6 +519,7 @@ body.menu-recolhido .conteudo {
     display: flex;
     justify-self: center;
     border-radius: 100px;
+    margin-bottom: 3%;
 }
 
 .quadradoInfo {
@@ -441,7 +570,7 @@ body.menu-recolhido .conteudo {
 
 .menu-lateral ul li a.underline-desliza:focus,
 .menu-lateral ul li a.underline-desliza.active {
-    background-color: var(--cor-hover);
+    background-color: var(--cor-hoverB);
     border-radius: 15px;
 }
 
