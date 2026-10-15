@@ -261,3 +261,73 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.querySelector('.char-wave-canvas');
+    if (!canvas) return;
+
+    const container = canvas.parentElement;
+    const ctx = canvas.getContext('2d');
+    if (!container || !ctx) return;
+
+    const config = {
+        symbols: ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', '[', ']'],
+        speed: 1.5,
+        frequency: 0.03,
+        amplitude: 35,
+        angle: 45,
+        fontSize: 18,
+        spacing: 22
+    };
+
+    let width = 0;
+    let height = 0;
+    let time = 0;
+
+    const resizeCanvas = () => {
+        const bounds = container.getBoundingClientRect();
+        const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+
+        width = bounds.width;
+        height = bounds.height;
+        canvas.width = Math.round(width * pixelRatio);
+        canvas.height = Math.round(height * pixelRatio);
+        ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    };
+
+    const resizeObserver = new ResizeObserver(resizeCanvas);
+    resizeObserver.observe(container);
+    resizeCanvas();
+
+    const angle = (config.angle * Math.PI) / 180;
+    const cosAngle = Math.cos(angle);
+    const sinAngle = Math.sin(angle);
+
+    const animate = () => {
+        time += config.speed * 0.02;
+        ctx.clearRect(0, 0, width, height);
+        ctx.font = `600 ${config.fontSize}px monospace`;
+        ctx.textAlign = 'center';
+
+        const columns = Math.ceil(width / config.spacing);
+        const rows = Math.ceil(height / config.spacing);
+
+        for (let row = 0; row < rows; row++) {
+            for (let column = 0; column < columns; column++) {
+                const x = column * config.spacing;
+                const y = row * config.spacing;
+                const phase = (x * cosAngle + y * sinAngle) * config.frequency - time;
+                const wave = Math.sin(phase) * config.amplitude;
+                const normalized = (wave + config.amplitude) / (config.amplitude * 2);
+                const symbolIndex = Math.floor(normalized * (config.symbols.length - 1));
+
+                ctx.fillStyle = `rgba(0, 240, 255, ${0.2 + normalized * 0.0})`;
+                ctx.fillText(config.symbols[symbolIndex], x, y + wave * 0.5);
+            }
+        }
+
+        requestAnimationFrame(animate);
+    };
+
+    animate();
+});

@@ -85,22 +85,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouWell - Register</title>
+    <title>YouWell - Cadastrar</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
     <link href="styleLogin.css" rel="stylesheet">
+    <link rel="stylesheet" href="loader.css">
     <link href="img/Sem título.png" rel="icon">
 </head>
 
 <body>
-    <div id="loader">
-        <img src="img/Sem título2.png" alt="Loading" class="spinner-img">
+    <div id="loader" role="status" aria-live="polite">
+        <div class="loader-content">
+            <div class="loader-emblem">
+                <span class="loader-ring" aria-hidden="true"></span>
+                <img src="img/Sem título2.png" alt="" class="spinner-img">
+            </div>
+            <p class="loader-label">Preparando sua experiência<span class="loader-dots" aria-hidden="true"></span></p>
+        </div>
     </div>
 
     <div class="bloco">
         <div class="iconF">
-            <i class="bi bi-door-open-fill iconT"></i>
+            <i class="bi bi-door-open iconT"></i>
         </div>
         <h1 class="title">Bem-Vindo(a)!</h1>
         <h1 class="title2">que bom ter você conosco</h1>
@@ -120,15 +127,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <form method="POST" action="" enctype="multipart/form-data">
             <div class="input-floating">
-                <i class="bi bi-person-circle iconny"></i>
+                <i class="bi bi-person iconny"></i>
                 <input id="nome" name="nome" type="text" required><i class="bi bi-exclamation-circle" id="icone3"></i><i
                     class="bi bi-check-circle" id="icone4"></i>
                 <label for="nome">Nome Completo</label>
             </div>
 
             <div class="input-floating-senha">
-                <i class="bi bi-lock-fill iconny2"></i>
-                <input id="senha" name="senha" type="password" required id="password"><i class="bi bi-eye-fill icone" id="botaoSenha"></i>
+                <i class="bi bi-lock iconny2"></i>
+                <input id="senha" name="senha" type="password" required id="password"><i class="bi bi-eye icone" id="botaoSenha"></i>
                 <label for="senha">Senha</label>
             </div>
             <div class="progress-container">
@@ -151,7 +158,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="input-floating">
                 <input id="confirmar" name="confirmar_senha" type="password" required><i class="bi bi-exclamation-circle" id="icone5"></i><i
                     class="bi bi-check-circle" id="icone6"></i>
-                <i class="bi bi-lock-fill iconny"></i>
+                <i class="bi bi-lock iconny"></i>
                 <label for="confirmar">Confirmar Senha</label>
             </div>
 
@@ -169,6 +176,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </a>
     </div>
     <script src="script.js"></script>
+    <script src="loader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 
     <!-- Área do pop-up -->

@@ -42,15 +42,25 @@ if (!in_array($pagina, $paginas, true)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouWell - DashBoard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
     <link href="img/Sem título.png" rel="icon">
     <link href="styleP.css" rel="stylesheet">
+    <link rel="stylesheet" href="loader.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="graficos.js"></script>
     <script src="menu.js?v=2"></script>
 </head>
 
 <body>
+    <div id="loader" role="status" aria-live="polite">
+        <div class="loader-content">
+            <div class="loader-emblem">
+                <span class="loader-ring" aria-hidden="true"></span>
+                <img src="img/Sem título2.png" alt="" class="spinner-img">
+            </div>
+            <p class="loader-label">Preparando sua experiência<span class="loader-dots" aria-hidden="true"></span></p>
+        </div>
+    </div>
 
     <header id="header">
         <div class="user">
@@ -474,6 +484,7 @@ if (!in_array($pagina, $paginas, true)) {
             </div>
     </div>
 
+    <script src="loader.js"></script>
 </body>
 
 </html>

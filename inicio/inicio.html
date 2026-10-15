@@ -6,15 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouWell</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../loader.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
     <link href="img/Sem título.png" rel="icon">
 </head>
 
 <body>
-    <div id="loader">
-        <img src="img/Sem título2.png" alt="Loading" class="spinner-img">
+    <div id="loader" role="status" aria-live="polite">
+        <div class="loader-content">
+            <div class="loader-emblem">
+                <span class="loader-ring" aria-hidden="true"></span>
+                <img src="img/Sem título2.png" alt="" class="spinner-img">
+            </div>
+            <p class="loader-label">Preparando sua experiência<span class="loader-dots" aria-hidden="true"></span></p>
+        </div>
     </div>
 
     <header id="header">
@@ -23,7 +30,7 @@
             <span class="empresa3">You</span><span class="empresa4">Well</span>
         </p>
         <div class="botoes">
-            <a href="https://youwell-entrar.netlify.app/" class="buttonenterheader">Entrar</a>
+            <a href="../cadastrar.php" class="buttonenterheader">Entrar</a>
             <a href="#funcao" class="buttonenterheader">funções</a>
             <a href="#passo" class="buttonenterheader">como<br> funciona</a>
         </div>
@@ -52,7 +59,7 @@
                 vigiando setores com uma interface que lhe alerta e te auxília.</h1>
             <div class="botoesF botao-animado-esquerda">
                 <div class="botaoEnn">
-                    <button class="botaoEn">Entrar</button>
+                    <a href="../cadastrar.php" class="botaoEn">Entrar</a>
                     <i class="bi bi-arrow-right iconeEn"></i>
                 </div>
                 <button class="botaoinfo">Ver detalhes</button>
@@ -95,7 +102,7 @@
         <div class="container botao-animado">
             <i class="bi bi-activity" id="perf"></i>
             <span class="nome" id="funcao">Monitoramento em tempo real</span>
-            <h4 class="desc">Acompanhe temperatura, umidade, ruído e qualidade do ar em tempo real.</h4>
+            <h4 class="desc">Acompanhe temperatura, ruído e qualidade do ar em tempo real.</h4>
             </a>
         </div>
         <div class="container botao-animado">
@@ -120,7 +127,7 @@
     </div>
 
     <div class="containernovo">
-        <h1 class="more">4 funcionalidades</h1>
+        <h1 class="more">3 funcionalidades</h1>
         <h1 class="frases">Processo simples e automatizado que garante monitoramento contínuo e respostas rápidas a
             qualquer situação.</h1>
 
@@ -131,12 +138,6 @@
                 <i class="bi bi-thermometer" id="perf2"></i>
                 <span class="nome2">Temperatura</span>
                 <h4 class="desc2">Controle térmico constante</h4>
-                </a>
-            </div>
-            <div class="container2 botao-animado">
-                <i class="bi bi-droplet" id="perf2"></i>
-                <span class="nome2">Umidade</span>
-                <h4 class="desc2">Conforto ambiente</h4>
                 </a>
             </div>
             <div class="container2 botao-animado">
@@ -232,11 +233,12 @@
         </div>
 
         <div class="fundo2">
+            <canvas class="char-wave-canvas" aria-hidden="true"></canvas>
             <h2 class="motivador">Pronto para transformar sua empresa?</h2>
             <h2 class="motivador2">Junte-se a empresas que já confiam na YouWell para garantir a segurança de seus
                 colaboradores.</h2>
             <div class="centralizador">
-                <a href="https://youwell-entrar.netlify.app/" class="buttonenter botao-animado">Entrar</a>
+                <a href="../cadastrar.php" class="buttonenter botao-animado">Entrar</a>
                 <h1 class="texto2 botao-animado"><i class="bi bi-alarm"></i> implementação em até 48 horas</h1>
             </div>
         </div>

@@ -63,14 +63,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>YouWell - Login</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="loader.css">
     <link rel="icon" href="img/Sem título.png"
     </head>
 
 <body>
+    <div id="loader" role="status" aria-live="polite">
+        <div class="loader-content">
+            <div class="loader-emblem">
+                <span class="loader-ring" aria-hidden="true"></span>
+                <img src="img/Sem título2.png" alt="" class="spinner-img">
+            </div>
+            <p class="loader-label">Preparando sua experiência<span class="loader-dots" aria-hidden="true"></span></p>
+        </div>
+    </div>
 
     <div class="bloco">
         <div class="iconF">
-            <i class="bi bi-door-open-fill"></i>
+            <i class="bi bi-door-open"></i>
         </div>
         <h1 class="title">Bem-Vindo(a) de volta :)</h1>
         <h1 class="title2">acompanhe os setores da sua empresa</h1>
@@ -85,15 +95,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form method="POST" action="">
 
             <div class="input-floating">
-                <i class="bi bi-person-circle iconny"></i>
+                <i class="bi bi-person iconny"></i>
                 <input id="nome" name="nome" type="text" required><i class="bi bi-exclamation-circle" id="icone3"></i><i
                     class="bi bi-check-circle" id="icone4"></i>
                 <label for="nome">Nome Completo</label>
             </div>
 
             <div class="input-floating-senha">
-                <i class="bi bi-lock-fill iconny"></i>
-                <input id="senha" name="senha" type="password" required><i class="bi bi-eye-fill icone" id="botaoSenha"></i>
+                <i class="bi bi-lock iconny"></i>
+                <input id="senha" name="senha" type="password" required><i class="bi bi-eye icone" id="botaoSenha"></i>
                 <label for="senha">Senha</label>
             </div>
 
@@ -107,6 +117,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     </div>
     <script src="script.js"></script>
+    <script src="loader.js"></script>
 </body>
 
 </html>

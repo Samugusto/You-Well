@@ -299,47 +299,22 @@ body.loading-locked {
     left: 0 !important;
 }
 
-#loader {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background: #145944 !important;
-    /* Verde escuro */
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    z-index: 999999 !important;
-    transition: opacity 0.8s ease-out !important;
+.animation-shake {
+    animation: animation-shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
-.spinner-img {
-    width: 100px !important;
-    height: 100px !important;
-    object-fit: contain !important;
-    animation: spinImage 2.0s linear infinite !important;
-}
-
-@keyframes spinImage {
-    from {
-        transform: rotate(0deg);
+@keyframes animation-shake {
+    0%, 100% {
+        transform: translateX(0);
     }
 
-    to {
-        transform: rotate(360deg);
+    20%, 60% {
+        transform: translateX(-6px);
     }
-}
 
-#loader.hidden {
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
-
-/* Esconde header durante loading */
-#header.loading-hidden {
-    opacity: 0 !important;
-    visibility: hidden !important;
+    40%, 80% {
+        transform: translateX(6px);
+    }
 }
 
 @media (max-width: 1068px) {

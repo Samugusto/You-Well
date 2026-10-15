@@ -90,18 +90,34 @@ body {
     text-decoration: underline;
 }
 
+.buttonenter{
+    color: #145944;
+    background-color: white;
+    font-size: 180%;
+    font-weight: 600;
+    text-align: center;
+    width: 130px;
+    border-radius: 100px;
+}
+
+.buttonenter:hover{
+    background-color: #16946e;
+    color: white;
+}
+
 /* nome da empresa header */
 
 .empresa3 {
     margin-left: 10%;
     font-size: 250%;
     color: #145944;
+    font-weight: 600;
 }
 
 .empresa4 {
-    font-family: 'Montserrat', sans-serif;
     font-size: 250%;
     color: #24213e;
+    font-weight: 600;
 }
 
 /* logo empresa header */
@@ -150,6 +166,11 @@ body {
 
 /* fundo */
 .fundo {
+    background-image: linear-gradient(to bottom, #f9faf9 10%, rgba(255, 255, 255, 0.786) 50%, rgba(0, 0, 0, 0) 100%),
+        radial-gradient(circle, #1459443d 1.8px, transparent 1.8px);
+    background-size: cover, 20px 20px;
+    background-position: center, left top;
+    background-repeat: no-repeat, repeat;
     gap: 4%;
     justify-content: center;
     align-items: center;
@@ -400,31 +421,32 @@ body {
 .more {
     color: white;
     font-size: 140%;
-    border-radius: 10px;
+    border-radius: 100px;
     background-color: #145944;
     /* trocar cor */
     /* trocar cor */
-    padding-top: 1%;
-    padding-bottom: 1%;
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
+    justify-self: center;
     margin-top: 3%;
-    margin-left: 40%;
-    margin-right: 40%;
+    width: 250px;
+
     text-align: center;
 }
 
 .more2 {
     color: white;
     font-size: 140%;
-    border-radius: 10px;
+    border-radius: 100px;
     background-color: #ffbf00;
     /* trocar cor */
     /* trocar cor */
-    padding-top: 1%;
-    padding-bottom: 1%;
+    padding-top: 0.5%;
+    padding-bottom: 0.5%;
     margin-top: 3%;
-    margin-left: 40%;
-    margin-right: 40%;
+    width: 250px;
     text-align: center;
+    justify-self: center;
 }
 
 /* titulo */
@@ -437,6 +459,7 @@ body {
 
 /* frases */
 .frases {
+    font-weight: 300;
     color: var(--cor-textos2);
     margin-top: 2%;
     margin-left: 30%;
@@ -568,6 +591,7 @@ body {
 
 /* número aleatorio para design melhor */
 .numero {
+    font-weight: 600;
     margin-right: 1%;
     color: #145944;
     font-size: 300%;
@@ -668,13 +692,13 @@ body {
 }
 
 #perf4 {
-    color: #ffff;
+    color: #145944;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 4%;
-    background-color: #145944;
-    font-size: 180%;
+    background-color: #1459444d;
+    font-size: 250%;
     margin-bottom: 5%;
     width: 20%;
     aspect-ratio: 1;
@@ -703,10 +727,26 @@ body {
 
 /* fundo final */
 .fundo2 {
+    background-color: #16946e;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     padding-bottom: 10%;
-    background-image: linear-gradient(-45deg, #ffffffd9, #1e9672, #145944d9, #145944d9, #1e9672, #ffffffd9);
     background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
+}
+
+.char-wave-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.fundo2 > :not(.char-wave-canvas) {
+    position: relative;
+    z-index: 1;
 }
 
 .motivador {
@@ -741,11 +781,10 @@ body {
 }
 
 .centralizador {
+    margin-top: 2%;
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: row;
-    /* horizontal */
     gap: 15px;
 }
 
@@ -785,7 +824,6 @@ body {
 .texto2 {
     color: #ffffffc2;
     text-align: center;
-    padding-top: 2%;
     font-size: 120%;
 }
 
@@ -834,9 +872,11 @@ footer {
 
 
 .footerbot1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding-top: 1%;
     color: #ffffffc2;
-    text-align: center;
     font-size: 240%;
 }
 
@@ -856,6 +896,7 @@ footer {
 
 .footere {
     margin-left: 0;
+    font-weight: 600;
 }
 
 .footere2 {
@@ -894,45 +935,6 @@ body.loading-locked {
     left: 0;
 }
 
-#loader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: #145944;
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 99999;
-    transition: opacity 0.8s ease-out;
-}
-
-.spinner-img {
-    width: 100px;
-    height: 100px;
-    object-fit: contain;
-    animation: spinImage 2.0s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
-}
-
-@keyframes spinImage {
-    0% {
-        transform: rotate(360deg);
-    }
-}
-
-#loader.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-#header.loading-hidden {
-    display: none !important;
-}
-
-
 .loading-locked *:not(#loader *) {
     animation-play-state: paused !important;
     transition: none !important;
@@ -962,7 +964,7 @@ body.loading-locked {
         gap: 8px;
     }
 
-    .iconF{
+    .iconF {
         width: 50px;
     }
 

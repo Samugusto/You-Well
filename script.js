@@ -1,51 +1,4 @@
 ﻿document.addEventListener('DOMContentLoaded', function () {
-    const body = document.body;
-    const loader = document.getElementById('loader');
-    const header = document.getElementById('header');
-    const blockScroll = function (event) {
-        event.preventDefault();
-    };
-
-    if (body) {
-        body.classList.add('loading-locked');
-    }
-
-    if (header) {
-        header.classList.add('loading-hidden');
-    }
-
-    ['wheel', 'touchmove'].forEach(function (eventName) {
-        document.addEventListener(eventName, blockScroll, { passive: false });
-    });
-
-    function removeLoader() {
-        if (loader) {
-            loader.classList.add('hidden');
-        }
-
-        setTimeout(function () {
-            if (body) {
-                body.classList.remove('loading-locked');
-            }
-
-            if (header) {
-                header.classList.remove('loading-hidden');
-            }
-
-            ['wheel', 'touchmove'].forEach(function (eventName) {
-                document.removeEventListener(eventName, blockScroll);
-            });
-
-            if (loader) {
-                loader.remove();
-            }
-        }, 800);
-    }
-
-    window.addEventListener('load', function () {
-        setTimeout(removeLoader, 1000);
-    });
-
     const nome = document.getElementById('nome');
     const cadastrar = document.getElementById('cadastrar');
     const senha = document.getElementById('senha');
@@ -58,6 +11,23 @@
     const botao4 = document.getElementById('icone6');
     const botao5 = document.getElementById('icone7');
     const botao6 = document.getElementById('icone8');
+
+    function shakeElement(element) {
+        if (!element) {
+            return;
+        }
+
+        element.classList.remove('animation-shake');
+        void element.offsetWidth;
+        element.classList.add('animation-shake');
+    }
+
+    document.querySelectorAll('#nome, #senha, #confirmar, #setor').forEach(input => {
+        input.addEventListener('invalid', () => {
+            shakeElement(input);
+            input.style.borderColor = '#f50000';
+        });
+    });
 
     function validatePassword(password) {
         const minLength = password.length >= 8;
@@ -85,13 +55,13 @@
         const reqEspecial = document.getElementById('req-especial');
 
         if (reqMaiuscula) {
-            reqMaiuscula.style.color = /[A-Z]/.test(password) ? '#145944' : '#f50000';
+            reqMaiuscula.style.color = /[A-Z]/.test(password) ? '#145944' : '#a52f2f';
         }
         if (reqCaracteres) {
-            reqCaracteres.style.color = password.length >= 8 ? '#145944' : '#f50000';
+            reqCaracteres.style.color = password.length >= 8 ? '#145944' : '#a52f2f';
         }
         if (reqEspecial) {
-            reqEspecial.style.color = /[@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]/.test(password) ? '#145944' : '#f50000';
+            reqEspecial.style.color = /[@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]/.test(password) ? '#145944' : '#a52f2f';
         }
     }
 
@@ -123,16 +93,21 @@
         botaoSenha.addEventListener('click', function () {
             if (senha.type === 'password') {
                 senha.setAttribute('type', 'text');
-                botaoSenha.classList.replace('bi-eye-fill', 'bi-eye-slash-fill');
+                botaoSenha.classList.replace('bi-eye', 'bi-eye-slash');
             } else {
                 senha.setAttribute('type', 'password');
-                botaoSenha.classList.replace('bi-eye-slash-fill', 'bi-eye-fill');
+                botaoSenha.classList.replace('bi-eye-slash', 'bi-eye');
             }
         });
     }
 
     if (cadastrar && nome && senha && confirm && sector) {
         cadastrar.addEventListener('click', function (event) {
+            if (nome.value.trim() === '') {
+                nome.style.borderColor = '#f50000';
+                shakeElement();
+            }
+
             if (!validatePassword(senha.value)) {
                 event.preventDefault();
                 alert('A senha deve ter pelo menos 8 caracteres, uma letra maiúscula e um caracter especial como @ ou #.');
@@ -143,6 +118,7 @@
                 if (botao1) botao1.style.display = 'block';
                 if (botao2) botao2.style.display = 'none';
                 nome.style.borderColor = '#f50000';
+                shakeElement();
             } else {
                 if (botao1) botao1.style.display = 'none';
                 if (botao2) botao2.style.display = 'block';
@@ -170,12 +146,14 @@
                 senha.style.borderColor = '#f50000';
                 if (botao3) botao3.style.display = 'block';
                 if (botao4) botao4.style.display = 'none';
+                shakeElement();
             }
 
             if (sector.value.trim() === '') {
                 sector.style.borderColor = '#f50000';
                 if (botao5) botao5.style.display = 'block';
                 if (botao6) botao6.style.display = 'none';
+                shakeElement();
             } else {
                 sector.style.borderColor = '#00ffb3';
                 if (botao5) botao5.style.display = 'none';
