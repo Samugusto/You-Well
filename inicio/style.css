@@ -62,7 +62,7 @@ body {
     padding: 0 30px;
     box-sizing: border-box;
     transition: top 0.3s;
-    border: 2px solid #d5d5d5;
+    border: 1px solid #d5d5d5;
 
 }
 
@@ -73,10 +73,9 @@ body {
     justify-content: center;
     text-align: center;
     color: #24213e;
-    border-radius: 10px;
     font-size: 100%;
     padding: 1% 6%;
-    max-width: 120px;
+    max-width: 300px;
     cursor: pointer;
     transition: 0.3s ease-in-out;
     white-space: nowrap;
@@ -179,6 +178,139 @@ body {
     display: flex;
 }
 
+.fundoD {
+    background-image: linear-gradient(to bottom, #f9faf900 10%, rgba(255, 255, 255, 0) 50%, rgb(255, 255, 255) 100%),
+        radial-gradient(circle, #1459443d 1.8px, transparent 1.8px);
+    background-size: cover, 20px 20px;
+    background-repeat: no-repeat, repeat;
+    height: 80vh;
+    position: relative;
+    display: flex;
+    padding: 10%;
+}
+
+.down{
+    background-color: #000000;
+    width: 300px;
+    text-align: center;
+    border-radius: 999px;
+    color: #ffffff;
+    font-weight: bolder;
+    font-size: 300%;
+}
+
+.wow2{
+    color: #145944;
+}
+
+.descD{
+    font-size: 220%;
+    width: 650px;
+}
+
+.desc2D{
+    color: #5c5c5c;
+    width: 600px;
+    font-size: 150%;
+}
+
+.Download{
+    padding: 2%;
+    width: 5000px;
+    background-color: #ffffff;
+    border: 1px solid #d5d3d3;
+    border-radius: 10px;
+}
+
+.app{
+    width: 70px;
+    background-color: #000000;
+    padding: 2%;
+    border-radius: 10px;
+}
+
+.Dlinha{
+    display: flex;
+    align-items: center;
+}
+
+.titles{
+    padding-left: 2%;
+    display: grid;
+}
+
+.title{
+    font-size: 20px;
+}
+
+.titleC{
+    color: #6a6969;
+    font-size: 13px;
+}
+
+.informaD{
+    margin-top: 2%;
+    border-radius: 10px;
+    border: 1px solid #d5d3d3;
+    align-items: center;
+}
+
+.infoDesc{
+    gap: 5%;
+    display: flex;
+    padding: 1%;
+    font-size: 15px;
+    color: #6a6969;
+}
+
+.important{
+    margin-left: auto;
+    text-align: right;
+    color: #000000;
+}
+
+.downloadB{
+    background-color: #589f8a;
+    color: #ffffff;
+    font-weight: bolder;
+    padding: 2%;
+    border-radius: 999px;
+    margin-top: 4%;
+    border-style: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    box-sizing: border-box;
+    width: 500px;
+    max-width: 100%;
+    font-size: 20px;
+    transition: 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.downloadB:hover{
+    background-color: #145944;
+}
+
+.linha-sep{
+    margin-top: 3%;
+    background-color: #d5d3d3;
+    padding: 0.09%;
+    border-radius: 999px;
+    position: relative;
+}
+
+.divH1{
+    background-color: #ffffff;
+    position: absolute;
+    justify-self: center;
+    top: -10px;
+    font-size: 15px;
+    width: 50px;
+    text-align: center;
+}
+
 .linha {
     position: absolute;
     left: 7%;
@@ -239,7 +371,7 @@ body {
 
 .delta {
     margin-bottom: 1%;
-    font-size: 30px;
+    font-size: 35px;
 }
 
 .destaque {
@@ -277,17 +409,21 @@ body {
 
 .botaoEnn {
     position: relative;
+    width: 140px;
 }
 
 .botaoEn {
+    display: inline-flex;
     align-items: center;
-    width: 120px;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 2%;
+    width: 140px;
+    padding-right: 30px;
     font-weight: bolder;
     color: var(--cor-textos);
     background-color: #145944;
     border-style: none;
-    padding: 10%;
-    padding-right: 25%;
     font-size: 20px;
     border-radius: 20px;
     transition: 0.2s ease-in-out;
@@ -305,18 +441,19 @@ body {
 }
 
 .iconeEn {
-    top: 25%;
+    top: 15%;
     font-size: 20px;
-    left: 75%;
+    left: 80%;
     color: var(--cor-textos);
     position: absolute;
     transition: 0.2s ease-in-out;
 }
 
 .botaoinfo {
-    border: 2px solid #d5d3d3;
-    padding: 2%;
+    padding: 1%;
+    border: 1px solid #d5d3d3;
     font-size: 20px;
+    width: 160px;
     border-radius: 20px;
     font-weight: bolder;
     transition: 0.2s ease-in-out;
@@ -326,13 +463,13 @@ body {
 
 .iconespai {
     display: flex;
+    gap: 10%;
 }
 
 .icones {
-    gap: 5%;
+    padding-top: 5%;
     align-items: center;
     display: flex;
-    padding: 4%;
 }
 
 .textosI {
@@ -375,9 +512,9 @@ body {
 .iconF {
     background-color: #16946e;
     color: var(--cor-textos);
-    font-size: 160%;
-    width: 60px;
-    height: 45px;
+    font-size: 200%;
+
+    padding: 5%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -480,7 +617,7 @@ body {
 }
 
 .container {
-    border: 2px solid #cac5c5;
+    border: 1px solid #cac5c5;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -497,7 +634,7 @@ body {
 }
 
 .container:hover {
-    border: 2px solid #145944;
+    border: 1px solid #145944;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.31);
 }
 
@@ -539,7 +676,7 @@ body {
 
 .container2 {
     background-color: #ffff;
-    border: 2px solid #cac5c5;
+    border: 1px solid #cac5c5;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -680,14 +817,14 @@ body {
     width: 25%;
     padding: 1%;
     background-color: #ffff;
-    border: 2px solid #cac5c5;
+    border: 1px solid #cac5c5;
     border-radius: 10px;
     transition: 0.2s ease-in-out;
 }
 
 .container4:hover {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.31);
-    border: 2px solid #145944;
+    border: 1px solid #145944;
 
 }
 
