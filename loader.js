@@ -2,7 +2,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const body = document.body;
     const loader = document.getElementById('loader');
     const header = document.getElementById('header');
-    if (!loader) return;
+    const currentUrl = new URL(window.location.href);
+    const skipLoader = currentUrl.searchParams.get('sem_loader') === '1';
+
+    if (skipLoader) {
+        currentUrl.searchParams.delete('sem_loader');
+        window.history.replaceState(
+            window.history.state,
+            '',
+            `${currentUrl.pathname}${currentUrl.search}${currentUrl.hash}`
+        );
+    }
+
+    if (!loader || skipLoader) return;
 
     const blockScroll = event => event.preventDefault();
     body.classList.add('loading-locked');

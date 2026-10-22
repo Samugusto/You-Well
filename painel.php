@@ -29,6 +29,7 @@ if ($usuario && !empty($usuario['foto_perfil'])) {
 
 $paginas = ['inicio', 'setores', 'temperatura', 'ruido', 'qualidadear', 'alertas'];
 $pagina = $_GET['pagina'] ?? 'inicio';
+$semLoader = ($_GET['sem_loader'] ?? null) === '1';
 
 if (!in_array($pagina, $paginas, true)) {
     $pagina = 'inicio';
@@ -52,15 +53,17 @@ if (!in_array($pagina, $paginas, true)) {
 </head>
 
 <body>
-    <div id="loader" role="status" aria-live="polite">
-        <div class="loader-content">
-            <div class="loader-emblem">
-                <span class="loader-ring" aria-hidden="true"></span>
-                <img src="img/Sem título2.png" alt="" class="spinner-img">
+    <?php if (!$semLoader): ?>
+        <div id="loader" role="status" aria-live="polite">
+            <div class="loader-content">
+                <div class="loader-emblem">
+                    <span class="loader-ring" aria-hidden="true"></span>
+                    <img src="img/Sem título2.png" alt="" class="spinner-img">
+                </div>
+                <p class="loader-label">Preparando sua experiência<span class="loader-dots" aria-hidden="true"></span></p>
             </div>
-            <p class="loader-label">Preparando sua experiência<span class="loader-dots" aria-hidden="true"></span></p>
         </div>
-    </div>
+    <?php endif; ?>
 
     <header id="header">
         <div class="user">
@@ -87,17 +90,17 @@ if (!in_array($pagina, $paginas, true)) {
                 <img src="img/Sem título2.png" class="logo-menu">
                 <h1 class="tituloY">You<span class="well">Well</span></h1>
             </div>
-            <li><a href="painel.php?pagina=inicio" class="underline-desliza <?= $pagina === 'inicio' ? 'active' : '' ?>"><i class="bi bi-house-fill"></i>Início</a></li>
+            <li><a href="painel.php?pagina=inicio&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'inicio' ? 'active' : '' ?>"><i class="bi bi-house-fill"></i>Início</a></li>
 
-            <li><a href="painel.php?pagina=setores" class="underline-desliza <?= $pagina === 'setores' ? 'active' : '' ?>"><i class="bi bi-building""></i>Setores</a></li>
+            <li><a href="painel.php?pagina=setores&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'setores' ? 'active' : '' ?>"><i class="bi bi-building""></i>Setores</a></li>
 
-            <li><a href=" painel.php?pagina=temperatura" class="underline-desliza <?= $pagina === 'temperatura' ? 'active' : '' ?>"><i class="bi bi-thermometer"></i>Temperatura</a></li>
+            <li><a href=" painel.php?pagina=temperatura&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'temperatura' ? 'active' : '' ?>"><i class="bi bi-thermometer"></i>Temperatura</a></li>
 
-            <li><a href="painel.php?pagina=ruido" class="underline-desliza <?= $pagina === 'ruido' ? 'active' : '' ?>"><i class="bi bi-volume-up-fill"></i>Ruído</a></li>
+            <li><a href="painel.php?pagina=ruido&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'ruido' ? 'active' : '' ?>"><i class="bi bi-volume-up-fill"></i>Ruído</a></li>
 
-            <li><a href="painel.php?pagina=qualidadear" class="underline-desliza <?= $pagina === 'qualidadear' ? 'active' : '' ?>"><i class="bi bi-wind"></i>Qualidade do Ar</a></li>
+            <li><a href="painel.php?pagina=qualidadear&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'qualidadear' ? 'active' : '' ?>"><i class="bi bi-wind"></i>Qualidade do Ar</a></li>
 
-            <li><a href="painel.php?pagina=alertas" class="underline-desliza <?= $pagina === 'alertas' ? 'active' : '' ?>"><i class="bi bi-exclamation-circle-fill"></i>Alertas</a></li>
+            <li><a href="painel.php?pagina=alertas&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'alertas' ? 'active' : '' ?>"><i class="bi bi-exclamation-circle-fill"></i>Alertas</a></li>
         </ul>
     </nav>
 
@@ -205,15 +208,15 @@ if (!in_array($pagina, $paginas, true)) {
                             <div class="divi"></div>
                             <div class="quadradoInfo">
                                 <h1 class="textoInfom">Temperatura:</h1>
-                                <h1 class="textoInfomD">(valor)</h1>
+                                <h1 class="textoInfomD">14º</h1>
                             </div>
                             <div class="quadradoInfo">
                                 <h1 class="textoInfom">Ruído:</h1>
-                                <h1 class="textoInfomD">(valor)</h1>
+                                <h1 class="textoInfomD">14db</h1>
                             </div>
                             <div class="quadradoInfo">
                                 <h1 class="textoInfom">Ar:</h1>
-                                <h1 class="textoInfomD">(valor)</h1>
+                                <h1 class="textoInfomD">Boa</h1>
                             </div>
                         </div>
                     </div>
@@ -228,15 +231,15 @@ if (!in_array($pagina, $paginas, true)) {
                             <div class="divi"></div>
                             <div class="quadradoInfo">
                                 <h1 class="textoInfom">Temperatura:</h1>
-                                <h1 class="textoInfomD">(valor)</h1>
+                                <h1 class="textoInfomD">14º</h1>
                             </div>
                             <div class="quadradoInfo">
                                 <h1 class="textoInfom">Ruído:</h1>
-                                <h1 class="textoInfomD">(valor)</h1>
+                                <h1 class="textoInfomD">14db</h1>
                             </div>
                             <div class="quadradoInfo">
                                 <h1 class="textoInfom">Ar:</h1>
-                                <h1 class="textoInfomD">(valor)</h1>
+                                <h1 class="textoInfomD">boa</h1>
                             </div>
                         </div>
                     </div>
@@ -251,15 +254,15 @@ if (!in_array($pagina, $paginas, true)) {
                             <div class="divi"></div>
                             <div class="quadradoInfo">
                                 <h1 class="textoInfom">Temperatura:</h1>
-                                <h1 class="textoInfomD">(valor)</h1>
+                                <h1 class="textoInfomD">14º</h1>
                             </div>
                             <div class="quadradoInfo">
                                 <h1 class="textoInfom">Ruído:</h1>
-                                <h1 class="textoInfomD">(valor)</h1>
+                                <h1 class="textoInfomD">14db</h1>
                             </div>
                             <div class="quadradoInfo">
                                 <h1 class="textoInfom">Ar:</h1>
-                                <h1 class="textoInfomD">(valor)</h1>
+                                <h1 class="textoInfomD">Boa</h1>
                             </div>
                         </div>
                     </div>
@@ -274,15 +277,15 @@ if (!in_array($pagina, $paginas, true)) {
                             <div class="divi"></div>
                             <div class="quadradoInfo">
                                 <h1 class="textoInfom">Temperatura:</h1>
-                                <h1 class="textoInfomD">(valor)</h1>
+                                <h1 class="textoInfomD">14º</h1>
                             </div>
                             <div class="quadradoInfo">
                                 <h1 class="textoInfom">Ruído:</h1>
-                                <h1 class="textoInfomD">(valor)</h1>
+                                <h1 class="textoInfomD">14db</h1>
                             </div>
                             <div class="quadradoInfo">
                                 <h1 class="textoInfom">Ar:</h1>
-                                <h1 class="textoInfomD">(valor)</h1>
+                                <h1 class="textoInfomD">Boa</h1>
                             </div>
                         </div>
                     </div>
