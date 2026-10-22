@@ -8,6 +8,10 @@
     --cor-textos: #ffff;
     --cor-textos2: #6d6b6b;
     --cor-hover: #d5d1d1d3;
+    --borda-cor: #d5d5d5;
+    --borda-container: #d5d3d3;
+    --verde: #145944;
+    --cor-borda2: #cac5c5;
 }
 
 a {
@@ -56,13 +60,13 @@ body {
     width: 100%;
     height: 70px;
     opacity: 0.97;
-    background: #ffffff;
+    background: var(--cor-textos);
     display: flex;
     align-items: center;
     padding: 0 30px;
     box-sizing: border-box;
     transition: top 0.3s;
-    border: 1px solid #d5d5d5;
+    border: 1px solid var(--borda-cor);
 
 }
 
@@ -85,12 +89,12 @@ body {
 }
 
 .buttonenterheader:hover {
-    color: #145944;
+    color: var(--verde);
     text-decoration: underline;
 }
 
 .buttonenter{
-    color: #145944;
+    color: var(--verde);
     background-color: white;
     font-size: 180%;
     font-weight: 600;
@@ -109,7 +113,7 @@ body {
 .empresa3 {
     margin-left: 10%;
     font-size: 250%;
-    color: #145944;
+    color: var(--verde);
     font-weight: 600;
 }
 
@@ -144,7 +148,7 @@ body {
 
 .janelinha {
     color: #ffff;
-    border: 1px solid #145944;
+    border: 1px solid var(--verde);
     /* trocar cor */
     border-radius: 10px;
     margin-top: 3%;
@@ -183,83 +187,111 @@ body {
         radial-gradient(circle, #1459443d 1.8px, transparent 1.8px);
     background-size: cover, 20px 20px;
     background-repeat: no-repeat, repeat;
-    height: 80vh;
+    min-height: 80vh;
     position: relative;
-    display: flex;
-    padding: 10%;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 500px);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 5rem);
+    padding: clamp(3rem, 8vw, 7rem) clamp(1.25rem, 8vw, 8rem);
 }
 
 .down{
     background-color: #000000;
-    width: 300px;
+    width: fit-content;
+    max-width: 100%;
     text-align: center;
     border-radius: 999px;
-    color: #ffffff;
+    color: var(--cor-textos);
     font-weight: bolder;
-    font-size: 300%;
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    line-height: 1.15;
+    padding: 0.45rem 1.25rem;
+    box-sizing: border-box;
 }
 
 .wow2{
-    color: #145944;
+    color: var(--verde);
 }
 
 .descD{
-    font-size: 220%;
-    width: 650px;
+    font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+    line-height: 1.3;
+    width: 100%;
+    max-width: 650px;
+    margin-top: 1.25rem;
 }
 
 .desc2D{
     color: #5c5c5c;
-    width: 600px;
-    font-size: 150%;
+    width: 100%;
+    max-width: 600px;
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    line-height: 1.5;
+    margin-top: 1rem;
 }
 
 .Download{
-    padding: 2%;
-    width: 5000px;
-    background-color: #ffffff;
-    border: 1px solid #d5d3d3;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 500px;
+    min-width: 0;
+    padding: clamp(1rem, 2vw, 1.5rem);
+    background-color: var(--cor-textos);
+    border: 1px solid var(--borda-container);
     border-radius: 10px;
+    justify-self: end;
 }
 
 .app{
-    width: 70px;
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    width: clamp(48px, 6vw, 70px);
     background-color: #000000;
-    padding: 2%;
+    padding: 0.65rem;
     border-radius: 10px;
 }
 
 .Dlinha{
     display: flex;
     align-items: center;
+    gap: 0.9rem;
 }
 
 .titles{
-    padding-left: 2%;
+    min-width: 0;
     display: grid;
+    gap: 0.35rem;
 }
 
 .title{
-    font-size: 20px;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    line-height: 1.3;
 }
 
 .titleC{
     color: #6a6969;
-    font-size: 13px;
+    font-size: 0.8125rem;
+    line-height: 1.4;
 }
 
 .informaD{
     margin-top: 2%;
     border-radius: 10px;
-    border: 1px solid #d5d3d3;
+    border: 1px solid var(--borda-container);
     align-items: center;
+    min-width: 0;
 }
 
 .infoDesc{
-    gap: 5%;
+    gap: 0.5rem;
     display: flex;
-    padding: 1%;
-    font-size: 15px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 0.65rem 0.8rem;
+    font-size: 0.9375rem;
+    line-height: 1.4;
     color: #6a6969;
 }
 
@@ -267,6 +299,7 @@ body {
     margin-left: auto;
     text-align: right;
     color: #000000;
+    overflow-wrap: anywhere;
 }
 
 .downloadB{
@@ -282,7 +315,7 @@ body {
     justify-content: center;
     gap: 0.7rem;
     box-sizing: border-box;
-    width: 500px;
+    width: 100%;
     max-width: 100%;
     font-size: 20px;
     transition: 0.3s ease-in-out;
@@ -290,12 +323,36 @@ body {
 }
 
 .downloadB:hover{
-    background-color: #145944;
+    background-color: var(--verde);
+}
+
+.downloadBB{
+    background-color: #000000;
+    color: #ffffff;
+    font-weight: bolder;
+    padding: 2%;
+    border-radius: 999px;
+    margin-top: 2%;
+    border-style: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    font-size: 20px;
+    transition: 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.downloadBB:hover{
+    background-color: #9fada9;
 }
 
 .linha-sep{
     margin-top: 3%;
-    background-color: #d5d3d3;
+    background-color: var(--borda-container);
     padding: 0.09%;
     border-radius: 999px;
     position: relative;
@@ -309,6 +366,18 @@ body {
     font-size: 15px;
     width: 50px;
     text-align: center;
+}
+
+.Acces{
+    font-size: 15px;
+    margin-top: 5%;
+    color: #3b3b3b;
+    text-align: center;
+}
+
+.linkC{
+    text-decoration: underline;
+    color: var(--verde);
 }
 
 .linha {
@@ -346,11 +415,11 @@ body {
 }
 
 .linha-ondulada-1 {
-    stroke: #145944;
+    stroke: var(--verde);
 }
 
 .linha-ondulada-2 {
-    stroke: #145944;
+    stroke: var(--verde);
     opacity: 0.8;
 }
 
@@ -361,7 +430,7 @@ body {
 }
 
 .nomeEmpresa {
-    color: #145944;
+    color: var(--verde);
     font-size: 70px;
 }
 
@@ -388,7 +457,7 @@ body {
 }
 
 .divissor {
-    background-color: #145944;
+    background-color: var(--verde);
     padding: 0.4%;
     border-radius: 100px;
     width: 240px;
@@ -422,7 +491,7 @@ body {
     padding-right: 30px;
     font-weight: bolder;
     color: var(--cor-textos);
-    background-color: #145944;
+    background-color: var(--verde);
     border-style: none;
     font-size: 20px;
     border-radius: 20px;
@@ -432,12 +501,12 @@ body {
 .botaoEnn:hover .botaoEn {
     cursor: pointer;
     background-color: var(--cor-hover);
-    color: #145944;
+    color: var(--verde);
 }
 
 .botaoEnn:hover .iconeEn {
     cursor: pointer;
-    color: #145944;
+    color: var(--verde);
 }
 
 .iconeEn {
@@ -451,7 +520,7 @@ body {
 
 .botaoinfo {
     padding: 1%;
-    border: 1px solid #d5d3d3;
+    border: 1px solid var(--borda-container);
     font-size: 20px;
     width: 160px;
     border-radius: 20px;
@@ -522,13 +591,13 @@ body {
 }
 
 .botaoinfo:hover {
-    background-color: #d5d3d3;
+    background-color: var(--borda-container);
 }
 
 .divimgshow {
     width: 380px;
     height: 370px;
-    background: linear-gradient(to bottom, #145944, #16946e);
+    background: linear-gradient(to bottom, var(--verde), #16946e);
     border-radius: 50px 10px 50px 10px;
     position: relative;
 }
@@ -559,7 +628,7 @@ body {
     color: white;
     font-size: 140%;
     border-radius: 100px;
-    background-color: #145944;
+    background-color: var(--verde);
     /* trocar cor */
     /* trocar cor */
     padding-top: 0.5%;
@@ -617,7 +686,7 @@ body {
 }
 
 .container {
-    border: 1px solid #cac5c5;
+    border: 1px solid var(--cor-borda2);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -634,7 +703,7 @@ body {
 }
 
 .container:hover {
-    border: 1px solid #145944;
+    border: 1px solid var(--verde);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.31);
 }
 
@@ -644,7 +713,7 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    background: linear-gradient(45deg, #145944, #16946e);
+    background: linear-gradient(45deg, var(--verde), #16946e);
     font-size: 400%;
     width: 40%;
     aspect-ratio: 1;
@@ -671,17 +740,17 @@ body {
 /* container novo*/
 .containernovo {
     padding-top: 1%;
-    background-color: #f3f3f3;
+    background-color: #f6f5f5af;
 }
 
 .container2 {
     background-color: #ffff;
-    border: 1px solid #cac5c5;
+    border: 1px solid var(--cor-borda2);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    background-color: rgba(255, 255, 255, 0.452);
+    background-color: #ffffff73;
     height: auto;
     width: 16%;
     color: rgb(0, 0, 0);
@@ -702,7 +771,7 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    background: linear-gradient(45deg, #145944, #16946e);
+    background: linear-gradient(45deg, var(--verde), #16946e);
     font-size: 400%;
     width: 40%;
     aspect-ratio: 1;
@@ -730,7 +799,7 @@ body {
 .numero {
     font-weight: 600;
     margin-right: 1%;
-    color: #145944;
+    color: var(--verde);
     font-size: 300%;
 }
 
@@ -755,7 +824,7 @@ body {
     align-items: center;
     color: white;
     text-align: center;
-    background: linear-gradient(45deg, #145944, #16946e);
+    background: linear-gradient(45deg, var(--verde), #16946e);
     font-size: 400%;
     width: 40%;
     aspect-ratio: 1;
@@ -817,19 +886,19 @@ body {
     width: 25%;
     padding: 1%;
     background-color: #ffff;
-    border: 1px solid #cac5c5;
+    border: 1px solid var(--cor-borda2);
     border-radius: 10px;
     transition: 0.2s ease-in-out;
 }
 
 .container4:hover {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.31);
-    border: 1px solid #145944;
+    border: 1px solid var(--verde);
 
 }
 
 #perf4 {
-    color: #145944;
+    color: var(--verde);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -967,7 +1036,7 @@ body {
 /* literalmente o footer */
 footer {
     padding-top: 0%;
-    background-color: #145944;
+    background-color: var(--verde);
 }
 
 .footernome {
@@ -1093,6 +1162,24 @@ body.loading-locked {
 }
 
 /* Layout para telas pequenas */
+@media (max-width: 960px) {
+    .fundoD {
+        grid-template-columns: minmax(0, 1fr);
+        min-height: 0;
+        gap: 2rem;
+        padding: clamp(3rem, 8vw, 5rem) clamp(1.5rem, 6vw, 4rem);
+    }
+
+    .fundoD > div:first-child {
+        width: 100%;
+        max-width: 650px;
+    }
+
+    .Download {
+        justify-self: center;
+    }
+}
+
 @media (max-width: 768px) {
     #header {
         height: auto;
@@ -1135,6 +1222,11 @@ body.loading-locked {
         gap: 36px;
         padding: 110px 22px 50px;
         box-sizing: border-box;
+    }
+
+    .fundoD {
+        gap: 1.75rem;
+        padding: 3.5rem 22px;
     }
 
     .textos {
@@ -1313,5 +1405,43 @@ body.loading-locked {
 
     .footerbot1 {
         font-size: 190%;
+    }
+}
+
+@media (max-width: 480px) {
+    .fundoD {
+        padding: 2.5rem 16px;
+    }
+
+    .down {
+        font-size: clamp(1.5rem, 8vw, 1.9rem);
+        padding: 0.4rem 1rem;
+    }
+
+    .descD {
+        font-size: 1.4rem;
+    }
+
+    .Download {
+        padding: 1rem;
+    }
+
+    .app {
+        width: 52px;
+        padding: 0.55rem;
+    }
+
+    .title {
+        font-size: 1rem;
+    }
+
+    .downloadB,
+    .downloadBB {
+        font-size: 1rem;
+        padding: 0.85rem 0.75rem;
+    }
+
+    .infoDesc {
+        font-size: 0.875rem;
     }
 }
