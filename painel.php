@@ -780,6 +780,7 @@ if (!in_array($pagina, $paginas, true)) {
             </div>
     </div>
 
+    <script src="loader.js"></script>
     <script src="scriptLC.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 </body>
