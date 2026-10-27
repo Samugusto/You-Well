@@ -349,6 +349,11 @@ body.menu-recolhido .menu-lateral ul li a.underline-desliza i {
 .janelinhaW:hover {
     border: 1px solid var(--cor-hover-destaque);
 }
+.card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
 
 .containerQIIO {
     gap: 5%;
@@ -766,9 +771,31 @@ body.menu-recolhido .menu-lateral ul li a.underline-desliza i {
 }
 
 .perfil-form input[type="text"]:focus,
+.setor-form input[type="text"]:focus,
 .perfil-file-input:focus-visible+.perfil-file-picker .perfil-file-botao {
     outline: 2px solid var(--cor-hover);
     outline-offset: 2px;
+}
+
+.setor-form {
+    display: grid;
+    gap: 10px;
+    max-width: 520px;
+    margin-top: 24px;
+}
+
+.setor-form label {
+    font-weight: 600;
+}
+
+.setor-form input[type="text"] {
+    width: 100%;
+    min-width: 0;
+    padding: 11px 12px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 8px;
+    background: #ffffff;
+    font: inherit;
 }
 
 .perfil-file-input {
@@ -1219,6 +1246,7 @@ body[data-theme="dark"] .configdiv,
 body[data-theme="dark"] .windowMod,
 body[data-theme="dark"] .card,
 body[data-theme="dark"] .perfil-form input[type="text"],
+body[data-theme="dark"] .setor-form input[type="text"],
 body[data-theme="dark"] .tema-opcao > span,
 body[data-theme="dark"] .graficoArea,
 body[data-theme="dark"] .graficoPizza {

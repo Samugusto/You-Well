@@ -14,6 +14,12 @@ if ($_SESSION['papel'] != "gerente") {
 
 $mensagemPerfil = '';
 $tipoMensagemPerfil = '';
+$mensagemSetor = '';
+$tipoMensagemSetor = '';
+$nomeSetorFormulario = '';
+if (!isset($_SESSION['setores_painel']) || !is_array($_SESSION['setores_painel'])) {
+    $_SESSION['setores_painel'] = [];
+}
 $abaAtiva = 'panel-informacoes';
 $nomePerfilFormulario = (string) $_SESSION['nome'];
 if (empty($_SESSION['token_configuracoes'])) {
@@ -102,6 +108,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'atualiz
     }
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'criar_setor') {
+    $abaAtiva = 'panel-setores';
+    $nomeSetorFormulario = isset($_POST['nome_setor']) && is_string($_POST['nome_setor'])
+        ? trim($_POST['nome_setor'])
+        : '';
+
+    if ($nomeSetorFormulario === '' || strlen($nomeSetorFormulario) > 255) {
+        $mensagemSetor = 'Informe um nome válido com até 255 caracteres.';
+        $tipoMensagemSetor = 'erro';
+    } else {
+        $nomeDuplicado = false;
+        foreach ($_SESSION['setores_painel'] as $setorExistente) {
+            if (strcasecmp($setorExistente['nome'], $nomeSetorFormulario) === 0) {
+                $nomeDuplicado = true;
+                break;
+            }
+        }
+
+        if ($nomeDuplicado) {
+            $mensagemSetor = 'Já existe um setor com esse nome.';
+            $tipoMensagemSetor = 'erro';
+        } else {
+            $_SESSION['setores_painel'][] = [
+                'id_setor' => count($_SESSION['setores_painel']) + 1,
+                'nome' => $nomeSetorFormulario,
+                'temperatura' => null,
+                'ruido' => null,
+                'qualidade_ar' => null,
+            ];
+            $mensagemSetor = 'Setor criado com sucesso.';
+            $tipoMensagemSetor = 'sucesso';
+            $nomeSetorFormulario = '';
+        }
+    }
+}
+
 $sql_usuario = "SELECT nome, foto_perfil FROM usuarios WHERE id_usuario = ?";
 $stmt_usuario = mysqli_prepare($con, $sql_usuario);
 mysqli_stmt_bind_param($stmt_usuario, "i", $idUsuario);
@@ -109,6 +151,8 @@ mysqli_stmt_execute($stmt_usuario);
 $resultado_usuario = mysqli_stmt_get_result($stmt_usuario);
 $usuario = mysqli_fetch_assoc($resultado_usuario);
 mysqli_stmt_close($stmt_usuario);
+
+$setores = $_SESSION['setores_painel'];
 mysqli_close($con);
 
 $fotoPerfil = null;
@@ -301,98 +345,34 @@ if (!in_array($pagina, $paginas, true)) {
                 <!-- Página setores -->
             <?php elseif ($pagina === 'setores'): ?>
                 <div class="containerj">
+                    <?php foreach ($setores as $setor): ?>
                     <div class="janelinha2">
                         <div class="janelinha">
                             <div class="containerQIIO">
                                 <div class="quadradoIcon">
                                     <i class="bi bi-building iconS"></i>
                                 </div>
-                                <span class="outro">Setor: 1</span>
+                                <span class="outro"><?= htmlspecialchars($setor['nome'], ENT_QUOTES, 'UTF-8') ?></span>
                             </div>
                             <div class="divi"></div>
                             <div class="quadradoInfo">
                                 <h1 class="textoInfom">Temperatura:</h1>
-                                <h1 class="textoInfomD">14º</h1>
+                                <h1 class="textoInfomD"><?= $setor['temperatura'] !== null ? htmlspecialchars($setor['temperatura'], ENT_QUOTES, 'UTF-8') . 'º' : 'Aguardando' ?></h1>
                             </div>
                             <div class="quadradoInfo">
                                 <h1 class="textoInfom">Ruído:</h1>
-                                <h1 class="textoInfomD">14db</h1>
+                                <h1 class="textoInfomD"><?= $setor['ruido'] !== null ? htmlspecialchars($setor['ruido'], ENT_QUOTES, 'UTF-8') . ' db' : 'Aguardando' ?></h1>
                             </div>
                             <div class="quadradoInfo">
                                 <h1 class="textoInfom">Ar:</h1>
-                                <h1 class="textoInfomD">Boa</h1>
+                                <h1 class="textoInfomD"><?= $setor['qualidade_ar'] !== null ? htmlspecialchars($setor['qualidade_ar'], ENT_QUOTES, 'UTF-8') : 'Aguardando' ?></h1>
                             </div>
                         </div>
                     </div>
-                    <div class="janelinha2">
-                        <div class="janelinha">
-                            <div class="containerQIIO">
-                                <div class="quadradoIcon">
-                                    <i class="bi bi-building iconS"></i>
-                                </div>
-                                <span class="outro">Setor: 2</span>
-                            </div>
-                            <div class="divi"></div>
-                            <div class="quadradoInfo">
-                                <h1 class="textoInfom">Temperatura:</h1>
-                                <h1 class="textoInfomD">14º</h1>
-                            </div>
-                            <div class="quadradoInfo">
-                                <h1 class="textoInfom">Ruído:</h1>
-                                <h1 class="textoInfomD">14db</h1>
-                            </div>
-                            <div class="quadradoInfo">
-                                <h1 class="textoInfom">Ar:</h1>
-                                <h1 class="textoInfomD">boa</h1>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="janelinha2">
-                        <div class="janelinha">
-                            <div class="containerQIIO">
-                                <div class="quadradoIcon">
-                                    <i class="bi bi-building iconS"></i>
-                                </div>
-                                <span class="outro">Setor: 3</span>
-                            </div>
-                            <div class="divi"></div>
-                            <div class="quadradoInfo">
-                                <h1 class="textoInfom">Temperatura:</h1>
-                                <h1 class="textoInfomD">14º</h1>
-                            </div>
-                            <div class="quadradoInfo">
-                                <h1 class="textoInfom">Ruído:</h1>
-                                <h1 class="textoInfomD">14db</h1>
-                            </div>
-                            <div class="quadradoInfo">
-                                <h1 class="textoInfom">Ar:</h1>
-                                <h1 class="textoInfomD">Boa</h1>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="janelinha2">
-                        <div class="janelinha">
-                            <div class="containerQIIO">
-                                <div class="quadradoIcon">
-                                    <i class="bi bi-building iconS"></i>
-                                </div>
-                                <span class="outro">Setor: 4</span>
-                            </div>
-                            <div class="divi"></div>
-                            <div class="quadradoInfo">
-                                <h1 class="textoInfom">Temperatura:</h1>
-                                <h1 class="textoInfomD">14º</h1>
-                            </div>
-                            <div class="quadradoInfo">
-                                <h1 class="textoInfom">Ruído:</h1>
-                                <h1 class="textoInfomD">14db</h1>
-                            </div>
-                            <div class="quadradoInfo">
-                                <h1 class="textoInfom">Ar:</h1>
-                                <h1 class="textoInfomD">Boa</h1>
-                            </div>
-                        </div>
-                    </div>
+                    <?php endforeach; ?>
+                    <?php if (count($setores) === 0): ?>
+                        <p class="aparencia-descricao">Nenhum setor cadastrado ainda.</p>
+                    <?php endif; ?>
                 </div>
             <?php elseif ($pagina === 'temperatura'): ?>
                 <div class="colunaG">
@@ -597,6 +577,11 @@ if (!in_array($pagina, $paginas, true)) {
                             tabindex="<?= $abaAtiva === 'panel-perfil' ? '0' : '-1' ?>">
                             Nome e foto de perfil
                         </button>
+                        <button class="optionsC2 <?= $abaAtiva === 'panel-setores' ? 'active' : '' ?>" id="tab-setores" type="button" role="tab"
+                            aria-selected="<?= $abaAtiva === 'panel-setores' ? 'true' : 'false' ?>" aria-controls="panel-setores" data-config-tab="panel-setores"
+                            tabindex="<?= $abaAtiva === 'panel-setores' ? '0' : '-1' ?>">
+                            Novos Setores
+                        </button>
                     </div>
                     <div class="windowMod" aria-live="polite">
                         <section class="config-panel" id="panel-informacoes" role="tabpanel"
@@ -686,6 +671,26 @@ if (!in_array($pagina, $paginas, true)) {
                                     <span><i class="bi bi-display" aria-hidden="true"></i> Sistema</span>
                                 </label>
                             </fieldset>
+                        </section>
+                        <section class="config-panel" id="panel-setores" role="tabpanel"
+                            aria-labelledby="tab-setores" hidden>
+                            <h2>Novos Setores</h2>
+                            <p class="aparencia-descricao">Cadastre um novo setor informando apenas o nome.</p>
+                            <?php if ($mensagemSetor !== ''): ?>
+                                <p class="perfil-mensagem <?= $tipoMensagemSetor === 'sucesso' ? 'sucesso' : 'erro' ?>" role="status">
+                                    <?= htmlspecialchars($mensagemSetor, ENT_QUOTES, 'UTF-8') ?>
+                                </p>
+                            <?php endif; ?>
+                            <form class="setor-form" method="post">
+                                <input type="hidden" name="acao" value="criar_setor">
+                                <label for="nome-setor">Nome do setor</label>
+                                <input id="nome-setor" name="nome_setor" type="text" maxlength="255"
+                                    placeholder="Ex.: Produção" autocomplete="off" value="<?= htmlspecialchars($nomeSetorFormulario, ENT_QUOTES, 'UTF-8') ?>" required>
+                                <button type="submit" class="perfil-salvar">
+                                    <i class="bi bi-plus-circle-fill" aria-hidden="true"></i>
+                                    Criar setor
+                                </button>
+                            </form>
                         </section>
                     </div>
                 </div>
