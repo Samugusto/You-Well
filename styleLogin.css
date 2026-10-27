@@ -536,3 +536,80 @@ body.loading-locked {
         transform: translateX(6px);
     }
 }
+
+@media (max-width: 600px) {
+    body {
+        padding: 16px 12px;
+        background-size: 180%;
+        background-position: 150% 2%;
+    }
+
+    .bloco {
+        width: 100%;
+        padding-bottom: 20px;
+        border-radius: 16px;
+    }
+
+    .title {
+        font-size: clamp(1.5rem, 7vw, 2rem);
+        padding: 16px 12px 0;
+    }
+
+    .title2 {
+        padding: 0 12px;
+    }
+
+    .iconF {
+        width: 64px;
+        height: 64px;
+        font-size: 250%;
+    }
+
+    .custom-file {
+        align-items: flex-start;
+    }
+
+    .custom-file-name {
+        min-width: 0;
+        flex: 1 1 140px;
+    }
+
+    .crop-modal {
+        padding: 12px;
+    }
+
+    .crop-modal-content {
+        padding: 16px;
+    }
+
+    .crop-actions {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .crop-actions button {
+        flex: 1 1 140px;
+        width: auto;
+        margin-top: 0;
+    }
+
+    .botao,
+    .botaoS,
+    .botaoC {
+        max-width: calc(100% - 32px);
+    }
+}
+
+@media (max-width: 380px) {
+    #req-maiuscula,
+    #req-caracteres,
+    #req-especial {
+        margin-left: 5%;
+        font-size: 75%;
+    }
+
+    .custom-file-label {
+        min-width: 0;
+        padding: 10px 12px;
+    }
+}

@@ -61,16 +61,15 @@ body::before {
 * {
     padding: 0;
     margin: 0;
+    box-sizing: border-box;
 }
 
 .bloco {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    width: 30%;
-    padding-left: 0.2%;
-    padding-right: 0.2%;
-    padding-bottom: 1%;
+    width: min(440px, 100%);
+    padding: 18px 0 24px;
     border-radius: 20px;
     background: linear-gradient(to top, #ffffff62, #ffff);
     backdrop-filter: blur(10px);
@@ -319,12 +318,40 @@ body.loading-locked {
 
 @media (max-width: 1068px) {
     .bloco {
-        width: 95%;
-        min-height: 500px;
+        width: min(440px, 100%);
     }
 
     body {
         background-size: 150%;
         background-position: 170% 2%;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 24px 12px;
+    }
+
+    .bloco {
+        border-radius: 16px;
+    }
+
+    .title {
+        font-size: clamp(1.35rem, 6vw, 1.8rem);
+        padding: 16px 12px 0;
+    }
+
+    .title2 {
+        padding: 0 12px;
+    }
+
+    .iconF {
+        width: 64px;
+        height: 64px;
+        font-size: 250%;
+    }
+
+    .botao {
+        max-width: calc(100% - 32px);
     }
 }
