@@ -1,9 +1,9 @@
-body {
+﻿body {
     font-family: 'Montserrat', sans-serif;
     overflow-x: hidden;
     touch-action: pan-y;
     background-color: #1e9672;
-    background-image: url('img/Sem\ título2.png');
+    background-image: url('../img/Sem\ título2.png');
     /* Imagem de fundo */
     background-position: -20% 2%;
     /* Posiciona no canto esquerdo superior */
@@ -355,3 +355,4 @@ body.loading-locked {
         max-width: calc(100% - 32px);
     }
 }
+

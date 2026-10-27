@@ -1,9 +1,9 @@
-<?php
+﻿<?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 session_start();
-require_once "conexao.php";
+require_once __DIR__ . "/../config/conexao.php";
 
 $erro = "";
 
@@ -34,10 +34,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['setor'] = $usuario['setor'];
 
             if ($usuario['papel'] == "admin") {
-                header("Location: adm.php");
+                header("Location: ../controllers/adm.php");
                 exit();
             } elseif ($usuario['papel'] == "gerente") {
-                header("Location: painel.php");
+                header("Location: ../controllers/painel.php");
                 exit();
             } else {
                 $erro = "Tipo de usuário inválido.";
@@ -61,10 +61,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouWell - Login</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../public/assets/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="loader.css">
-    <link rel="icon" href="img/Sem título.png"
+    <link rel="stylesheet" href="../public/assets/css/loader.css">
+    <link rel="icon" href="../public/assets/img/Sem título.png"
     </head>
 
 <body>
@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="loader-content">
             <div class="loader-emblem">
                 <span class="loader-ring" aria-hidden="true"></span>
-                <img src="img/Sem título2.png" alt="" class="spinner-img">
+                <img src="../public/assets/img/Sem título2.png" alt="" class="spinner-img">
             </div>
             <p class="loader-label">Preparando sua experiência<span class="loader-dots" aria-hidden="true"></span></p>
         </div>
@@ -116,8 +116,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <br>
 
     </div>
-    <script src="script.js"></script>
-    <script src="loader.js"></script>
+    <script src="../public/assets/js/script.js"></script>
+    <script src="../public/assets/js/loader.js"></script>
 </body>
 
 </html>
+

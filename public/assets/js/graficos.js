@@ -1,4 +1,4 @@
-// Espera toda a página carregar antes de executar o código
+﻿// Espera toda a página carregar antes de executar o código
 document.addEventListener("DOMContentLoaded", () => {
 
     // ======================================================

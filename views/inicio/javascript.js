@@ -1,4 +1,4 @@
-// === LOADING REAL - ESPERA TUDO CARREGAR ===
+﻿// === LOADING REAL - ESPERA TUDO CARREGAR ===
 document.addEventListener('DOMContentLoaded', function () {
     // BLOQUEIA IMEDIATAMENTE TUDO
     document.body.classList.add('loading-locked');

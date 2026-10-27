@@ -1,4 +1,4 @@
-/* remover coisas do chrome*/
+﻿/* remover coisas do chrome*/
 * {
     padding: 0;
     margin: 0;
@@ -1129,7 +1129,7 @@ footer {
 /* fonte */
 @font-face {
     font-family: 'Seona';
-    src: url('fonts/Seona-DEMO.otf') format('opentype');
+    src: url('../../public/assets/fonts/Seona-DEMO.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
@@ -1518,3 +1518,4 @@ body.loading-locked {
         font-size: 0.875rem;
     }
 }
+

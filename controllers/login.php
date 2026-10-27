@@ -1,8 +1,8 @@
-<?php
+﻿<?php
 
 header("Content-Type: application/json; charset=UTF-8");
 
-require_once 'conexao.php';
+require_once __DIR__ . "/../config/conexao.php";
 
 $con = conectar();
 
@@ -60,3 +60,4 @@ mysqli_stmt_close($stmt);
 mysqli_close($con);
 
 ?>
+

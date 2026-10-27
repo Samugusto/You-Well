@@ -1,6 +1,6 @@
-<?php
+﻿<?php
 session_start();
-require_once "conexao.php";
+require_once __DIR__ . "/../config/conexao.php";
 
 $erro = "";
 $sucesso = "";
@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if (mysqli_stmt_execute($stmt_insert)) {
                 $sucesso = "Cadastro realizado com sucesso! Redirecionando para o login...";
-                echo '<meta http-equiv="refresh" content="2;url=entrar.php">';
+                echo '<meta http-equiv="refresh" content="2;url=../controllers/entrar.php">';
             } else {
                 $erro = "Erro ao cadastrar: " . mysqli_error($con);
             }
@@ -89,9 +89,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
-    <link href="styleLogin.css" rel="stylesheet">
-    <link rel="stylesheet" href="loader.css">
-    <link href="img/Sem título.png" rel="icon">
+    <link href="../public/assets/css/styleLogin.css" rel="stylesheet">
+    <link rel="stylesheet" href="../public/assets/css/loader.css">
+    <link href="../public/assets/img/Sem título.png" rel="icon">
 </head>
 
 <body>
@@ -99,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="loader-content">
             <div class="loader-emblem">
                 <span class="loader-ring" aria-hidden="true"></span>
-                <img src="img/Sem título2.png" alt="" class="spinner-img">
+                <img src="../public/assets/img/Sem título2.png" alt="" class="spinner-img">
             </div>
             <p class="loader-label">Preparando sua experiência<span class="loader-dots" aria-hidden="true"></span></p>
         </div>
@@ -171,12 +171,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <button type="submit" class="botao" id="cadastrar">Entrar</button>
         </form>
-        <a href="entrar.php">
+        <a href="../controllers/entrar.php">
             <h1 class="outro">Já tem um cadastro? Clique aqui!</h1>
         </a>
     </div>
-    <script src="script.js"></script>
-    <script src="loader.js"></script>
+    <script src="../public/assets/js/script.js"></script>
+    <script src="../public/assets/js/loader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 
     <!-- Área do pop-up -->
@@ -195,3 +195,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </body>
 
 </html>
+
+

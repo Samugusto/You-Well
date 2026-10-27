@@ -1,4 +1,4 @@
-const configTabs = [...document.querySelectorAll('[data-config-tab]')];
+﻿const configTabs = [...document.querySelectorAll('[data-config-tab]')];
 
 const ativarAbaConfig = (tab) => {
     configTabs.forEach((item) => {

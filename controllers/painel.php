@@ -1,14 +1,14 @@
-<?php
+﻿<?php
 session_start();
-require_once "conexao.php";
+require_once __DIR__ . "/../config/conexao.php";
 
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: entrar.php");
+    header("Location: ../controllers/entrar.php");
     exit();
 }
 
 if ($_SESSION['papel'] != "gerente") {
-    header("Location: entrar.php");
+    header("Location: ../controllers/entrar.php");
     exit();
 }
 
@@ -139,13 +139,13 @@ if (!in_array($pagina, $paginas, true)) {
     <title>YouWell - DashBoard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
-    <link href="img/Sem título.png" rel="icon">
-    <link href="styleP.css" rel="stylesheet">
-    <link rel="stylesheet" href="loader.css">
+    <link href="../public/assets/img/Sem título.png" rel="icon">
+    <link href="../public/assets/css/styleP.css" rel="stylesheet">
+    <link rel="stylesheet" href="../public/assets/css/loader.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="graficos.js"></script>
-    <script src="menu.js?v=4"></script>
+    <script src="../public/assets/js/graficos.js"></script>
+    <script src="../public/assets/js/menu.js?v=4"></script>
 </head>
 
 <body>
@@ -154,7 +154,7 @@ if (!in_array($pagina, $paginas, true)) {
             <div class="loader-content">
                 <div class="loader-emblem">
                     <span class="loader-ring" aria-hidden="true"></span>
-                    <img src="img/Sem título2.png" alt="" class="spinner-img">
+                    <img src="../public/assets/img/Sem título2.png" alt="" class="spinner-img">
                 </div>
                 <p class="loader-label">Preparando sua experiência<span class="loader-dots" aria-hidden="true"></span></p>
             </div>
@@ -179,7 +179,7 @@ if (!in_array($pagina, $paginas, true)) {
             <?php if (!empty($fotoPerfil)): ?>
                 <img src="<?php echo $fotoPerfil; ?>" class="perfil" alt="Foto do perfil">
             <?php else: ?>
-                <img src="img/PFP.png" class="perfil" alt="Sem foto de perfil">
+                <img src="../public/assets/img/PFP.png" class="perfil" alt="Sem foto de perfil">
             <?php endif; ?>
         </div>
     </header>
@@ -187,22 +187,22 @@ if (!in_array($pagina, $paginas, true)) {
     <nav class="menu-lateral">
         <ul>
             <div class="Logo">
-                <img src="img/Sem título2.png" class="logo-menu">
+                <img src="../public/assets/img/Sem título2.png" class="logo-menu">
                 <h1 class="tituloY">You<span class="well">Well</span></h1>
             </div>
-            <li><a href="painel.php?pagina=inicio&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'inicio' ? 'active' : '' ?>"><i class="bi bi-house-fill"></i>Início</a></li>
+            <li><a href="../controllers/painel.php?pagina=inicio&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'inicio' ? 'active' : '' ?>"><i class="bi bi-house-fill"></i>Início</a></li>
 
-            <li><a href="painel.php?pagina=setores&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'setores' ? 'active' : '' ?>"><i class="bi bi-building""></i>Setores</a></li>
+            <li><a href="../controllers/painel.php?pagina=setores&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'setores' ? 'active' : '' ?>"><i class="bi bi-building""></i>Setores</a></li>
 
-            <li><a href=" painel.php?pagina=temperatura&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'temperatura' ? 'active' : '' ?>"><i class="bi bi-thermometer"></i>Temperatura</a></li>
+            <li><a href=" ../controllers/painel.php?pagina=temperatura&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'temperatura' ? 'active' : '' ?>"><i class="bi bi-thermometer"></i>Temperatura</a></li>
 
-            <li><a href="painel.php?pagina=ruido&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'ruido' ? 'active' : '' ?>"><i class="bi bi-volume-up-fill"></i>Ruído</a></li>
+            <li><a href="../controllers/painel.php?pagina=ruido&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'ruido' ? 'active' : '' ?>"><i class="bi bi-volume-up-fill"></i>Ruído</a></li>
 
-            <li><a href="painel.php?pagina=qualidadear&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'qualidadear' ? 'active' : '' ?>"><i class="bi bi-wind"></i>Qualidade do Ar</a></li>
+            <li><a href="../controllers/painel.php?pagina=qualidadear&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'qualidadear' ? 'active' : '' ?>"><i class="bi bi-wind"></i>Qualidade do Ar</a></li>
 
-            <li><a href="painel.php?pagina=alertas&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'alertas' ? 'active' : '' ?>"><i class="bi bi-exclamation-circle-fill"></i>Alertas</a></li>
+            <li><a href="../controllers/painel.php?pagina=alertas&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'alertas' ? 'active' : '' ?>"><i class="bi bi-exclamation-circle-fill"></i>Alertas</a></li>
 
-            <li><a href="painel.php?pagina=configuracoes&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'configuracoes' ? 'active' : '' ?>"><i class="bi bi-gear-fill"></i>Configurações</a></li>
+            <li><a href="../controllers/painel.php?pagina=configuracoes&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'configuracoes' ? 'active' : '' ?>"><i class="bi bi-gear-fill"></i>Configurações</a></li>
         </ul>
     </nav>
 
@@ -241,7 +241,7 @@ if (!in_array($pagina, $paginas, true)) {
         <!-- Página início -->
         <?php if ($pagina === 'inicio'): ?>
             <div class="containerj2">
-                <a href=" painel.php?pagina=temperatura">
+                <a href=" ../controllers/painel.php?pagina=temperatura">
                     <div class="janelinha2">
                         <div class="janelinhaW">
                             <div class="inicioIcons">
@@ -253,7 +253,7 @@ if (!in_array($pagina, $paginas, true)) {
                         </div>
                     </div>
                 </a>
-                <a href=" painel.php?pagina=ruido">
+                <a href=" ../controllers/painel.php?pagina=ruido">
                     <div class="janelinha2">
                         <div class="janelinhaW">
                             <div class="inicioIcons">
@@ -265,7 +265,7 @@ if (!in_array($pagina, $paginas, true)) {
                         </div>
                     </div>
                 </a>
-                <a href=" painel.php?pagina=qualidadear">
+                <a href=" ../controllers/painel.php?pagina=qualidadear">
                     <div class="janelinha2">
                         <div class="janelinhaW">
                             <div class="inicioIcons">
@@ -622,7 +622,7 @@ if (!in_array($pagina, $paginas, true)) {
                                 </p>
                             <?php endif; ?>
                             <div class="perfil-config">
-                                <img src="<?php echo htmlspecialchars($fotoPerfil ?? 'img/PFP.png', ENT_QUOTES, 'UTF-8'); ?>"
+                                <img src="<?php echo htmlspecialchars($fotoPerfil ?? '../public/assets/img/PFP.png', ENT_QUOTES, 'UTF-8'); ?>"
                                     alt="Foto de perfil de <?php echo htmlspecialchars((string) $_SESSION['nome'], ENT_QUOTES, 'UTF-8'); ?>">
                                 <div>
                                     <h3><?php echo htmlspecialchars((string) $_SESSION['nome'], ENT_QUOTES, 'UTF-8'); ?></h3>
@@ -671,17 +671,17 @@ if (!in_array($pagina, $paginas, true)) {
                             <p class="aparencia-descricao">Escolha como o painel deve ser exibido.</p>
                             <fieldset class="tema-opcoes" aria-label="Tema do painel">
                                 <label class="tema-opcao">
-                                    <img src="img/icon-normal.png" class="img-theme">
+                                    <img src="../public/assets/img/icon-normal.png" class="img-theme">
                                     <input type="radio" name="tema-painel" value="light">
                                     <span><i class="bi bi-sun-fill" aria-hidden="true"></i> Claro</span>
                                 </label>
                                 <label class="tema-opcao">
-                                    <img src="img/icon-night.png" class="img-theme">
+                                    <img src="../public/assets/img/icon-night.png" class="img-theme">
                                     <input type="radio" name="tema-painel" value="dark">
                                     <span><i class="bi bi-moon-stars-fill" aria-hidden="true"></i> Escuro</span>
                                 </label>
                                 <label class="tema-opcao">
-                                    <img src="img/icon-system.png" class="img-theme">
+                                    <img src="../public/assets/img/icon-system.png" class="img-theme">
                                     <input type="radio" name="tema-painel" value="system">
                                     <span><i class="bi bi-display" aria-hidden="true"></i> Sistema</span>
                                 </label>
@@ -780,9 +780,10 @@ if (!in_array($pagina, $paginas, true)) {
             </div>
     </div>
 
-    <script src="loader.js"></script>
-    <script src="scriptLC.js"></script>
+    <script src="../public/assets/js/loader.js"></script>
+    <script src="../public/assets/js/scriptLC.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 </body>
 
 </html>
+

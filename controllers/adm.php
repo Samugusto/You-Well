@@ -1,13 +1,13 @@
-<?php
+﻿<?php
 session_start();
 
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: entrar.php");
+    header("Location: ../controllers/entrar.php");
     exit();
 }
 
 if ($_SESSION['papel'] != "admin") {
-    header("Location: entrar.php");
+    header("Location: ../controllers/entrar.php");
     exit();
 }
 ?>
@@ -27,7 +27,8 @@ if ($_SESSION['papel'] != "admin") {
 
 <p>Setor: <?php echo $_SESSION['setor']; ?></p>
 
-<a href="logout.php">Sair</a>
+<a href="../controllers/logout.php">Sair</a>
 
 </body>
 </html>
+
