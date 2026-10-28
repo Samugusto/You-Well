@@ -1,4 +1,4 @@
-﻿/* remover coisas do chrome*/
+/* remover coisas do chrome*/
 * {
     padding: 0;
     margin: 0;
@@ -177,11 +177,9 @@ body {
     gap: 4%;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    height: auto;
+    height: 100vh;
     position: relative;
     display: flex;
-    overflow-x: clip;
 }
 
 .fundoD {
@@ -1129,7 +1127,7 @@ footer {
 /* fonte */
 @font-face {
     font-family: 'Seona';
-    src: url('../../public/assets/fonts/Seona-DEMO.otf') format('opentype');
+    src: url('fonts/Seona-DEMO.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
@@ -1165,47 +1163,6 @@ body.loading-locked {
 
 /* Layout para telas pequenas */
 @media (max-width: 960px) {
-    #header {
-        padding: 0 18px;
-    }
-
-    .empresa3,
-    .empresa4 {
-        font-size: 200%;
-        margin-left: 3%;
-    }
-
-    .fundo {
-        gap: 24px;
-        padding-left: 5%;
-        padding-right: 5%;
-    }
-
-    .textos {
-        min-width: 0;
-        flex: 1 1 0;
-    }
-
-    .divimgshow {
-        flex: 0 1 36%;
-        max-width: 380px;
-    }
-
-    .searruma {
-        flex-wrap: wrap;
-        gap: 16px;
-        padding: 0 24px;
-        box-sizing: border-box;
-    }
-
-    .container,
-    .container2,
-    .container3,
-    .container4 {
-        width: calc(50% - 8px);
-        box-sizing: border-box;
-    }
-
     .fundoD {
         grid-template-columns: minmax(0, 1fr);
         min-height: 0;
@@ -1225,17 +1182,10 @@ body.loading-locked {
 
 @media (max-width: 768px) {
     #header {
-        display: grid;
-        grid-template-columns: auto minmax(0, 1fr);
         height: auto;
-        min-height: 94px;
+        min-height: 58px;
         padding: 8px 14px;
-        gap: 4px 8px;
-    }
-
-    #header > p {
-        display: flex;
-        align-items: center;
+        gap: 8px;
     }
 
     .iconF {
@@ -1254,22 +1204,14 @@ body.loading-locked {
     }
 
     .botoes {
-        grid-column: 1 / -1;
-        width: 100%;
         gap: 4px;
         padding-right: 0;
-        justify-content: space-between;
     }
 
     .buttonenterheader {
-        flex: 1 1 0;
-        flex-shrink: 1;
-        min-width: 0;
-        max-width: none;
-        font-size: 0.8rem;
+        font-size: 70%;
         padding: 6px 4px;
         white-space: normal;
-        text-align: center;
     }
 
     .fundo {
@@ -1278,7 +1220,7 @@ body.loading-locked {
         flex-direction: column;
         align-items: stretch;
         gap: 36px;
-        padding: 124px 22px 50px;
+        padding: 110px 22px 50px;
         box-sizing: border-box;
     }
 
@@ -1322,7 +1264,6 @@ body.loading-locked {
     }
 
     .divimgshow {
-        flex: none;
         width: min(100%, 380px);
         height: 350px;
         margin: 0 auto;
@@ -1468,20 +1409,6 @@ body.loading-locked {
 }
 
 @media (max-width: 480px) {
-    #header {
-        padding: 8px 10px;
-    }
-
-    .empresa3,
-    .empresa4 {
-        font-size: 130%;
-    }
-
-    .buttonenterheader {
-        font-size: 0.72rem;
-        line-height: 1.2;
-    }
-
     .fundoD {
         padding: 2.5rem 16px;
     }
@@ -1518,4 +1445,3 @@ body.loading-locked {
         font-size: 0.875rem;
     }
 }
-
