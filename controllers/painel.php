@@ -1,6 +1,7 @@
 ﻿<?php
 session_start();
 require_once __DIR__ . "/../config/conexao.php";
+require_once __DIR__ . "/../config/setores.php";
 
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: ../controllers/entrar.php");
@@ -17,9 +18,6 @@ $tipoMensagemPerfil = '';
 $mensagemSetor = '';
 $tipoMensagemSetor = '';
 $nomeSetorFormulario = '';
-if (!isset($_SESSION['setores_painel']) || !is_array($_SESSION['setores_painel'])) {
-    $_SESSION['setores_painel'] = [];
-}
 $abaAtiva = 'panel-informacoes';
 $nomePerfilFormulario = (string) $_SESSION['nome'];
 if (empty($_SESSION['token_configuracoes'])) {
@@ -28,6 +26,12 @@ if (empty($_SESSION['token_configuracoes'])) {
 
 $con = conectar();
 $idUsuario = (int) $_SESSION['id_usuario'];
+$erroTabelaSetores = false;
+try {
+    garantirTabelaSetores($con);
+} catch (Throwable $erro) {
+    $erroTabelaSetores = true;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'atualizar_perfil') {
     $abaAtiva = 'panel-perfil';
@@ -117,29 +121,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'criar_s
     if ($nomeSetorFormulario === '' || strlen($nomeSetorFormulario) > 255) {
         $mensagemSetor = 'Informe um nome válido com até 255 caracteres.';
         $tipoMensagemSetor = 'erro';
+    } elseif ($erroTabelaSetores) {
+        $mensagemSetor = 'Não foi possível salvar o setor agora. Tente novamente.';
+        $tipoMensagemSetor = 'erro';
     } else {
-        $nomeDuplicado = false;
-        foreach ($_SESSION['setores_painel'] as $setorExistente) {
-            if (strcasecmp($setorExistente['nome'], $nomeSetorFormulario) === 0) {
-                $nomeDuplicado = true;
-                break;
-            }
-        }
-
-        if ($nomeDuplicado) {
+        $resultadoCriacao = criarSetor($con, $idUsuario, $nomeSetorFormulario);
+        if ($resultadoCriacao === 'duplicado') {
             $mensagemSetor = 'Já existe um setor com esse nome.';
             $tipoMensagemSetor = 'erro';
-        } else {
-            $_SESSION['setores_painel'][] = [
-                'id_setor' => count($_SESSION['setores_painel']) + 1,
-                'nome' => $nomeSetorFormulario,
-                'temperatura' => null,
-                'ruido' => null,
-                'qualidade_ar' => null,
-            ];
+        } elseif ($resultadoCriacao === 'criado') {
             $mensagemSetor = 'Setor criado com sucesso.';
             $tipoMensagemSetor = 'sucesso';
             $nomeSetorFormulario = '';
+        } else {
+            $mensagemSetor = 'Não foi possível salvar o setor agora. Tente novamente.';
+            $tipoMensagemSetor = 'erro';
         }
     }
 }
@@ -152,7 +148,15 @@ $resultado_usuario = mysqli_stmt_get_result($stmt_usuario);
 $usuario = mysqli_fetch_assoc($resultado_usuario);
 mysqli_stmt_close($stmt_usuario);
 
-$setores = $_SESSION['setores_painel'];
+try {
+    $setores = $erroTabelaSetores ? [] : listarSetores($con, $idUsuario);
+} catch (Throwable $erro) {
+    $setores = [];
+    if ($mensagemSetor === '') {
+        $mensagemSetor = 'Não foi possível carregar os setores agora. Tente novamente.';
+        $tipoMensagemSetor = 'erro';
+    }
+}
 mysqli_close($con);
 
 $fotoPerfil = null;
