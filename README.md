@@ -29,7 +29,7 @@
   <b>principais tecnologias utilizadas no projeto:</b><br>
   <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Unofficial_JavaScript_logo_2.svg/960px-Unofficial_JavaScript_logo_2.svg.png" width="3%">
   <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/HTML5_Badge.svg/1280px-HTML5_Badge.svg.png" width="3%">
-  <img src="https://prosimples.com/wp-content/uploads/2024/01/css-3.png" width="3%">
+  <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d5/CSS3_logo_and_wordmark.svg/500px-CSS3_logo_and_wordmark.svg.png?utm_source=pt.wikipedia.org&utm_campaign=index&utm_content=thumbnail" width="2.5%">
   <img src="https://cdn-icons-png.flaticon.com/512/5968/5968313.png" width="3%">
   <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/PHP-logo.svg/1280px-PHP-logo.svg.png" width=3%>
     <h4> 2026 YouWell © - Saúde e bem estar corporativo</h4>
