@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acesso por Código de E-mail</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body { background: #0f172a; color: #f8fafc; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 32px; width: 100%; max-width: 420px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
+    h2 { font-size: 1.5rem; margin-bottom: 8px; font-weight: 600; text-align: center; }
+    p.subtitle { color: #94a3b8; font-size: 0.9rem; margin-bottom: 24px; text-align: center; }
+    
+    .form-group { margin-bottom: 20px; }
+    label { display: block; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 8px; font-weight: 500; }
+    input[type="email"] { width: 100%; padding: 12px 16px; background: #0f172a; border: 1px solid #475569; border-radius: 8px; color: #fff; font-size: 1rem; outline: none; transition: border 0.2s; }
+    input[type="email"]:focus { border-color: #3b82f6; }
+
+    /* Inputs de 6 dígitos */
+    .otp-container { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; }
+    .otp-input { width: 48px; height: 56px; text-align: center; font-size: 1.5rem; font-weight: bold; background: #0f172a; border: 1px solid #475569; border-radius: 8px; color: #60a5fa; outline: none; }
+    .otp-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3); }
+
+    .btn { width: 100%; padding: 12px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: #1d4ed8; }
+    .btn:disabled { background: #475569; cursor: not-allowed; }
+
+    .alert { padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 16px; text-align: center; display: none; }
+    .alert-error { background: #450a0a; color: #fca5a5; border: 1px solid #7f1d1d; }
+    .alert-success { background: #052e16; color: #86efac; border: 1px solid #14532d; }
+
+    .step { display: none; }
+    .step.active { display: block; }
+
+    .user-area { text-align: center; }
+    .user-area img { width: 64px; height: 64px; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div id="alertBox" class="alert"></div>
+
+    <!-- PASSO 1: DIGITAR E-MAIL -->
+    <div id="step1" class="step active">
+      <h2>Entrar no Aplicativo</h2>
+      <p class="subtitle">Digite seu e-mail para receber o código de verificação.</p>
+      
+      <div class="form-group">
+        <label for="email">Endereço de E-mail</label>
+        <input type="email" id="email" placeholder="seuemail@exemplo.com" required>
+      </div>
+      
+      <button class="btn" id="btnSend" onclick="solicitarCodigo()">Enviar Código</button>
+    </div>
+
+    <!-- PASSO 2: DIGITAR CÓDIGO (6 DÍGITOS) -->
+    <div id="step2" class="step">
+      <h2>Verifique seu E-mail</h2>
+      <p class="subtitle" id="step2Subtitle">Enviamos um código de 6 dígitos para o seu e-mail.</p>
+
+      <div class="otp-container">
+        <input type="text" class="otp-input" maxlength="1" oninput="moveNext(this, 0)">
+        <input type="text" class="otp-input" maxlength="1" oninput="moveNext(this, 1)">
+        <input type="text" class="otp-input" maxlength="1" oninput="moveNext(this, 2)">
+        <input type="text" class="otp-input" maxlength="1" oninput="moveNext(this, 3)">
+        <input type="text" class="otp-input" maxlength="1" oninput="moveNext(this, 4)">
+        <input type="text" class="otp-input" maxlength="1" oninput="moveNext(this, 5)">
+      </div>
+
+      <button class="btn" id="btnVerify" onclick="validarCodigo()">Confirmar e Entrar</button>
+      <p style="text-align: center; margin-top: 16px;">
+        <a href="#" onclick="voltarPasso1()" style="color: #94a3b8; font-size: 0.8rem; text-decoration: none;">← Alterar e-mail</a>
+      </p>
+    </div>
+
+    <!-- PASSO 3: ÁREA LOGADA -->
+    <div id="step3" class="step user-area">
+      <div style="font-size: 3rem; margin-bottom: 8px;">🎉</div>
+      <h2>Acesso Autorizado!</h2>
+      <p class="subtitle" id="userEmailText">Você está autenticado no sistema.</p>
+      <button class="btn" onclick="location.reload()" style="background: #334155;">Sair</button>
+    </div>
+  </div>
+
+  <script>
+    let userEmail = '';
+
+    function showAlert(msg, isError = true) {
+      const box = document.getElementById('alertBox');
+      box.innerText = msg;
+      box.className = `alert ${isError ? 'alert-error' : 'alert-success'}`;
+      box.style.display = 'block';
+    }
+
+    function clearAlert() {
+      document.getElementById('alertBox').style.display = 'none';
+    }
+
+    // Navegação entre os caixas de 6 dígitos
+    function moveNext(input, index) {
+      const inputs = document.querySelectorAll('.otp-input');
+      input.value = input.value.replace(/[^0-9]/g, '');
+      if (input.value && index < 5) {
+        inputs[index + 1].focus();
+      }
+    }
+
+    async function solicitarCodigo() {
+      userEmail = document.getElementById('email').value.trim();
+      if (!userEmail) return showAlert('Informe um e-mail válido.');
+
+      clearAlert();
+      const btn = document.getElementById('btnSend');
+      btn.disabled = true;
+      btn.innerText = 'Enviando e-mail...';
+
+      try {
+        const response = await fetch('gerar_otp.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: userEmail })
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          document.getElementById('step1').classList.remove('active');
+          document.getElementById('step2').classList.add('active');
+          document.getElementById('step2Subtitle').innerText = `Código enviado para ${userEmail}`;
+        } else {
+          showAlert(data.error || 'Erro ao enviar código.');
+        }
+      } catch (e) {
+        showAlert('Erro de conexão com o servidor PHP.');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Enviar Código';
+      }
+    }
+
+    async function validarCodigo() {
+      const inputs = document.querySelectorAll('.otp-input');
+      let codigo = '';
+      inputs.forEach(i => codigo += i.value);
+
+      if (codigo.length < 6) return showAlert('Digite os 6 dígitos do código.');
+
+      clearAlert();
+      const btn = document.getElementById('btnVerify');
+      btn.disabled = true;
+      btn.innerText = 'Validando...';
+
+      try {
+        const response = await fetch('validar_otp.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: userEmail, codigo: codigo })
+        });
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          document.getElementById('step2').classList.remove('active');
+          document.getElementById('step3').classList.add('active');
+          document.getElementById('userEmailText').innerText = `Logado como: ${userEmail}`;
+        } else {
+          showAlert(data.error || 'Código incorreto.');
+        }
+      } catch (e) {
+        showAlert('Erro de conexão ao validar.');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Confirmar e Entrar';
+      }
+    }
+
+    function voltarPasso1() {
+      clearAlert();
+      document.getElementById('step2').classList.remove('active');
+      document.getElementById('step1').classList.add('active');
+    }
+  </script>
+</body>
+</html>
