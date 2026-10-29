@@ -18,7 +18,7 @@ if (!$email) {
     responder(400, ['error' => 'E-mail inválido']);
 }
 
-$arquivoConfigEmail = __DIR__ . '/config/resend.local.php';
+$arquivoConfigEmail = __DIR__ . '/../../config/resend.local.php';
 $configEmail = is_file($arquivoConfigEmail) ? require $arquivoConfigEmail : [];
 if (!is_array($configEmail)) {
     responder(500, ['error' => 'A configuração local do serviço de e-mail é inválida.']);
@@ -30,7 +30,7 @@ if (!$apiKey || !$remetente) {
     responder(500, ['error' => 'Configure a chave e o remetente em config/resend.local.php.']);
 }
 
-require_once __DIR__ . '/config/conexao.php';
+require_once __DIR__ . '/../../config/conexao.php';
 
 try {
     $con = conectar();

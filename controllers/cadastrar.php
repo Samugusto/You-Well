@@ -1,5 +1,21 @@
 ﻿<?php
 session_start();
+
+$otpVerificadoEm = $_SESSION["otp_cadastro_verificado_em"] ?? 0;
+if (
+    empty($_SESSION["otp_cadastro_autorizado"])
+    || !is_int($otpVerificadoEm)
+    || $otpVerificadoEm < time() - 1800
+) {
+    unset(
+        $_SESSION["otp_cadastro_autorizado"],
+        $_SESSION["otp_cadastro_email"],
+        $_SESSION["otp_cadastro_verificado_em"]
+    );
+    header("Location: ../views/YouWell%20-%20Ativa%C3%A7%C3%A3o/index.html");
+    exit;
+}
+
 require_once __DIR__ . "/../config/conexao.php";
 
 $erro = "";
@@ -67,6 +83,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
 
             if (mysqli_stmt_execute($stmt_insert)) {
+                unset(
+                    $_SESSION["otp_cadastro_autorizado"],
+                    $_SESSION["otp_cadastro_email"],
+                    $_SESSION["otp_cadastro_verificado_em"]
+                );
                 $sucesso = "Cadastro realizado com sucesso! Redirecionando para o login...";
                 echo '<meta http-equiv="refresh" content="2;url=../controllers/entrar.php">';
             } else {
@@ -195,5 +216,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </body>
 
 </html>
-
 
