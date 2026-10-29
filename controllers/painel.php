@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 require_once __DIR__ . "/../config/conexao.php";
 require_once __DIR__ . "/../config/setores.php";
@@ -26,6 +26,12 @@ if (empty($_SESSION['token_configuracoes'])) {
 
 $con = conectar();
 $idUsuario = (int) $_SESSION['id_usuario'];
+$alertas = [
+    ['setor' => 'Setor 1', 'texto' => 'Crítico: Problemas relacionados a temperatura do setor: 40°C', 'classe' => 'janelinhaA'],
+    ['setor' => 'Setor 2', 'texto' => 'Crítico: Problemas relacionados ao ruído do setor: 180 db', 'classe' => 'janelinhaA'],
+    ['setor' => 'Setor 3', 'texto' => 'Avisos: Ajustes relacionados a qualidade do ar do setor: Estável', 'classe' => 'janelinhaM'],
+];
+$quantidadeAlertas = count($alertas);
 $erroTabelaSetores = false;
 try {
     garantirTabelaSetores($con);
@@ -140,6 +146,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'criar_s
     }
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'excluir_setor') {
+    $abaAtiva = 'panel-setores';
+    $idSetorExcluir = isset($_POST['id_setor']) ? (int) $_POST['id_setor'] : 0;
+
+    if ($idSetorExcluir <= 0) {
+        $mensagemSetor = 'Setor inválido para exclusão.';
+        $tipoMensagemSetor = 'erro';
+    } elseif ($erroTabelaSetores) {
+        $mensagemSetor = 'Não foi possível excluir o setor agora. Tente novamente.';
+        $tipoMensagemSetor = 'erro';
+    } else {
+        if (excluirSetor($con, $idUsuario, $idSetorExcluir)) {
+            $mensagemSetor = 'Setor excluído com sucesso.';
+            $tipoMensagemSetor = 'sucesso';
+        } else {
+            $mensagemSetor = 'Não foi possível excluir o setor. Tente novamente.';
+            $tipoMensagemSetor = 'erro';
+        }
+    }
+}
+
 $sql_usuario = "SELECT nome, foto_perfil FROM usuarios WHERE id_usuario = ?";
 $stmt_usuario = mysqli_prepare($con, $sql_usuario);
 mysqli_stmt_bind_param($stmt_usuario, "i", $idUsuario);
@@ -215,8 +242,11 @@ if (!in_array($pagina, $paginas, true)) {
                 <i class="bi bi-layout-sidebar-inset"></i>
             </button>
 
-            <button class="menu-toggle" type="button" aria-label="Esconder menu" aria-expanded="true">
-                <i class="bi bi-bell"></i>
+            <button class="menu-toggle botao-alertas" type="button" aria-label="Ver alertas" onclick="window.location.href='../controllers/painel.php?pagina=alertas&amp;sem_loader=1'">
+                <i class="bi bi-bell" aria-hidden="true"></i>
+                <?php if ($quantidadeAlertas > 0): ?>
+                    <span class="contador-alertas" aria-label="<?= $quantidadeAlertas ?> alertas"><?= $quantidadeAlertas > 99 ? '99+' : $quantidadeAlertas ?></span>
+                <?php endif; ?>
             </button>
             <div class="infos">
                 <h1 class="nome"><?php echo htmlspecialchars((string) $_SESSION['nome'], ENT_QUOTES, 'UTF-8'); ?></h1>
@@ -584,7 +614,7 @@ if (!in_array($pagina, $paginas, true)) {
                         <button class="optionsC2 <?= $abaAtiva === 'panel-setores' ? 'active' : '' ?>" id="tab-setores" type="button" role="tab"
                             aria-selected="<?= $abaAtiva === 'panel-setores' ? 'true' : 'false' ?>" aria-controls="panel-setores" data-config-tab="panel-setores"
                             tabindex="<?= $abaAtiva === 'panel-setores' ? '0' : '-1' ?>">
-                            Novos Setores
+                            Gerenciar Setores
                         </button>
                     </div>
                     <div class="windowMod" aria-live="polite">
@@ -677,24 +707,67 @@ if (!in_array($pagina, $paginas, true)) {
                             </fieldset>
                         </section>
                         <section class="config-panel" id="panel-setores" role="tabpanel"
-                            aria-labelledby="tab-setores" hidden>
-                            <h2>Novos Setores</h2>
-                            <p class="aparencia-descricao">Cadastre um novo setor informando apenas o nome.</p>
+                            aria-labelledby="tab-setores" <?= $abaAtiva === 'panel-setores' ? '' : 'hidden' ?>>
+                            <h2>Gerenciar Setores</h2>
+                            <p class="aparencia-descricao">Visualize os setores cadastrados, exclua os que desejar ou cadastre um novo setor.</p>
                             <?php if ($mensagemSetor !== ''): ?>
                                 <p class="perfil-mensagem <?= $tipoMensagemSetor === 'sucesso' ? 'sucesso' : 'erro' ?>" role="status">
                                     <?= htmlspecialchars($mensagemSetor, ENT_QUOTES, 'UTF-8') ?>
                                 </p>
                             <?php endif; ?>
-                            <form class="setor-form" method="post">
-                                <input type="hidden" name="acao" value="criar_setor">
-                                <label for="nome-setor">Nome do setor</label>
-                                <input id="nome-setor" name="nome_setor" type="text" maxlength="255"
-                                    placeholder="Ex.: Produção" autocomplete="off" value="<?= htmlspecialchars($nomeSetorFormulario, ENT_QUOTES, 'UTF-8') ?>" required>
-                                <button type="submit" class="perfil-salvar">
-                                    <i class="bi bi-plus-circle-fill" aria-hidden="true"></i>
-                                    Criar setor
-                                </button>
-                            </form>
+
+                            <div class="gerenciador-setores">
+                                <!-- Lista de setores existentes criados pelo usuário -->
+                                <div class="bloco-setores-existentes">
+                                    <h3 class="subtitulo-painel-setores">
+                                        <i class="bi bi-buildings" aria-hidden="true"></i> Setores Cadastrados (<?= count($setores) ?>)
+                                    </h3>
+                                    <?php if (!empty($setores)): ?>
+                                        <div class="lista-setores-config">
+                                            <?php foreach ($setores as $setor): ?>
+                                                <div class="card-setor-item">
+                                                    <div class="card-setor-info">
+                                                        <span class="card-setor-badge"><i class="bi bi-building"></i></span>
+                                                        <span class="card-setor-nome"><?= htmlspecialchars($setor['nome'], ENT_QUOTES, 'UTF-8') ?></span>
+                                                    </div>
+                                                    <form method="post" class="form-excluir-setor" onsubmit="return confirm('Deseja realmente excluir o setor &quot;<?= htmlspecialchars($setor['nome'], ENT_QUOTES, 'UTF-8') ?>&quot;? Todas as leituras associadas a ele serão apagadas permanentemente.');">
+                                                        <input type="hidden" name="acao" value="excluir_setor">
+                                                        <input type="hidden" name="id_setor" value="<?= (int) $setor['id_setor'] ?>">
+                                                        <button type="submit" class="btn-excluir-setor" title="Excluir <?= htmlspecialchars($setor['nome'], ENT_QUOTES, 'UTF-8') ?>">
+                                                            <i class="bi bi-trash3-fill" aria-hidden="true"></i>
+                                                            <span>Excluir</span>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="alerta-sem-setores">
+                                            <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
+                                            <span>Você ainda não possui nenhum setor cadastrado. Crie o seu primeiro setor abaixo!</span>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+
+                                <div class="divisor-config-setores"></div>
+
+                                <!-- Formulário para criar novo setor -->
+                                <div class="bloco-novo-setor">
+                                    <h3 class="subtitulo-painel-setores">
+                                        <i class="bi bi-plus-square-fill" aria-hidden="true"></i> Cadastrar Novo Setor
+                                    </h3>
+                                    <form class="setor-form" method="post">
+                                        <input type="hidden" name="acao" value="criar_setor">
+                                        <label for="nome-setor">Nome do setor</label>
+                                        <input id="nome-setor" name="nome_setor" type="text" maxlength="255"
+                                            placeholder="Ex.: Produção, Laboratório, Estoque..." autocomplete="off" value="<?= htmlspecialchars($nomeSetorFormulario, ENT_QUOTES, 'UTF-8') ?>" required>
+                                        <button type="submit" class="perfil-salvar">
+                                            <i class="bi bi-plus-circle-fill" aria-hidden="true"></i>
+                                            Criar setor
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </section>
                     </div>
                 </div>

@@ -29,8 +29,10 @@ function garantirTabelaSetores(mysqli $con): void
     mysqli_free_result($colunas);
 
     // 3. Migra registros antigos: preenche 'id_usuario' a partir do nome do gerente na tabela 'usuarios'
-    if (!mysqli_query($con, 'UPDATE setores s INNER JOIN usuarios u ON u.nome = s.gerente SET s.id_usuario = u.id_usuario WHERE s.id_usuario IS NULL')) {
-        throw new RuntimeException('Não foi possível associar os setores às contas existentes.');
+    try {
+        @mysqli_query($con, 'UPDATE setores s INNER JOIN usuarios u ON u.nome = s.gerente SET s.id_usuario = u.id_usuario WHERE s.id_usuario IS NULL');
+    } catch (Throwable $e) {
+        // Prossegue mesmo se houver divergência em registros legados
     }
 
     // 4. Garante que o campo 'nome' tenha capacidade de até 255 caracteres
@@ -212,20 +214,31 @@ function listarSetores(mysqli $con, int $idUsuario): array
             FROM `{$tabelaLeituras}` ORDER BY id_leitura DESC LIMIT 1";
         try {
             $resultadoLeitura = mysqli_query($con, $sqlUltimaLeitura);
-        } catch (mysqli_sql_exception $erro) {
-            mysqli_stmt_close($stmt);
-            throw new RuntimeException('Não foi possível consultar as leituras dos setores.');
-        }
-
-        // Se houver leitura registrada, preenche os valores atuais
-        if ($resultadoLeitura) {
-            $leitura = mysqli_fetch_assoc($resultadoLeitura);
-            if ($leitura) {
-                $setor['temperatura'] = $leitura['temperatura'];
-                $setor['ruido'] = $leitura['ruido'];
-                $setor['qualidade_ar'] = $leitura['qualidade_ar'];
+            if ($resultadoLeitura) {
+                $leitura = mysqli_fetch_assoc($resultadoLeitura);
+                if ($leitura) {
+                    $setor['temperatura'] = $leitura['temperatura'];
+                    $setor['ruido'] = $leitura['ruido'];
+                    $setor['qualidade_ar'] = $leitura['qualidade_ar'];
+                }
+                mysqli_free_result($resultadoLeitura);
             }
-            mysqli_free_result($resultadoLeitura);
+        } catch (Throwable $erro) {
+            // Se a tabela do setor não existir ainda, tenta criá-la e não trava a listagem
+            $sqlCriarTabela = "CREATE TABLE IF NOT EXISTS `{$tabelaLeituras}` (
+                id_leitura BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+                temperatura DECIMAL(10,2) NULL,
+                ruido DECIMAL(10,2) NULL,
+                qualidade_ar DECIMAL(10,2) NULL,
+                data_hora TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (id_leitura),
+                KEY idx_data_hora (data_hora)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+            try {
+                mysqli_query($con, $sqlCriarTabela);
+            } catch (Throwable $e) {
+                // Silencia para garantir que a página continue funcionando
+            }
         }
 
         $setores[] = $setor;
@@ -233,4 +246,32 @@ function listarSetores(mysqli $con, int $idUsuario): array
 
     mysqli_stmt_close($stmt);
     return $setores;
+}
+
+function excluirSetor(mysqli $con, int $idUsuario, int $idSetor): bool
+{
+    // 1. Remove o setor pertencente ao usuário
+    $sql = "DELETE FROM setores WHERE id_setor = ? AND (id_usuario = ? OR (id_usuario IS NULL AND gerente = (SELECT nome FROM usuarios WHERE id_usuario = ? LIMIT 1)))";
+    $stmt = mysqli_prepare($con, $sql);
+    if (!$stmt) {
+        return false;
+    }
+
+    mysqli_stmt_bind_param($stmt, 'iii', $idSetor, $idUsuario, $idUsuario);
+    $executou = mysqli_stmt_execute($stmt);
+    $linhasAfetadas = mysqli_stmt_affected_rows($stmt);
+    mysqli_stmt_close($stmt);
+
+    if ($executou && $linhasAfetadas > 0) {
+        // 2. Remove a tabela individual de leituras associada a esse setor (se existir)
+        $tabelaLeituras = 'setor_' . $idSetor;
+        try {
+            mysqli_query($con, "DROP TABLE IF EXISTS `{$tabelaLeituras}`");
+        } catch (Throwable $e) {
+            // Silencia caso não consiga remover a tabela auxiliar
+        }
+        return true;
+    }
+
+    return false;
 }

@@ -1,4 +1,4 @@
-﻿* {
+* {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
@@ -105,6 +105,27 @@ body {
 .menu-toggle:hover {
     color: var(--cor-hover);
     border-color: var(--cor-hover);
+}
+
+.botao-alertas {
+    position: relative;
+}
+
+.contador-alertas {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: var(--cor-alerta);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 18px;
+    text-align: center;
+    box-sizing: border-box;
 }
 
 body.menu-recolhido .menu-lateral {
@@ -1399,4 +1420,186 @@ body[data-theme="dark"] .tema-opcao input:checked + span {
     border-color: var(--cor-hover);
     background: #173b30;
     color: #d7f5e9;
+}
+
+/* =========================================================
+   Gerenciador de Setores (Configurações)
+   ========================================================= */
+.gerenciador-setores {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-top: 20px;
+}
+
+.subtitulo-painel-setores {
+    font-size: 1.05rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    color: var(--cor-textos);
+}
+
+.subtitulo-painel-setores i {
+    color: var(--cor-hover);
+}
+
+.lista-setores-config {
+    display: grid;
+    gap: 10px;
+    max-width: 580px;
+}
+
+.card-setor-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 16px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.card-setor-item:hover {
+    border-color: var(--cor-hover);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+}
+
+.card-setor-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.card-setor-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: var(--cor-fundo);
+    color: var(--cor-hover);
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.card-setor-nome {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--cor-textos);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.form-excluir-setor {
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+    flex-shrink: 0;
+}
+
+.btn-excluir-setor {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1px solid #ffd1d5;
+    border-radius: 8px;
+    background: #fff5f5;
+    color: #d32f2f;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.btn-excluir-setor:hover {
+    background-color: #d32f2f;
+    color: #ffffff;
+    border-color: #d32f2f;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(211, 47, 47, 0.25);
+}
+
+.btn-excluir-setor:active {
+    transform: translateY(0);
+}
+
+.alerta-sem-setores {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border-radius: 8px;
+    background: var(--cor-fundo);
+    color: var(--cor-menu);
+    font-size: 0.92rem;
+    font-weight: 500;
+    max-width: 580px;
+}
+
+.alerta-sem-setores i {
+    font-size: 1.25rem;
+    color: var(--cor-hover);
+    flex-shrink: 0;
+}
+
+.divisor-config-setores {
+    height: 1px;
+    background: var(--cor-borda);
+    opacity: 0.5;
+    max-width: 580px;
+    margin: 6px 0;
+}
+
+/* Modo escuro para o gerenciador de setores */
+body[data-theme="dark"] .card-setor-item {
+    background-color: var(--cor-superficie);
+    border-color: #2e3d37;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+body[data-theme="dark"] .card-setor-item:hover {
+    border-color: var(--cor-hover);
+}
+
+body[data-theme="dark"] .card-setor-nome {
+    color: var(--cor-textos);
+}
+
+body[data-theme="dark"] .card-setor-badge {
+    background: #14382c;
+    color: #2ee6ad;
+}
+
+body[data-theme="dark"] .btn-excluir-setor {
+    background: #381a1d;
+    border-color: #592027;
+    color: #ff9da8;
+}
+
+body[data-theme="dark"] .btn-excluir-setor:hover {
+    background: #e03131;
+    color: #ffffff;
+    border-color: #e03131;
+    box-shadow: 0 3px 8px rgba(224, 49, 49, 0.4);
+}
+
+body[data-theme="dark"] .alerta-sem-setores {
+    background: #15352a;
+    color: #bbf0d8;
+}
+
+body[data-theme="dark"] .divisor-config-setores {
+    background: #2e3d37;
+    opacity: 0.8;
 }

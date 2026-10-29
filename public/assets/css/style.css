@@ -303,15 +303,19 @@ body.loading-locked {
 }
 
 @keyframes animation-shake {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateX(0);
     }
 
-    20%, 60% {
+    20%,
+    60% {
         transform: translateX(-6px);
     }
 
-    40%, 80% {
+    40%,
+    80% {
         transform: translateX(6px);
     }
 }
@@ -355,4 +359,3 @@ body.loading-locked {
         max-width: calc(100% - 32px);
     }
 }
-
