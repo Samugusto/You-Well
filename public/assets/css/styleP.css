@@ -579,6 +579,14 @@ body.menu-recolhido .menu-lateral ul li a.underline-desliza i {
     margin-bottom: 3%;
 }
 
+.diviM {
+    width: 72%;
+    height: 1px;
+    margin: 10px auto 14px;
+    border-radius: 100px;
+    background-color: var(--cor-hoverB);
+}
+
 .quadradoInfo {
     padding: 5%;
     border-radius: 10px;
@@ -630,6 +638,7 @@ body.menu-recolhido .menu-lateral ul li a.underline-desliza i {
 .menu-lateral ul li a.underline-desliza.active {
     background-color: var(--cor-hoverB);
     border-radius: 20px;
+    color: var(--cor-hover-destaque);
 }
 
 .underline-desliza:hover {
@@ -1243,13 +1252,13 @@ body[data-theme="dark"] {
     --cor-hover: #36bd91;
     --cor-hoverB: #36bd9140;
     --cor-fundo: #36bd9120;
-    --cor-textos2: #111918;
+    --cor-textos2: #000000;
     --cor-alerta: #ff8585;
     --cor-alertafundo: #bf1c1c24;
     --cor-mid: #f0d45c;
     --cor-midfundo: #e2e82e20;
     --cor-borda: #394642;
-    --cor-superficie: #1c2522;
+    --cor-superficie: #141615;
     --cor-superficie-secundaria: #26312d;
     color-scheme: dark;
 }

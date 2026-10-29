@@ -272,11 +272,15 @@ if (!in_array($pagina, $paginas, true)) {
 
             <li><a href="../controllers/painel.php?pagina=setores&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'setores' ? 'active' : '' ?>"><i class="bi bi-building""></i>Setores</a></li>
 
+            <div class=" diviM"></div>
+
             <li><a href=" ../controllers/painel.php?pagina=temperatura&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'temperatura' ? 'active' : '' ?>"><i class="bi bi-thermometer"></i>Temperatura</a></li>
 
             <li><a href="../controllers/painel.php?pagina=ruido&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'ruido' ? 'active' : '' ?>"><i class="bi bi-volume-up-fill"></i>Ruído</a></li>
 
             <li><a href="../controllers/painel.php?pagina=qualidadear&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'qualidadear' ? 'active' : '' ?>"><i class="bi bi-wind"></i>Qualidade do Ar</a></li>
+
+            <div class="diviM"></div>
 
             <li><a href="../controllers/painel.php?pagina=alertas&amp;sem_loader=1" class="underline-desliza <?= $pagina === 'alertas' ? 'active' : '' ?>"><i class="bi bi-exclamation-circle-fill"></i>Alertas</a></li>
 
@@ -380,29 +384,29 @@ if (!in_array($pagina, $paginas, true)) {
             <?php elseif ($pagina === 'setores'): ?>
                 <div class="containerj">
                     <?php foreach ($setores as $setor): ?>
-                    <div class="janelinha2">
-                        <div class="janelinha">
-                            <div class="containerQIIO">
-                                <div class="quadradoIcon">
-                                    <i class="bi bi-building iconS"></i>
+                        <div class="janelinha2">
+                            <div class="janelinha">
+                                <div class="containerQIIO">
+                                    <div class="quadradoIcon">
+                                        <i class="bi bi-building iconS"></i>
+                                    </div>
+                                    <span class="outro"><?= htmlspecialchars($setor['nome'], ENT_QUOTES, 'UTF-8') ?></span>
                                 </div>
-                                <span class="outro"><?= htmlspecialchars($setor['nome'], ENT_QUOTES, 'UTF-8') ?></span>
-                            </div>
-                            <div class="divi"></div>
-                            <div class="quadradoInfo">
-                                <h1 class="textoInfom">Temperatura:</h1>
-                                <h1 class="textoInfomD"><?= $setor['temperatura'] !== null ? htmlspecialchars($setor['temperatura'], ENT_QUOTES, 'UTF-8') . 'º' : 'Aguardando' ?></h1>
-                            </div>
-                            <div class="quadradoInfo">
-                                <h1 class="textoInfom">Ruído:</h1>
-                                <h1 class="textoInfomD"><?= $setor['ruido'] !== null ? htmlspecialchars($setor['ruido'], ENT_QUOTES, 'UTF-8') . ' db' : 'Aguardando' ?></h1>
-                            </div>
-                            <div class="quadradoInfo">
-                                <h1 class="textoInfom">Ar:</h1>
-                                <h1 class="textoInfomD"><?= $setor['qualidade_ar'] !== null ? htmlspecialchars($setor['qualidade_ar'], ENT_QUOTES, 'UTF-8') : 'Aguardando' ?></h1>
+                                <div class="divi"></div>
+                                <div class="quadradoInfo">
+                                    <h1 class="textoInfom">Temperatura:</h1>
+                                    <h1 class="textoInfomD"><?= $setor['temperatura'] !== null ? htmlspecialchars($setor['temperatura'], ENT_QUOTES, 'UTF-8') . 'º' : 'Aguardando' ?></h1>
+                                </div>
+                                <div class="quadradoInfo">
+                                    <h1 class="textoInfom">Ruído:</h1>
+                                    <h1 class="textoInfomD"><?= $setor['ruido'] !== null ? htmlspecialchars($setor['ruido'], ENT_QUOTES, 'UTF-8') . ' db' : 'Aguardando' ?></h1>
+                                </div>
+                                <div class="quadradoInfo">
+                                    <h1 class="textoInfom">Ar:</h1>
+                                    <h1 class="textoInfomD"><?= $setor['qualidade_ar'] !== null ? htmlspecialchars($setor['qualidade_ar'], ENT_QUOTES, 'UTF-8') : 'Aguardando' ?></h1>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     <?php endforeach; ?>
                     <?php if (count($setores) === 0): ?>
                         <p class="aparencia-descricao">Nenhum setor cadastrado ainda.</p>
@@ -868,4 +872,3 @@ if (!in_array($pagina, $paginas, true)) {
 </body>
 
 </html>
-
