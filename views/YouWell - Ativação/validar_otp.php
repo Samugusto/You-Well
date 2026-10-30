@@ -29,11 +29,11 @@ try {
 
     $stmt = mysqli_prepare(
         $con,
-        'SELECT id_verificacao, codigo_hash
+        'SELECT id, codigo_hash
          FROM verificacoes_email
          WHERE email = ? AND usado = 0
-           AND criado_em >= DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 15 MINUTE)
-         ORDER BY id_verificacao DESC
+           AND created_at >= DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 15 MINUTE)
+         ORDER BY id DESC
          LIMIT 1
          FOR UPDATE'
     );
@@ -49,10 +49,10 @@ try {
         responder(400, ['error' => 'Código incorreto ou expirado.']);
     }
 
-    $idVerificacao = (int) $verificacao['id_verificacao'];
+    $idVerificacao = (int) $verificacao['id'];
     $stmt = mysqli_prepare(
         $con,
-        'UPDATE verificacoes_email SET usado = 1 WHERE id_verificacao = ? AND usado = 0'
+        'UPDATE verificacoes_email SET usado = 1 WHERE id = ? AND usado = 0'
     );
     mysqli_stmt_bind_param($stmt, 'i', $idVerificacao);
     mysqli_stmt_execute($stmt);

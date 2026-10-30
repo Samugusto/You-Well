@@ -39,12 +39,12 @@ try {
     mysqli_query(
         $con,
         "CREATE TABLE IF NOT EXISTS verificacoes_email (
-            id_verificacao BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+            id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
             email VARCHAR(254) NOT NULL,
             codigo_hash CHAR(64) NOT NULL,
             usado TINYINT(1) NOT NULL DEFAULT 0,
-            criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (id_verificacao),
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
             KEY idx_verificacoes_email_email_usado (email, usado)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
     );
