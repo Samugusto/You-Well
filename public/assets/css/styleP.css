@@ -15,6 +15,7 @@ a {
     --cor-textosInfo: #111111a2;
     --cor-textos: #000;
     --cor-hover-destaque: #0beeaa;
+    --cor-hover-destaque-gradient: #0beeaa3d;
     --cor-hover: #1e9672;
     --cor-hoverB: #1e96727c;
     --cor-fundo: #1e96721d;
@@ -326,7 +327,7 @@ body.menu-recolhido .menu-lateral ul li a.underline-desliza i {
     padding-top: 2%;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    width: 100%;
+    width: 96%;
     max-width: 1200px;
     margin: 0 auto;
 }
@@ -356,20 +357,23 @@ body.menu-recolhido .menu-lateral ul li a.underline-desliza i {
 .janelinhaW {
     width: 92%;
     min-width: 0;
-    border: 1px solid var(--cor-hover);
+    border: 1px solid var(--cor-borda);
     border-radius: 20px;
     margin-top: 3%;
-    padding: 3%;
+    padding: 2%;
     background-color: #ffffff;
-    padding-top: 10%;
-    padding-bottom: 10%;
+    padding-top: 6%;
+    padding-bottom: 6%;
     cursor: pointer;
     transition: 0.2s ease-in-out;
 }
 
 .janelinhaW:hover {
-    border: 1px solid var(--cor-hover-destaque);
+    border: 1px solid var(--cor-hover-destaque-gradient);
+    background-image: linear-gradient(50deg, var(--cor-hover-destaque-gradient) 0.5%, var(--cor-fundo) 40%, rgba(0, 0, 0, 0) 100%),
+        radial-gradient(circle, #1459443d 1.8px, transparent 1.8px);
 }
+
 .card-link {
     display: block;
     text-decoration: none;
@@ -613,7 +617,6 @@ body.menu-recolhido .menu-lateral ul li a.underline-desliza i {
 }
 
 .janelinha2 {
-    min-width: 0;
     text-align: center;
     display: flex;
     justify-content: center;
@@ -1277,7 +1280,7 @@ body[data-theme="dark"] .windowMod,
 body[data-theme="dark"] .card,
 body[data-theme="dark"] .perfil-form input[type="text"],
 body[data-theme="dark"] .setor-form input[type="text"],
-body[data-theme="dark"] .tema-opcao > span,
+body[data-theme="dark"] .tema-opcao>span,
 body[data-theme="dark"] .graficoArea,
 body[data-theme="dark"] .graficoPizza {
     background-color: var(--cor-superficie);
@@ -1318,7 +1321,7 @@ body[data-theme="dark"] .aparencia-descricao {
 }
 
 body[data-theme="dark"] .quadradoInfo,
-body[data-theme="dark"] .config-info > div {
+body[data-theme="dark"] .config-info>div {
     background-color: var(--cor-superficie-secundaria);
     border-color: var(--cor-borda);
 }
@@ -1376,7 +1379,7 @@ body[data-theme="dark"] .optionsC3.active {
     display: grid;
 }
 
-.img-theme{
+.img-theme {
     width: 120px;
     margin-bottom: 10%;
 }
@@ -1388,7 +1391,7 @@ body[data-theme="dark"] .optionsC3.active {
     opacity: 0;
 }
 
-.tema-opcao > span {
+.tema-opcao>span {
     display: inline-flex;
     align-items: center;
     gap: 9px;
@@ -1401,12 +1404,12 @@ body[data-theme="dark"] .optionsC3.active {
     transition: border-color 0.2s ease, background 0.2s ease;
 }
 
-.tema-opcao input:checked + span {
+.tema-opcao input:checked+span {
     border-color: var(--cor-hover);
     background: var(--cor-fundo);
 }
 
-.tema-opcao input:focus-visible + span {
+.tema-opcao input:focus-visible+span {
     outline: 2px solid var(--cor-hover);
     outline-offset: 2px;
 }
@@ -1421,11 +1424,11 @@ body[data-theme="dark"] .perfil-mensagem.erro {
     color: #ffb4b4;
 }
 
-body[data-theme="dark"] .tema-opcao > span {
+body[data-theme="dark"] .tema-opcao>span {
     background: var(--cor-superficie-secundaria);
 }
 
-body[data-theme="dark"] .tema-opcao input:checked + span {
+body[data-theme="dark"] .tema-opcao input:checked+span {
     border-color: var(--cor-hover);
     background: #173b30;
     color: #d7f5e9;
