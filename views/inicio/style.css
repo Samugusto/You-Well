@@ -1363,13 +1363,7 @@ footer {
 
 
 
-/* fonte */
-@font-face {
-    font-family: 'Seona';
-    src: url('fonts/Seona-DEMO.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-}
+
 
 body.loading-locked {
     overflow: hidden !important;

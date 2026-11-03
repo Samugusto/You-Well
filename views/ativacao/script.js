@@ -52,7 +52,7 @@ async function solicitarCodigo() {
     btn.innerText = 'Enviando e-mail...';
 
     try {
-        const response = await fetch('gerar_otp.php', {
+        const response = await fetch('/You-Well/codigo/gerar/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: userEmail })
@@ -87,7 +87,7 @@ async function validarCodigo() {
     btn.innerText = 'Validando...';
 
     try {
-        const response = await fetch('validar_otp.php', {
+        const response = await fetch('/You-Well/codigo/validar/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: userEmail, codigo: codigo })
@@ -95,7 +95,7 @@ async function validarCodigo() {
         const data = await response.json();
 
         if (response.ok && data.success) {
-            window.location.href = '../../controllers/cadastrar.php';
+            window.location.href = '/You-Well/cadastro/';
         } else {
             showAlert(data.error || 'Código incorreto.');
         }

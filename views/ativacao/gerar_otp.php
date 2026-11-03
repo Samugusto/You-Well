@@ -27,7 +27,7 @@ if (!is_array($configEmail)) {
 $apiKey = getenv('RESEND_API_KEY') ?: ($configEmail['api_key'] ?? '');
 $remetente = getenv('RESEND_FROM') ?: ($configEmail['from'] ?? '');
 if (!$apiKey || !$remetente) {
-    responder(500, ['error' => 'Configure a chave e o remetente em config/resend.local.php.']);
+    responder(500, ['error' => 'Configure a chave e o remetente do serviço de e-mail.']);
 }
 
 require_once __DIR__ . '/../../config/conexao.php';
@@ -70,11 +70,41 @@ try {
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
 
+    $codigoHtml = htmlspecialchars($codigo, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $htmlEmail = <<<HTML
+<!doctype html>
+<html lang="pt-BR">
+<body style="margin:0;padding:24px;background-color:#f4f7f6;font-family:Arial,sans-serif;color:#24342f">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background-color:#ffffff;border-radius:12px">
+          <tr>
+            <td align="center" style="padding:32px 24px 16px">
+              <img src="https://youwell.netlify.app/img/Sem%20t%C3%ADtulo.png" alt="YouWell" width="88" height="88" style="display:block;width:88px;height:88px;margin:0 auto">
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:8px 32px 32px">
+              <h1 style="margin:0 0 16px;font-size:24px;color:#176b58">Confirme seu e-mail</h1>
+              <p style="margin:0 0 20px;font-size:16px;line-height:1.5">Use este código para continuar seu cadastro no YouWell:</p>
+              <p style="margin:0 0 20px;padding:16px;background-color:#f1f7f5;border-radius:8px;font-size:32px;font-weight:bold;letter-spacing:8px;color:#176b58">{$codigoHtml}</p>
+              <p style="margin:0;font-size:14px;line-height:1.5;color:#65736e">O código expira em 15 minutos. Se você não solicitou esta verificação, ignore este e-mail.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+HTML;
+
     $payload = [
         'from' => $remetente,
         'to' => [$email],
-        'subject' => "Seu código de acesso: $codigo",
-        'html' => "<h3>Seu código de acesso</h3><p>Use o código a seguir para acessar a sua conta:</p><h2>$codigo</h2>"
+        'subject' => 'Confirme seu e-mail no YouWell',
+        'html' => $htmlEmail
     ];
 
     $ch = curl_init('https://api.resend.com/emails');

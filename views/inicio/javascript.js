@@ -14,46 +14,53 @@ document.addEventListener('DOMContentLoaded', function () {
     window.loadingObservers = window.loadingObservers || [];
 
     // ✅ ESPERA TUDO CARREGAR DE VERDADE
-    waitForAllResources().then(hideLoader);
+    waitForAllResources()
+        .then(hideLoader)
+        .catch((error) => {
+            console.error('Não foi possível aguardar todos os recursos da página:', error);
+            hideLoader();
+        });
 });
 
 function waitForAllResources() {
-    return Promise.all([
-        // 1. Espera imagens carregarem
+    let timeoutId;
+    const recursosCarregados = Promise.all([
         waitForImages(),
-
-        // 2. Espera fontes carregarem
         waitForFonts(),
-
-        // 3. Espera window.load (todos recursos)
-        waitForWindowLoad(),
-
-        // 4. Espera CSS customizado carregar (se usar)
-        waitForCustomCSS()
+        waitForWindowLoad()
     ]);
+
+    const limiteDeEspera = new Promise((resolve) => {
+        timeoutId = window.setTimeout(() => {
+            console.warn('O carregamento excedeu o tempo limite; exibindo a página mesmo assim.');
+            resolve();
+        }, 10000);
+    });
+
+    return Promise.race([recursosCarregados, limiteDeEspera])
+        .finally(() => window.clearTimeout(timeoutId));
 }
 
 function waitForImages() {
-    return new Promise((resolve) => {
-        const images = document.querySelectorAll('img');
-        if (images.length === 0) return resolve();
+    const images = Array.from(document.querySelectorAll('img'));
 
-        let loadedCount = 0;
+    return Promise.all(images.map((img) => new Promise((resolve) => {
+        if (img.complete) {
+            resolve();
+            return;
+        }
 
-        images.forEach((img, index) => {
-            if (img.complete && img.naturalHeight !== 0) {
-                loadedCount++;
-            } else {
-                img.onload = img.onerror = () => {
-                    loadedCount++;
-                    if (loadedCount === images.length) resolve();
-                };
-            }
-        });
+        const settle = () => {
+            img.removeEventListener('load', settle);
+            img.removeEventListener('error', settle);
+            resolve();
+        };
 
-        // Se todas já carregaram
-        if (loadedCount === images.length) resolve();
-    });
+        img.addEventListener('load', settle, { once: true });
+        img.addEventListener('error', settle, { once: true });
+
+        if (img.complete) settle();
+    })));
 }
 
 function waitForFonts() {
@@ -69,33 +76,6 @@ function waitForWindowLoad() {
         } else {
             window.addEventListener('load', resolve, { once: true });
         }
-    });
-}
-
-function waitForCustomCSS() {
-    // Para CSS carregado via JS ou link externo
-    return new Promise((resolve) => {
-        const links = document.querySelectorAll('link[rel="stylesheet"]');
-        let loadedCount = 0;
-
-        if (links.length === 0) return resolve();
-
-        links.forEach(link => {
-            if (link.sheet) {
-                loadedCount++;
-            } else {
-                link.onload = () => {
-                    loadedCount++;
-                    if (loadedCount === links.length) resolve();
-                };
-                link.onerror = () => {
-                    loadedCount++;
-                    if (loadedCount === links.length) resolve();
-                };
-            }
-        });
-
-        if (loadedCount === links.length) resolve();
     });
 }
 
