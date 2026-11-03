@@ -5,7 +5,7 @@
 </div>
 
   <h1>Sobre a Youwell</h1>
-<h3>Youwell é uma plataforma digital (WEB) para o monitoramento de setores empresariais em industriais para a garantia da segurança dos colaboradores usando como base sensores de temperatura, ruído e qualidade do ar, tendo informações essenciais para a empresa administrar cada setor.</h3>
+Youwell é uma plataforma digital (WEB) para o monitoramento de setores empresariais em industriais para a garantia da segurança dos colaboradores usando como base sensores de temperatura, ruído e qualidade do ar, tendo informações essenciais para a empresa administrar cada setor.
 
 <h1>Equipe:</h1>
 
@@ -35,5 +35,3 @@
   <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/PHP-logo.svg/1280px-PHP-logo.svg.png" width=3%>
     <h4> 2026 YouWell © - Saúde e bem estar corporativo</h4>
 </div>
-
-Não há um dump SQL do banco nesta pasta; o sistema depende do esquema e dos dados existentes do projeto. Os nomes locais dos arquivos de imagem e da página de ativação são minúsculos e sem acentos/espaços para evitar diferenças de maiúsculas e codificação no Linux. Não envie arquivos de credenciais antigos; use somente credenciais próprias do cPanel e uma nova chave de e-mail.
