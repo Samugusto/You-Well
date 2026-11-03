@@ -12,7 +12,7 @@ if (
         $_SESSION["otp_cadastro_email"],
         $_SESSION["otp_cadastro_verificado_em"]
     );
-    header("Location: /You-Well/codigo/");
+    header("Location: ../views/ativacao/index.html");
     exit;
 }
 
@@ -89,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $_SESSION["otp_cadastro_verificado_em"]
                 );
                 $sucesso = "Cadastro realizado com sucesso! Redirecionando para o login...";
-                echo '<meta http-equiv="refresh" content="2;url=/You-Well/entrar/">';
+                echo '<meta http-equiv="refresh" content="2;url=../controllers/entrar.php">';
             } else {
                 $erro = "Erro ao cadastrar: " . mysqli_error($con);
             }
@@ -110,9 +110,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
-    <link href="/You-Well/public/assets/css/styleLogin.css" rel="stylesheet">
-    <link rel="stylesheet" href="/You-Well/public/assets/css/loader.css">
-    <link href="/You-Well/public/assets/img/sem-titulo.png" rel="icon">
+    <link href="../public/assets/css/styleLogin.css" rel="stylesheet">
+    <link rel="stylesheet" href="../public/assets/css/loader.css">
+    <link href="../public/assets/img/sem-titulo.png" rel="icon">
 </head>
 
 <body>
@@ -120,7 +120,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="loader-content">
             <div class="loader-emblem">
                 <span class="loader-ring" aria-hidden="true"></span>
-                <img src="/You-Well/public/assets/img/sem-titulo2.png" alt="" class="spinner-img">
+                <img src="../public/assets/img/sem-titulo2.png" alt="" class="spinner-img">
             </div>
             <p class="loader-label">Preparando sua experiência<span class="loader-dots" aria-hidden="true"></span></p>
         </div>
@@ -192,12 +192,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <button type="submit" class="botao" id="cadastrar">Entrar</button>
         </form>
-        <a href="/You-Well/entrar/">
+        <a href="../controllers/entrar.php">
             <h1 class="outro">Já tem um cadastro? Clique aqui!</h1>
         </a>
     </div>
-    <script src="/You-Well/public/assets/js/script.js"></script>
-    <script src="/You-Well/public/assets/js/loader.js"></script>
+    <script src="../public/assets/js/script.js"></script>
+    <script src="../public/assets/js/loader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
 
     <!-- Área do pop-up -->

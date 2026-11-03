@@ -20,7 +20,20 @@ document.addEventListener('pointerleave', () => {
 });
 
 
+const viewsIndex = window.location.pathname.indexOf('/views/');
+const codigoRoute = window.location.pathname.match(/^(.*\/)codigo\/?$/);
+const appRoot = viewsIndex >= 0
+    ? window.location.pathname.slice(0, viewsIndex + 1)
+    : codigoRoute
+        ? codigoRoute[1]
+        : '/You-Well/';
+window.youWellBasePath = appRoot.endsWith('/') ? appRoot : `${appRoot}/`;
+
 let userEmail = '';
+
+function appUrl(path) {
+    return new URL(path, `${window.location.origin}${window.youWellBasePath}`).href;
+}
 
 function showAlert(msg, isError = true) {
     const box = document.getElementById('alertBox');
@@ -52,7 +65,7 @@ async function solicitarCodigo() {
     btn.innerText = 'Enviando e-mail...';
 
     try {
-        const response = await fetch('/You-Well/codigo/gerar/', {
+        const response = await fetch(appUrl('views/ativacao/gerar_otp.php'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: userEmail })
@@ -87,7 +100,7 @@ async function validarCodigo() {
     btn.innerText = 'Validando...';
 
     try {
-        const response = await fetch('/You-Well/codigo/validar/', {
+        const response = await fetch(appUrl('views/ativacao/validar_otp.php'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: userEmail, codigo: codigo })
@@ -95,7 +108,7 @@ async function validarCodigo() {
         const data = await response.json();
 
         if (response.ok && data.success) {
-            window.location.href = '/You-Well/cadastro/';
+            window.location.href = appUrl('controllers/cadastrar.php');
         } else {
             showAlert(data.error || 'Código incorreto.');
         }

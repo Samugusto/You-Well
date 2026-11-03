@@ -8,10 +8,11 @@ function conectar(): mysqli
         throw new RuntimeException('A configuração local do banco de dados é inválida.');
     }
 
-    $host = $config['host'] ?? 'localhost';
-    $user = $config['user'] ?? '';
-    $password = $config['password'] ?? '';
-    $database = $config['database'] ?? '';
+    $host = $config['host'] ?? '162.241.3.35';
+    $user = $config['user'] ?? 'devsbeecom';
+    
+    $password = $config['password'] ?? '$Projeto26';
+    $database = $config['database'] ?? 'devsbeec_monitoramento_ambiente';
     $port = (int) ($config['port'] ?? 3306);
 
     if ($user === '' || $database === '') {
