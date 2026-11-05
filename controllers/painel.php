@@ -186,9 +186,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'criar_s
         $mensagemSetor = 'Não foi possível salvar o setor agora. Tente novamente.';
         $tipoMensagemSetor = 'erro';
     } else {
-        $resultadoCriacao = criarSetor($con, $idUsuario, $nomeSetorFormulario, $idGerenteFormulario);
+        $resultadoCriacao = criarSetor($con, $idGerenteFormulario, $nomeSetorFormulario);
         if (($resultadoCriacao['status'] ?? '') === 'duplicado') {
             $mensagemSetor = 'Já existe um setor com esse nome.';
+            $tipoMensagemSetor = 'erro';
+        } elseif (($resultadoCriacao['status'] ?? '') === 'gerente_invalido') {
+            $mensagemSetor = 'Selecione um gerente válido.';
             $tipoMensagemSetor = 'erro';
         } elseif (($resultadoCriacao['status'] ?? '') === 'criado') {
             $mensagemSetor = 'Setor criado com sucesso.';
