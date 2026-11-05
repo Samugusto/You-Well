@@ -19,6 +19,7 @@ $tipoMensagemPerfil = '';
 $mensagemSetor = '';
 $tipoMensagemSetor = '';
 $nomeSetorFormulario = '';
+$tokenDispositivo = null;
 $abaAtiva = 'panel-informacoes';
 $nomePerfilFormulario = (string) $_SESSION['nome'];
 if (empty($_SESSION['token_configuracoes'])) {
@@ -137,12 +138,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'criar_s
         $tipoMensagemSetor = 'erro';
     } else {
         $resultadoCriacao = criarSetor($con, $idUsuario, $nomeSetorFormulario);
-        if ($resultadoCriacao === 'duplicado') {
+        if (($resultadoCriacao['status'] ?? '') === 'duplicado') {
             $mensagemSetor = 'Já existe um setor com esse nome.';
             $tipoMensagemSetor = 'erro';
-        } elseif ($resultadoCriacao === 'criado') {
+        } elseif (($resultadoCriacao['status'] ?? '') === 'criado') {
             $mensagemSetor = 'Setor criado com sucesso.';
             $tipoMensagemSetor = 'sucesso';
+            $tokenDispositivo = $resultadoCriacao['token'] ?? null;
             $nomeSetorFormulario = '';
         } else {
             $mensagemSetor = 'Não foi possível salvar o setor agora. Tente novamente.';
@@ -723,6 +725,12 @@ if (!in_array($pagina, $paginas, true)) {
                                 <p class="perfil-mensagem <?= $tipoMensagemSetor === 'sucesso' ? 'sucesso' : 'erro' ?>" role="status">
                                     <?= htmlspecialchars($mensagemSetor, ENT_QUOTES, 'UTF-8') ?>
                                 </p>
+                            <?php endif; ?>
+                            <?php if ($tokenDispositivo !== null): ?>
+                                <div class="alerta-sucesso" role="status">
+                                    Token do ESP32 (copie agora; ele não será exibido novamente):
+                                    <code><?= htmlspecialchars($tokenDispositivo, ENT_QUOTES, 'UTF-8') ?></code>
+                                </div>
                             <?php endif; ?>
 
                             <div class="gerenciador-setores">

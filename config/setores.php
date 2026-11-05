@@ -79,39 +79,58 @@ function garantirTabelaSetores(mysqli $con): void
     }
 }
 
-function criarSetor(mysqli $con, int $idUsuario, string $nome): string
+function garantirTabelaDispositivos(mysqli $con): void
+{
+    $sql = "CREATE TABLE IF NOT EXISTS dispositivos_esp32 (
+        id_dispositivo BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        id_setor INT NOT NULL,
+        nome VARCHAR(100) NOT NULL,
+        token_hash CHAR(64) NOT NULL,
+        ativo TINYINT(1) NOT NULL DEFAULT 1,
+        criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id_dispositivo),
+        UNIQUE KEY uq_dispositivos_token_hash (token_hash),
+        KEY idx_dispositivos_setor (id_setor)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+    if (!mysqli_query($con, $sql)) {
+        throw new RuntimeException('Não foi possível preparar o cadastro de dispositivos.');
+    }
+}
+
+function criarSetor(mysqli $con, int $idUsuario, string $nome): array
 {
     try {
+        garantirTabelaDispositivos($con);
         // 1. Verifica preventivamente se já existe um setor com o mesmo nome para este usuário
         $sqlDuplicado = "SELECT id_setor FROM setores WHERE id_usuario = ? AND nome = ? LIMIT 1";
         $stmtDuplicado = mysqli_prepare($con, $sqlDuplicado);
         if (!$stmtDuplicado) {
-            return 'erro';
+            return ['status' => 'erro', 'token' => null];
         }
 
         mysqli_stmt_bind_param($stmtDuplicado, 'is', $idUsuario, $nome);
         if (!mysqli_stmt_execute($stmtDuplicado)) {
             mysqli_stmt_close($stmtDuplicado);
-            return 'erro';
+            return ['status' => 'erro', 'token' => null];
         }
         mysqli_stmt_store_result($stmtDuplicado);
         $duplicado = mysqli_stmt_num_rows($stmtDuplicado) > 0;
         mysqli_stmt_close($stmtDuplicado);
 
         if ($duplicado) {
-            return 'duplicado';
+            return ['status' => 'duplicado', 'token' => null];
         }
 
         // 2. Busca o nome do usuário para preencher o campo legado 'gerente'
         $sqlGerente = 'SELECT nome FROM usuarios WHERE id_usuario = ? LIMIT 1';
         $stmtGerente = mysqli_prepare($con, $sqlGerente);
         if (!$stmtGerente) {
-            return 'erro';
+            return ['status' => 'erro', 'token' => null];
         }
         mysqli_stmt_bind_param($stmtGerente, 'i', $idUsuario);
         if (!mysqli_stmt_execute($stmtGerente)) {
             mysqli_stmt_close($stmtGerente);
-            return 'erro';
+            return ['status' => 'erro', 'token' => null];
         }
         $resultadoGerente = mysqli_stmt_get_result($stmtGerente);
         $gerente = mysqli_fetch_assoc($resultadoGerente);
@@ -134,7 +153,7 @@ function criarSetor(mysqli $con, int $idUsuario, string $nome): string
             $codigoErro = mysqli_stmt_errno($stmtInserir);
             mysqli_stmt_close($stmtInserir);
             // Código de erro 1062 = violação de chave única (registro duplicado)
-            return $codigoErro === 1062 ? 'duplicado' : 'erro';
+            return ['status' => $codigoErro === 1062 ? 'duplicado' : 'erro', 'token' => null];
         }
 
         // Recupera o ID auto-incremental gerado para o novo setor
@@ -142,7 +161,7 @@ function criarSetor(mysqli $con, int $idUsuario, string $nome): string
         mysqli_stmt_close($stmtInserir);
 
         if ($idSetor <= 0) {
-            return 'erro';
+            return ['status' => 'erro', 'token' => null];
         }
 
         // 4. Cria a tabela individual de leituras de sensores para este setor: 'setor_{id_setor}'
@@ -172,12 +191,29 @@ function criarSetor(mysqli $con, int $idUsuario, string $nome): string
                 mysqli_stmt_execute($stmtRemover);
                 mysqli_stmt_close($stmtRemover);
             }
-            return 'erro';
+            return ['status' => 'erro', 'token' => null];
         }
 
-        return 'criado';
+        $token = bin2hex(random_bytes(32));
+        $tokenHash = hash('sha256', $token);
+        $nomeDispositivo = 'ESP32 - ' . $nome;
+        $stmtDispositivo = mysqli_prepare($con, 'INSERT INTO dispositivos_esp32 (id_setor, nome, token_hash) VALUES (?, ?, ?)');
+        if (!$stmtDispositivo) {
+            mysqli_query($con, "DROP TABLE IF EXISTS `{$tabelaLeituras}`");
+            mysqli_query($con, "DELETE FROM setores WHERE id_setor = {$idSetor} AND id_usuario = {$idUsuario}");
+            return ['status' => 'erro', 'token' => null];
+        }
+        mysqli_stmt_bind_param($stmtDispositivo, 'iss', $idSetor, $nomeDispositivo, $tokenHash);
+        $dispositivoCriado = mysqli_stmt_execute($stmtDispositivo);
+        mysqli_stmt_close($stmtDispositivo);
+        if (!$dispositivoCriado) {
+            mysqli_query($con, "DROP TABLE IF EXISTS `{$tabelaLeituras}`");
+            mysqli_query($con, "DELETE FROM setores WHERE id_setor = {$idSetor} AND id_usuario = {$idUsuario}");
+            return ['status' => 'erro', 'token' => null];
+        }
+        return ['status' => 'criado', 'token' => $token];
     } catch (mysqli_sql_exception $erro) {
-        return 'erro';
+        return ['status' => 'erro', 'token' => null];
     }
 }
 
