@@ -793,7 +793,9 @@ body.menu-recolhido .menu-lateral ul li a.underline-desliza i {
     font-weight: 400;
 }
 
-.perfil-form input[type="text"] {
+.perfil-form input:not([type="hidden"]):not([type="file"]),
+.setor-form input:not([type="hidden"]):not([type="file"]),
+.setor-form select {
     width: 100%;
     min-width: 0;
     padding: 11px 12px;
@@ -803,8 +805,9 @@ body.menu-recolhido .menu-lateral ul li a.underline-desliza i {
     font: inherit;
 }
 
-.perfil-form input[type="text"]:focus,
-.setor-form input[type="text"]:focus,
+.perfil-form input:not([type="hidden"]):not([type="file"]):focus,
+.setor-form input:not([type="hidden"]):not([type="file"]):focus,
+.setor-form select:focus,
 .perfil-file-input:focus-visible+.perfil-file-picker .perfil-file-botao {
     outline: 2px solid var(--cor-hover);
     outline-offset: 2px;
@@ -819,16 +822,6 @@ body.menu-recolhido .menu-lateral ul li a.underline-desliza i {
 
 .setor-form label {
     font-weight: 600;
-}
-
-.setor-form input[type="text"] {
-    width: 100%;
-    min-width: 0;
-    padding: 11px 12px;
-    border: 1px solid var(--cor-borda);
-    border-radius: 8px;
-    background: #ffffff;
-    font: inherit;
 }
 
 .perfil-file-input {
@@ -1278,8 +1271,9 @@ body[data-theme="dark"] .janelinhaR,
 body[data-theme="dark"] .configdiv,
 body[data-theme="dark"] .windowMod,
 body[data-theme="dark"] .card,
-body[data-theme="dark"] .perfil-form input[type="text"],
-body[data-theme="dark"] .setor-form input[type="text"],
+body[data-theme="dark"] .perfil-form input:not([type="hidden"]):not([type="file"]),
+body[data-theme="dark"] .setor-form input:not([type="hidden"]):not([type="file"]),
+body[data-theme="dark"] .setor-form select,
 body[data-theme="dark"] .tema-opcao>span,
 body[data-theme="dark"] .graficoArea,
 body[data-theme="dark"] .graficoPizza {
