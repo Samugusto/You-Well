@@ -22,6 +22,7 @@ $nomeSetorFormulario = '';
 $idGerenteFormulario = 0;
 $mensagemGerente = '';
 $tipoMensagemGerente = '';
+$setorGerenteFormulario = '';
 $tokenDispositivo = null;
 $abaAtiva = 'panel-informacoes';
 $nomePerfilFormulario = (string) $_SESSION['nome'];
@@ -126,13 +127,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'atualiz
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'criar_gerente' && $podeCriarSetores) {
     $nomeGerente = trim((string) ($_POST['nome_gerente'] ?? ''));
     $senhaGerente = (string) ($_POST['senha_gerente'] ?? '');
-    if ($nomeGerente === '' || $senhaGerente === '') { $mensagemGerente = 'Informe nome e senha do gerente.'; $tipoMensagemGerente = 'erro'; }
+    $setorGerenteFormulario = trim((string) ($_POST['setor_gerente'] ?? ''));
+    if ($nomeGerente === '' || $senhaGerente === '' || $setorGerenteFormulario === '') { $mensagemGerente = 'Informe nome, senha e setor do gerente.'; $tipoMensagemGerente = 'erro'; }
     elseif (strlen($senhaGerente) < 8 || !preg_match('/[A-Z]/', $senhaGerente) || !preg_match('/[^A-Za-z0-9]/', $senhaGerente)) { $mensagemGerente = 'A senha deve ter 8 caracteres, uma maiúscula e um caractere especial.'; $tipoMensagemGerente = 'erro'; }
     else {
-        $stmt = mysqli_prepare($con, 'INSERT INTO usuarios (nome, senha, papel, setor, foto_perfil) SELECT ?, ?, "gerente", NULL, NULL FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE nome = ?)');
-        $hash = password_hash($senhaGerente, PASSWORD_DEFAULT); mysqli_stmt_bind_param($stmt, 'sss', $nomeGerente, $hash, $nomeGerente);
-        if (mysqli_stmt_execute($stmt) && mysqli_stmt_affected_rows($stmt) > 0) { $mensagemGerente = 'Gerente criado com sucesso.'; $tipoMensagemGerente = 'sucesso'; } else { $mensagemGerente = 'Este nome já está cadastrado ou não foi possível criar a conta.'; $tipoMensagemGerente = 'erro'; }
-        mysqli_stmt_close($stmt);
+        $setorExiste = false;
+        $stmtSetor = mysqli_prepare($con, 'SELECT id_setor FROM setores WHERE id_setor = ? LIMIT 1');
+        $idSetorGerente = (int) $setorGerenteFormulario;
+        if ($stmtSetor && $idSetorGerente > 0) { mysqli_stmt_bind_param($stmtSetor, 'i', $idSetorGerente); mysqli_stmt_execute($stmtSetor); mysqli_stmt_store_result($stmtSetor); $setorExiste = mysqli_stmt_num_rows($stmtSetor) > 0; mysqli_stmt_close($stmtSetor); }
+        if (!$setorExiste) { $mensagemGerente = 'Selecione um setor existente válido.'; $tipoMensagemGerente = 'erro'; }
+        $stmt = $setorExiste ? mysqli_prepare($con, 'INSERT INTO usuarios (nome, senha, papel, setor, foto_perfil) SELECT ?, ?, "gerente", ?, NULL FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE nome = ?)') : false;
+        $hash = password_hash($senhaGerente, PASSWORD_DEFAULT); if ($stmt) mysqli_stmt_bind_param($stmt, 'ssss', $nomeGerente, $hash, $setorGerenteFormulario, $nomeGerente);
+        if ($stmt && mysqli_stmt_execute($stmt) && mysqli_stmt_affected_rows($stmt) > 0) { $mensagemGerente = 'Gerente criado com sucesso.'; $tipoMensagemGerente = 'sucesso'; } elseif ($setorExiste) { $mensagemGerente = 'Este nome já está cadastrado ou não foi possível criar a conta.'; $tipoMensagemGerente = 'erro'; }
+        if ($stmt) mysqli_stmt_close($stmt);
     }
     $abaAtiva = 'panel-setores';
 }
@@ -204,7 +211,10 @@ mysqli_stmt_close($stmt_usuario);
 
 try {
     $gerentes = [];
+    $setoresDisponiveis = [];
     if ($podeCriarSetores) {
+        $resultadoSetores = mysqli_query($con, "SELECT id_setor, nome FROM setores ORDER BY nome");
+        while ($resultadoSetores && ($setorDisponivel = mysqli_fetch_assoc($resultadoSetores))) $setoresDisponiveis[] = $setorDisponivel;
         $resultadoGerentes = mysqli_query($con, "SELECT id_usuario, nome FROM usuarios WHERE papel = 'gerente' ORDER BY nome");
         while ($resultadoGerentes && ($gerente = mysqli_fetch_assoc($resultadoGerentes))) $gerentes[] = $gerente;
     }
@@ -798,7 +808,7 @@ if (!in_array($pagina, $paginas, true)) {
                                     <div class="bloco-novo-setor">
                                         <h3 class="subtitulo-painel-setores"><i class="bi bi-person-plus-fill"></i> Cadastrar gerente</h3>
                                         <?php if ($mensagemGerente !== ''): ?><p class="perfil-mensagem <?= $tipoMensagemGerente === 'sucesso' ? 'sucesso' : 'erro' ?>"><?= htmlspecialchars($mensagemGerente, ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
-                                        <form class="setor-form" method="post"><input type="hidden" name="acao" value="criar_gerente"><label for="nome-gerente">Nome do gerente</label><input id="nome-gerente" name="nome_gerente" type="text" maxlength="255" required><label for="senha-gerente">Senha</label><input id="senha-gerente" name="senha_gerente" type="password" minlength="8" required><button type="submit" class="perfil-salvar">Criar conta do gerente</button></form>
+                                        <form class="setor-form" method="post"><input type="hidden" name="acao" value="criar_gerente"><label for="nome-gerente">Nome do gerente</label><input id="nome-gerente" name="nome_gerente" type="text" maxlength="255" required><label for="senha-gerente">Senha</label><input id="senha-gerente" name="senha_gerente" type="password" minlength="8" required><label for="setor-gerente">Setor do gerente</label><select id="setor-gerente" name="setor_gerente" required><option value="">Selecione um setor</option><?php foreach ($setoresDisponiveis as $setorDisponivel): ?><option value="<?= (int) $setorDisponivel['id_setor'] ?>" <?= $setorGerenteFormulario === (string) $setorDisponivel['id_setor'] ? 'selected' : '' ?>><?= htmlspecialchars($setorDisponivel['nome'], ENT_QUOTES, 'UTF-8') ?></option><?php endforeach; ?></select><button type="submit" class="perfil-salvar">Criar conta do gerente</button></form>
                                         <div class="divisor-config-setores"></div>
                                         <h3 class="subtitulo-painel-setores">
                                             <i class="bi bi-plus-square-fill" aria-hidden="true"></i> Cadastrar Novo Setor
@@ -810,6 +820,7 @@ if (!in_array($pagina, $paginas, true)) {
                                                 placeholder="Ex.: Produção, Laboratório, Estoque..." autocomplete="off" value="<?= htmlspecialchars($nomeSetorFormulario, ENT_QUOTES, 'UTF-8') ?>" required>
                                             <label for="gerente-setor">ID do gerente responsável</label>
                                             <input id="gerente-setor" name="id_gerente" type="number" min="1" step="1" placeholder="Ex.: 4" value="<?= $idGerenteFormulario > 0 ? (int) $idGerenteFormulario : '' ?>" required>
+                                            <small id="nome-gerente-setor" aria-live="polite"></small>
                                             <button type="submit" class="perfil-salvar">
                                                 <i class="bi bi-plus-circle-fill" aria-hidden="true"></i>
                                                 Criar setor
@@ -917,6 +928,19 @@ if (!in_array($pagina, $paginas, true)) {
     <script src="/You-Well/public/assets/js/loader.js"></script>
     <script src="/You-Well/public/assets/js/scriptLC.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+    <script>
+        const gerentesPorId = <?= json_encode(array_column($gerentes ?? [], 'nome', 'id_usuario'), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+        const campoIdGerente = document.getElementById('gerente-setor');
+        const nomeGerenteSetor = document.getElementById('nome-gerente-setor');
+        if (campoIdGerente && nomeGerenteSetor) {
+            const atualizarNomeGerente = () => {
+                const nome = gerentesPorId[campoIdGerente.value];
+                nomeGerenteSetor.textContent = nome ? 'Gerente encontrado: ' + nome : (campoIdGerente.value ? 'Nenhum gerente encontrado com este ID.' : '');
+            };
+            campoIdGerente.addEventListener('input', atualizarNomeGerente);
+            atualizarNomeGerente();
+        }
+    </script>
 </body>
 
 </html>

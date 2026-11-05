@@ -97,49 +97,101 @@ function garantirTabelaDispositivos(mysqli $con): void
     }
 }
 
-function criarSetor(mysqli $con, int $idUsuario, string $nome, int $idGerente): array
+function criarSetor(mysqli $con, int $idGerente, string $nome): array
 {
     try {
-        garantirTabelaDispositivos($con);
-        // 1. Verifica preventivamente se já existe um setor com o mesmo nome para este usuário
-        $sqlDuplicado = "SELECT id_setor FROM setores WHERE id_usuario = ? AND nome = ? LIMIT 1";
-        $stmtDuplicado = mysqli_prepare($con, $sqlDuplicado);
-        if (!$stmtDuplicado) {
-            return ['status' => 'erro', 'token' => null];
+        $nome = trim($nome);
+
+
+        if ($idGerente <= 0 || $nome === '') {
+            return ['status' => 'erro'];
         }
 
-        mysqli_stmt_bind_param($stmtDuplicado, 'is', $idGerente, $nome);
-        if (!mysqli_stmt_execute($stmtDuplicado)) {
-            mysqli_stmt_close($stmtDuplicado);
-            return ['status' => 'erro', 'token' => null];
+
+        // Verifica se o usuário selecionado realmente é gerente.
+        $sqlGerente = "SELECT id_usuario
+                       FROM usuarios
+                       WHERE id_usuario = ? AND papel = 'gerente'
+                       LIMIT 1";
+
+
+        $stmtGerente = mysqli_prepare($con, $sqlGerente);
+        mysqli_stmt_bind_param($stmtGerente, 'i', $idGerente);
+        mysqli_stmt_execute($stmtGerente);
+
+
+        $resultado = mysqli_stmt_get_result($stmtGerente);
+        $gerente = mysqli_fetch_assoc($resultado);
+
+
+        mysqli_stmt_close($stmtGerente);
+
+
+        if (!$gerente) {
+            return ['status' => 'gerente_invalido'];
         }
-        mysqli_stmt_store_result($stmtDuplicado);
-        $duplicado = mysqli_stmt_num_rows($stmtDuplicado) > 0;
+
+
+        // Verifica se o setor já existe para esse gerente.
+        $sqlDuplicado = "SELECT id_setor
+                         FROM setores
+                         WHERE id_usuario = ? AND nome = ?
+                         LIMIT 1";
+
+
+        $stmtDuplicado = mysqli_prepare($con, $sqlDuplicado);
+        mysqli_stmt_bind_param($stmtDuplicado, 'is', $idGerente, $nome);
+        mysqli_stmt_execute($stmtDuplicado);
+
+
+        $resultado = mysqli_stmt_get_result($stmtDuplicado);
+        $duplicado = mysqli_fetch_assoc($resultado);
+
+
         mysqli_stmt_close($stmtDuplicado);
 
+
         if ($duplicado) {
-            return ['status' => 'duplicado', 'token' => null];
+            return ['status' => 'duplicado'];
         }
 
-        // 2. Busca o nome do usuário para preencher o campo legado 'gerente'
-        $sqlGerente = "SELECT nome FROM usuarios WHERE id_usuario = ? AND papel = 'gerente' LIMIT 1";
-        $stmtGerente = mysqli_prepare($con, $sqlGerente);
-        if (!$stmtGerente) {
-            return ['status' => 'erro', 'token' => null];
-        }
-        mysqli_stmt_bind_param($stmtGerente, 'i', $idGerente);
-        if (!mysqli_stmt_execute($stmtGerente)) {
-            mysqli_stmt_close($stmtGerente);
-            return ['status' => 'erro', 'token' => null];
-        }
-        $resultadoGerente = mysqli_stmt_get_result($stmtGerente);
-        $gerente = mysqli_fetch_assoc($resultadoGerente);
-        mysqli_stmt_close($stmtGerente);
-        if (!$gerente) {
-            return 'erro';
+
+        // Cadastra o setor utilizando o ID do gerente.
+        $sqlInserir = "INSERT INTO setores (id_usuario, nome)
+                       VALUES (?, ?)";
+
+
+        $stmtInserir = mysqli_prepare($con, $sqlInserir);
+        mysqli_stmt_bind_param($stmtInserir, 'is', $idGerente, $nome);
+
+
+        if (!mysqli_stmt_execute($stmtInserir)) {
+            $erro = mysqli_stmt_errno($stmtInserir);
+            mysqli_stmt_close($stmtInserir);
+
+
+            return [
+                'status' => $erro === 1062 ? 'duplicado' : 'erro'
+            ];
         }
 
-        $nomeGerente = $gerente['nome'];
+
+        $idSetor = (int) mysqli_insert_id($con);
+        mysqli_stmt_close($stmtInserir);
+
+
+        return [
+            'status' => 'criado',
+            'id_setor' => $idSetor
+        ];
+
+
+    } catch (Throwable $erro) {
+        return ['status' => 'erro'];
+    }
+}
+
+/*
 
         // 3. Insere o novo setor no banco de dados
         $sqlInserir = "INSERT INTO setores (id_usuario, nome, gerente) VALUES (?, ?, ?)";
@@ -284,6 +336,7 @@ function listarSetores(mysqli $con, int $idUsuario): array
     return $setores;
 }
 
+*/
 function listarTodosSetores(mysqli $con): array
 {
     $resultado = mysqli_query($con, "SELECT s.id_setor, s.nome, s.gerente, u.nome AS responsavel FROM setores s LEFT JOIN usuarios u ON u.id_usuario = s.id_usuario ORDER BY s.nome");
