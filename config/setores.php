@@ -1,5 +1,11 @@
 <?php
 
+function garantirTabelaSetores(mysqli $con): void
+{
+    $sql = "CREATE TABLE IF NOT EXISTS setores (id_setor INT NOT NULL AUTO_INCREMENT, id_usuario INT NULL, nome VARCHAR(255) NOT NULL, gerente VARCHAR(255) NOT NULL, criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (id_setor), UNIQUE KEY uq_setores_usuario_nome (id_usuario, nome), KEY idx_setores_usuario (id_usuario)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+    if (!mysqli_query($con, $sql)) throw new RuntimeException('Não foi possível preparar o catálogo de setores.');
+}
+
 
 // ======================================================
 // CADASTRAR SETOR
@@ -19,7 +25,7 @@ function criarSetor(mysqli $con, int $idGerente, string $nome): array
 
         // Verifica se o usuário selecionado existe e é gerente.
         $sqlGerente = "
-            SELECT id_usuario
+            SELECT id_usuario, nome
             FROM usuarios
             WHERE id_usuario = ? AND papel = 'gerente'
             LIMIT 1
@@ -86,8 +92,8 @@ function criarSetor(mysqli $con, int $idGerente, string $nome): array
 
         // Insere o setor utilizando o ID do gerente.
         $sqlInserir = "
-            INSERT INTO setores (id_usuario, nome)
-            VALUES (?, ?)
+            INSERT INTO setores (id_usuario, nome, gerente)
+            VALUES (?, ?, ?)
         ";
 
 
@@ -99,7 +105,7 @@ function criarSetor(mysqli $con, int $idGerente, string $nome): array
         }
 
 
-        mysqli_stmt_bind_param($stmtInserir, 'is', $idGerente, $nome);
+        mysqli_stmt_bind_param($stmtInserir, 'iss', $idGerente, $nome, $gerente['nome']);
 
 
         if (!mysqli_stmt_execute($stmtInserir)) {

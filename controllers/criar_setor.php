@@ -4,82 +4,131 @@
 header('Content-Type: application/json; charset=UTF-8');
 
 
-require_once __DIR__ . '/../config/conexao.php';
-require_once __DIR__ . '/../config/setores.php';
-
-
 try {
+
+
+    require_once __DIR__ . '/../config/conexao.php';
+
+
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+
     $con = conectar();
 
 
     $nome = trim($_POST['nome'] ?? '');
-    $idGerente = $_POST['id_gerente'] ?? '';
+    $idUsuario = $_POST['id_gerente'] ?? '';
 
 
+    // Validar nome
     if ($nome === '') {
         echo json_encode([
             'success' => false,
             'message' => 'Informe o nome do setor.'
-        ]);
+        ], JSON_UNESCAPED_UNICODE);
         exit;
     }
 
 
-    if (!ctype_digit((string) $idGerente) || (int) $idGerente <= 0) {
+    // Validar ID do gerente
+    if (!ctype_digit((string) $idUsuario) || (int) $idUsuario <= 0) {
         echo json_encode([
             'success' => false,
             'message' => 'Selecione um gerente válido.'
-        ]);
+        ], JSON_UNESCAPED_UNICODE);
         exit;
     }
 
 
-    $resultado = criarSetor(
-        $con,
-        (int) $idGerente,
-        $nome
-    );
+    $idUsuario = (int) $idUsuario;
 
 
-    if ($resultado['status'] === 'criado') {
+    // Verificar se o usuário existe e é gerente
+    $sqlGerente = "SELECT id_usuario
+                   FROM usuarios
+                   WHERE id_usuario = ?
+                   AND papel = 'gerente'
+                   LIMIT 1";
+
+
+    $stmt = $con->prepare($sqlGerente);
+    $stmt->bind_param("i", $idUsuario);
+    $stmt->execute();
+
+
+    if (!$stmt->get_result()->fetch_assoc()) {
         echo json_encode([
-            'success' => true,
-            'message' => 'Setor criado com sucesso!',
-            'id_setor' => $resultado['id_setor']
+            'success' => false,
+            'message' => 'Gerente não encontrado.'
         ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
 
 
-    } elseif ($resultado['status'] === 'duplicado') {
+    $stmt->close();
+
+
+    // Verificar se já existe setor com o mesmo nome
+    // para esse gerente
+    $sqlDuplicado = "SELECT id_setor
+                     FROM setores
+                     WHERE nome = ?
+                     AND id_usuario = ?
+                     LIMIT 1";
+
+
+    $stmt = $con->prepare($sqlDuplicado);
+    $stmt->bind_param("si", $nome, $idUsuario);
+    $stmt->execute();
+
+
+    if ($stmt->get_result()->fetch_assoc()) {
         echo json_encode([
             'success' => false,
             'message' => 'Esse gerente já possui um setor com esse nome.'
         ], JSON_UNESCAPED_UNICODE);
-
-
-    } elseif ($resultado['status'] === 'gerente_invalido') {
-        echo json_encode([
-            'success' => false,
-            'message' => 'O gerente selecionado não é válido.'
-        ], JSON_UNESCAPED_UNICODE);
-
-
-    } else {
-        echo json_encode([
-            'success' => false,
-            'message' => 'Não foi possível criar o setor.'
-        ], JSON_UNESCAPED_UNICODE);
+        exit;
     }
 
 
-    mysqli_close($con);
+    $stmt->close();
+
+
+    // Inserir setor
+    $sqlInserir = "INSERT INTO setores (nome, id_usuario)
+                   VALUES (?, ?)";
+
+
+    $stmt = $con->prepare($sqlInserir);
+    $stmt->bind_param("si", $nome, $idUsuario);
+    $stmt->execute();
+
+
+    $idSetor = $con->insert_id;
+
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'Setor criado com sucesso!',
+        'id_setor' => $idSetor
+    ], JSON_UNESCAPED_UNICODE);
+
+
+    $stmt->close();
+    $con->close();
 
 
 } catch (Throwable $erro) {
+
+
+    error_log('Erro ao criar setor: ' . $erro->getMessage());
+
+
     http_response_code(500);
 
 
     echo json_encode([
         'success' => false,
-        'message' => 'Erro ao cadastrar o setor.'
+        'message' => 'Erro interno ao cadastrar setor.'
     ], JSON_UNESCAPED_UNICODE);
-}]
+}
