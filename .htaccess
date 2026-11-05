@@ -15,6 +15,7 @@ RewriteRule ^dashboard/(inicio|setores|temperatura|ruido|qualidadear|alertas|con
 RewriteRule ^dashboard/?$ controllers/painel.php [END]
 RewriteRule ^admin/?$ controllers/adm.php [END]
 RewriteRule ^sair/?$ controllers/logout.php [END]
+RewriteRule ^api/receber_dados/?$ Api/receber_dados.php [END,QSA]
 
 <FilesMatch "^README\.md$">
     Require all denied
