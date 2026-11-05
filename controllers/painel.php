@@ -8,11 +8,12 @@ if (!isset($_SESSION['id_usuario'])) {
     exit();
 }
 
-if ($_SESSION['papel'] != "gerente") {
+if (!in_array($_SESSION['papel'] ?? null, ["admin", "gerente"], true)) {
     header("Location: /You-Well/entrar/");
     exit();
 }
 
+$podeCriarSetores = $_SESSION['papel'] === 'admin';
 $mensagemPerfil = '';
 $tipoMensagemPerfil = '';
 $mensagemSetor = '';
@@ -124,7 +125,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'criar_s
         ? trim($_POST['nome_setor'])
         : '';
 
-    if ($nomeSetorFormulario === '' || strlen($nomeSetorFormulario) > 255) {
+    if (!$podeCriarSetores) {
+        http_response_code(403);
+        $mensagemSetor = 'Somente administradores podem criar setores.';
+        $tipoMensagemSetor = 'erro';
+    } elseif ($nomeSetorFormulario === '' || strlen($nomeSetorFormulario) > 255) {
         $mensagemSetor = 'Informe um nome válido com até 255 caracteres.';
         $tipoMensagemSetor = 'erro';
     } elseif ($erroTabelaSetores) {
@@ -753,24 +758,28 @@ if (!in_array($pagina, $paginas, true)) {
                                     <?php endif; ?>
                                 </div>
 
-                                <div class="divisor-config-setores"></div>
+                                <?php if ($podeCriarSetores): ?>
+                                    <div class="divisor-config-setores"></div>
 
-                                <!-- Formulário para criar novo setor -->
-                                <div class="bloco-novo-setor">
-                                    <h3 class="subtitulo-painel-setores">
-                                        <i class="bi bi-plus-square-fill" aria-hidden="true"></i> Cadastrar Novo Setor
-                                    </h3>
-                                    <form class="setor-form" method="post">
-                                        <input type="hidden" name="acao" value="criar_setor">
-                                        <label for="nome-setor">Nome do setor</label>
-                                        <input id="nome-setor" name="nome_setor" type="text" maxlength="255"
-                                            placeholder="Ex.: Produção, Laboratório, Estoque..." autocomplete="off" value="<?= htmlspecialchars($nomeSetorFormulario, ENT_QUOTES, 'UTF-8') ?>" required>
-                                        <button type="submit" class="perfil-salvar">
-                                            <i class="bi bi-plus-circle-fill" aria-hidden="true"></i>
-                                            Criar setor
-                                        </button>
-                                    </form>
-                                </div>
+                                    <!-- Formulário para criar novo setor -->
+                                    <div class="bloco-novo-setor">
+                                        <h3 class="subtitulo-painel-setores">
+                                            <i class="bi bi-plus-square-fill" aria-hidden="true"></i> Cadastrar Novo Setor
+                                        </h3>
+                                        <form class="setor-form" method="post">
+                                            <input type="hidden" name="acao" value="criar_setor">
+                                            <label for="nome-setor">Nome do setor</label>
+                                            <input id="nome-setor" name="nome_setor" type="text" maxlength="255"
+                                                placeholder="Ex.: Produção, Laboratório, Estoque..." autocomplete="off" value="<?= htmlspecialchars($nomeSetorFormulario, ENT_QUOTES, 'UTF-8') ?>" required>
+                                            <button type="submit" class="perfil-salvar">
+                                                <i class="bi bi-plus-circle-fill" aria-hidden="true"></i>
+                                                Criar setor
+                                            </button>
+                                        </form>
+                                    </div>
+                                <?php else: ?>
+                                    <p class="aparencia-descricao">A criação de setores está disponível somente para administradores.</p>
+                                <?php endif; ?>
                             </div>
                         </section>
                     </div>

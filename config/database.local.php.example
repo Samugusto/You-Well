@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'host' => 'localhost',
-    'user' => '',
-    'password' => '',
-    'database' => '',
+    'host' => '162.241.3.35',
+    'user' => 'devsbeecom',
+    'password' => '$Projeto26',
+    'database' => 'devsbeec_monitoramento_ambiente',
     'port' => 3306
 ];

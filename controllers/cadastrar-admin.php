@@ -1,0 +1,210 @@
+<?php
+session_start();
+
+$otpVerificadoEm = $_SESSION["otp_cadastro_verificado_em"] ?? 0;
+if (
+    empty($_SESSION["otp_cadastro_autorizado"])
+    || !is_int($otpVerificadoEm)
+    || $otpVerificadoEm < time() - 1800
+) {
+    unset(
+        $_SESSION["otp_cadastro_autorizado"],
+        $_SESSION["otp_cadastro_email"],
+        $_SESSION["otp_cadastro_verificado_em"]
+    );
+    header("Location: ../views/ativacao/index.html");
+    exit;
+}
+
+require_once __DIR__ . "/../config/conexao.php";
+
+$erro = "";
+$sucesso = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nome = trim($_POST["nome"] ?? "");
+    $senha = $_POST["senha"] ?? "";
+    $confirmar_senha = $_POST["confirmar_senha"] ?? "";
+    $imagem_cropada = $_POST["imagem_cropada"] ?? "";
+
+    $foto_perfil = null;
+
+    if (!empty($imagem_cropada) && strpos($imagem_cropada, 'data:image/') === 0) {
+        $base64 = preg_replace('#^data:image/[^;]+;base64,#i', '', $imagem_cropada);
+        $base64 = str_replace([' ', "\n", "\r", "\t"], '', $base64);
+        $imagem_data = base64_decode($base64, true);
+
+        if ($imagem_data !== false && @getimagesizefromstring($imagem_data) !== false) {
+            $foto_perfil = $imagem_data;
+        }
+    }
+
+    // Validações
+    if (empty($nome) || empty($senha) || empty($confirmar_senha)) {
+        $erro = "Todos os campos são obrigatórios.";
+    } elseif ($senha !== $confirmar_senha) {
+        $erro = "As senhas não coincidem.";
+    } elseif (strlen($senha) < 8) {
+        $erro = "A senha deve ter pelo menos 8 caracteres.";
+    } elseif (!preg_match('/[A-Z]/', $senha)) {
+        $erro = "A senha deve conter pelo menos uma letra maiúscula.";
+    } elseif (!preg_match('/[@#\$%\^&\*\(\)_\+\-=\[\]\{\};":\\|,.<>\/?]/', $senha)) {
+        $erro = "A senha deve conter pelo menos um caractere especial.";
+    } else {
+        $con = conectar();
+
+        // Verificar se usuário já existe
+        $sql_check = "SELECT id_usuario FROM usuarios WHERE nome = ?";
+        $stmt_check = mysqli_prepare($con, $sql_check);
+        mysqli_stmt_bind_param($stmt_check, "s", $nome);
+        mysqli_stmt_execute($stmt_check);
+        mysqli_stmt_store_result($stmt_check);
+
+        if (mysqli_stmt_num_rows($stmt_check) > 0) {
+            $erro = "Este nome de usuário já está cadastrado.";
+        } else {
+            // Hash da senha
+            $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
+
+            // Inserir novo usuário
+            $papel = 'admin';
+
+            if ($foto_perfil === null) {
+                $sql_insert = "INSERT INTO usuarios (nome, senha, papel, setor, foto_perfil) VALUES (?, ?, ?, NULL, NULL)";
+                $stmt_insert = mysqli_prepare($con, $sql_insert);
+                mysqli_stmt_bind_param($stmt_insert, "sss", $nome, $senha_hash, $papel);
+            } else {
+                $sql_insert = "INSERT INTO usuarios (nome, senha, papel, setor, foto_perfil) VALUES (?, ?, ?, NULL, ?)";
+                $stmt_insert = mysqli_prepare($con, $sql_insert);
+                $foto_perfil_db = null;
+                mysqli_stmt_bind_param($stmt_insert, "sssb", $nome, $senha_hash, $papel, $foto_perfil_db);
+                mysqli_stmt_send_long_data($stmt_insert, 3, $foto_perfil);
+            }
+
+            if (mysqli_stmt_execute($stmt_insert)) {
+                unset(
+                    $_SESSION["otp_cadastro_autorizado"],
+                    $_SESSION["otp_cadastro_email"],
+                    $_SESSION["otp_cadastro_verificado_em"]
+                );
+                $sucesso = "Cadastro realizado com sucesso! Redirecionando para o login...";
+                echo '<meta http-equiv="refresh" content="2;url=../controllers/entrar.php">';
+            } else {
+                $erro = "Erro ao cadastrar: " . mysqli_error($con);
+            }
+            mysqli_stmt_close($stmt_insert);
+        }
+        mysqli_stmt_close($stmt_check);
+        mysqli_close($con);
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouWell - Cadastrar administrador</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+    <link href="../public/assets/css/styleLogin.css" rel="stylesheet">
+    <link rel="stylesheet" href="../public/assets/css/loader.css">
+    <link href="../public/assets/img/sem-titulo.png" rel="icon">
+</head>
+
+<body>
+    <div id="loader" role="status" aria-live="polite">
+        <div class="loader-content">
+            <div class="loader-emblem">
+                <span class="loader-ring" aria-hidden="true"></span>
+                <img src="../public/assets/img/sem-titulo2.png" alt="" class="spinner-img">
+            </div>
+            <p class="loader-label">Preparando sua experiência<span class="loader-dots" aria-hidden="true"></span></p>
+        </div>
+    </div>
+
+    <div class="bloco">
+        <div class="iconF">
+            <i class="bi bi-door-open iconT"></i>
+        </div>
+        <h1 class="title">Cadastro de administrador</h1>
+        <h1 class="title2">Crie sua conta de administrador</h1>
+        <div class="footerdiv"></div>
+
+        <?php if ($erro != ""): ?>
+            <div style="background-color: #ff4444; color: white; padding: 10px; margin: 10px; border-radius: 5px; text-align: center;">
+                <?php echo $erro; ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($sucesso != ""): ?>
+            <div style="background-color: #00ffb3; color: #145944; padding: 10px; margin: 10px; border-radius: 5px; text-align: center;">
+                <?php echo $sucesso; ?>
+            </div>
+        <?php endif; ?>
+
+        <form method="POST" action="" enctype="multipart/form-data">
+            <div class="input-floating">
+                <i class="bi bi-person iconny"></i>
+                <input id="nome" name="nome" type="text" required><i class="bi bi-exclamation-circle" id="icone3"></i><i
+                    class="bi bi-check-circle" id="icone4"></i>
+                <label for="nome">Nome Completo</label>
+            </div>
+
+            <div class="input-floating-senha">
+                <i class="bi bi-lock iconny2"></i>
+                <input id="senha" name="senha" type="password" required id="password"><i class="bi bi-eye icone" id="botaoSenha"></i>
+                <label for="senha">Senha</label>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <p id="req-maiuscula">Requer uma letra maiúscula</p>
+            <p id="req-caracteres">Requer mais de 7 caracteres</p>
+            <p id="req-especial">Requer um caracter especial (@, #, etc.)</p>
+
+            <!-- Campo da foto de perfil -->
+            <div class="custom-file">
+                <label for="campoImg" class="custom-file-label">Escolher ficheiro</label>
+                <input type="file" id="campoImg" name="imagem" accept="image/*">
+                <span id="file-name" class="custom-file-name">Envie sua foto de perfil.</span>
+            </div>
+
+            <input type="hidden" name="imagem_cropada" id="imagemCropada">
+            <!--------------->
+
+            <div class="input-floating">
+                <input id="confirmar" name="confirmar_senha" type="password" required><i class="bi bi-exclamation-circle" id="icone5"></i><i
+                    class="bi bi-check-circle" id="icone6"></i>
+                <i class="bi bi-lock iconny"></i>
+                <label for="confirmar">Confirmar Senha</label>
+            </div>
+
+            <button type="submit" class="botao" id="cadastrar">Entrar</button>
+        </form>
+        <a href="../controllers/entrar.php">
+            <h1 class="outro">Já tem um cadastro? Clique aqui!</h1>
+        </a>
+    </div>
+    <script src="../public/assets/js/script.js"></script>
+    <script src="../public/assets/js/loader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+
+    <!-- Área do pop-up -->
+    <div id="cropModal" class="crop-modal" style="display:none;">
+        <div class="crop-modal-content">
+            <h3>Ajustar imagem</h3>
+            <div class="cropper-box">
+                <img id="cropImage" src="" alt="Imagem para recortar">
+            </div>
+            <div class="crop-actions">
+                <button type="button" id="confirmCrop" class="botaoS">Salvar imagem</button>
+                <button type="button" id="cancelCrop" class="botaoC botao-cancelar">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

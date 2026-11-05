@@ -30,45 +30,9 @@ if (!$apiKey || !$remetente) {
     responder(500, ['error' => 'Configure a chave e o remetente do serviço de e-mail.']);
 }
 
-require_once __DIR__ . '/../../config/conexao.php';
-
 try {
-    $con = conectar();
-    mysqli_set_charset($con, 'utf8mb4');
-
-    mysqli_query(
-        $con,
-        "CREATE TABLE IF NOT EXISTS verificacoes_email (
-            id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-            email VARCHAR(254) NOT NULL,
-            codigo_hash CHAR(64) NOT NULL,
-            usado TINYINT(1) NOT NULL DEFAULT 0,
-            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (id),
-            KEY idx_verificacoes_email_email_usado (email, usado)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
-    );
-
     $codigo = sprintf('%06d', random_int(0, 999999));
     $codigoHash = hash('sha256', $codigo);
-
-    $con->begin_transaction();
-
-    $stmt = mysqli_prepare(
-        $con,
-        'UPDATE verificacoes_email SET usado = 1 WHERE email = ? AND usado = 0'
-    );
-    mysqli_stmt_bind_param($stmt, 's', $email);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
-
-    $stmt = mysqli_prepare(
-        $con,
-        'INSERT INTO verificacoes_email (email, codigo_hash) VALUES (?, ?)'
-    );
-    mysqli_stmt_bind_param($stmt, 'ss', $email, $codigoHash);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
 
     $codigoHtml = htmlspecialchars($codigo, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     $htmlEmail = <<<HTML
@@ -120,8 +84,8 @@ HTML;
         CURLOPT_POST => true,
         CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE),
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_CONNECTTIMEOUT => 10,
-        CURLOPT_TIMEOUT => 20
+        CURLOPT_CONNECTTIMEOUT => 4,
+        CURLOPT_TIMEOUT => 8
     ]);
 
     $respostaEmail = curl_exec($ch);
@@ -130,9 +94,6 @@ HTML;
     curl_close($ch);
 
     if ($respostaEmail === false || $httpCode < 200 || $httpCode >= 300) {
-        $con->rollback();
-        mysqli_close($con);
-
         $erroResend = is_string($respostaEmail)
             ? json_decode($respostaEmail, true)
             : null;
@@ -147,28 +108,19 @@ HTML;
         responder(502, ['error' => 'Não foi possível enviar o código por e-mail: ' . $detalheErro]);
     }
 
-    $con->commit();
-    mysqli_close($con);
+    if (!session_start()) {
+        throw new RuntimeException('Não foi possível iniciar a sessão para guardar o código.');
+    }
+
+    $_SESSION['otp_email_verificacao'] = [
+        'email' => $email,
+        'codigo_hash' => $codigoHash,
+        'created_at' => time()
+    ];
+    session_write_close();
 
     responder(200, ['message' => 'Código enviado com sucesso.']);
-} catch (mysqli_sql_exception $e) {
-    if (isset($con) && $con instanceof mysqli) {
-        try {
-            $con->rollback();
-            mysqli_close($con);
-        } catch (mysqli_sql_exception $erroRollback) {
-            error_log('Falha ao reverter a transação OTP: ' . $erroRollback->getMessage());
-        }
-    }
-
-    error_log('Falha no banco de dados ao gerar OTP: ' . $e->getMessage());
-    responder(500, ['error' => 'Não foi possível registrar o código no banco de dados.']);
 } catch (RuntimeException $e) {
-    if (isset($con) && $con instanceof mysqli) {
-        $con->rollback();
-        mysqli_close($con);
-    }
-
     error_log('Falha ao gerar OTP: ' . $e->getMessage());
     responder(500, ['error' => 'Não foi possível enviar o código de acesso.']);
 }

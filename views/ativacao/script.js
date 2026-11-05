@@ -20,10 +20,10 @@ document.addEventListener('pointerleave', () => {
 });
 
 
-const viewsIndex = window.location.pathname.indexOf('/views/');
+const ativacaoIndex = window.location.pathname.match(/^(.*\/)views\/ativacao(?:\/index\.html)?\/?$/);
 const codigoRoute = window.location.pathname.match(/^(.*\/)codigo\/?$/);
-const appRoot = viewsIndex >= 0
-    ? window.location.pathname.slice(0, viewsIndex + 1)
+const appRoot = ativacaoIndex
+    ? ativacaoIndex[1]
     : codigoRoute
         ? codigoRoute[1]
         : '/You-Well/';
@@ -61,16 +61,31 @@ async function solicitarCodigo() {
 
     clearAlert();
     const btn = document.getElementById('btnSend');
+    const controller = new AbortController();
+    let timedOut = false;
+    let timeout;
     btn.disabled = true;
     btn.innerText = 'Enviando e-mail...';
 
     try {
-        const response = await fetch(appUrl('views/ativacao/gerar_otp.php'), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: userEmail })
+        const requisicao = (async () => {
+            const response = await fetch(appUrl('views/ativacao/gerar_otp.php'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: userEmail }),
+                signal: controller.signal
+            });
+            const data = await response.json().catch(() => ({}));
+            return { response, data };
+        })();
+        const limiteTempo = new Promise((resolve, reject) => {
+            timeout = window.setTimeout(() => {
+                timedOut = true;
+                controller.abort();
+                reject(new Error('OTP_TIMEOUT'));
+            }, 10000);
         });
-        const data = await response.json();
+        const { response, data } = await Promise.race([requisicao, limiteTempo]);
 
         if (response.ok) {
             document.getElementById('step1').classList.remove('active');
@@ -80,8 +95,11 @@ async function solicitarCodigo() {
             showAlert(data.error || 'Erro ao enviar código.');
         }
     } catch (e) {
-        showAlert('Erro de conexão com o servidor PHP.');
+        showAlert(timedOut || e.name === 'AbortError'
+            ? 'O envio excedeu o tempo limite. Confira a chave e o remetente do Resend e tente novamente.'
+            : 'Não foi possível falar com o servidor. Verifique a conexão e tente novamente.');
     } finally {
+        window.clearTimeout(timeout);
         btn.disabled = false;
         btn.innerText = 'Enviar Código';
     }
@@ -108,7 +126,7 @@ async function validarCodigo() {
         const data = await response.json();
 
         if (response.ok && data.success) {
-            window.location.href = appUrl('controllers/cadastrar.php');
+            window.location.href = appUrl('cadastro-admin/');
         } else {
             showAlert(data.error || 'Código incorreto.');
         }

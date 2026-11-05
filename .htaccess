@@ -2,14 +2,18 @@ Options -Indexes
 DirectoryIndex index.php
 
 RewriteEngine On
-RewriteBase /You-Well/
 
 RewriteRule ^$ index.php [END]
 RewriteRule ^inicio/?$ views/inicio/inicio.html [END]
 RewriteRule ^codigo/?$ views/ativacao/index.html [END]
+RewriteRule ^views/ativacao/?$ views/ativacao/index.html [END]
 RewriteRule ^codigo/gerar/?$ views/ativacao/gerar_otp.php [END]
 RewriteRule ^codigo/validar/?$ views/ativacao/validar_otp.php [END]
-RewriteRule ^cadastro/?$ controllers/cadastrar.php [END]
+RewriteCond %{REQUEST_URI} ^(.*/)(?:cadastro|cadastrar)(?:\.php)?/?$
+RewriteRule ^(?:cadastro|cadastrar)(?:\.php)?/?$ %1cadastro-admin/ [R=302,L]
+RewriteCond %{REQUEST_URI} ^(.*/)controllers/(?:cadastro|cadastrar)\.php$
+RewriteRule ^controllers/(?:cadastro|cadastrar)\.php$ %1cadastro-admin/ [R=302,L]
+RewriteRule ^cadastro-admin/?$ controllers/cadastrar-admin.php [END]
 RewriteRule ^entrar/?$ controllers/entrar.php [END]
 RewriteRule ^dashboard/(inicio|setores|temperatura|ruido|qualidadear|alertas|configuracoes)/?$ controllers/painel.php?pagina=$1 [END,QSA]
 RewriteRule ^dashboard/?$ controllers/painel.php [END]

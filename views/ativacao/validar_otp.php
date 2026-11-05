@@ -20,70 +20,26 @@ if (!$email || !is_string($codigo) || !preg_match('/^\d{6}$/', $codigo)) {
     responder(400, ['error' => 'E-mail ou código inválido.']);
 }
 
-require_once __DIR__ . '/../../config/conexao.php';
+$verificacao = $_SESSION['otp_email_verificacao'] ?? null;
+$criacao = is_array($verificacao) ? ($verificacao['created_at'] ?? null) : null;
+$verificacaoValida = is_array($verificacao)
+    && isset($verificacao['email'], $verificacao['codigo_hash'])
+    && is_string($verificacao['email'])
+    && is_string($verificacao['codigo_hash'])
+    && is_int($criacao)
+    && $criacao <= time()
+    && $criacao >= time() - 900
+    && hash_equals($verificacao['email'], $email)
+    && hash_equals($verificacao['codigo_hash'], hash('sha256', $codigo));
 
-try {
-    $con = conectar();
-    mysqli_set_charset($con, 'utf8mb4');
-    $con->begin_transaction();
-
-    $stmt = mysqli_prepare(
-        $con,
-        'SELECT id, codigo_hash
-         FROM verificacoes_email
-         WHERE email = ? AND usado = 0
-           AND created_at >= DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 15 MINUTE)
-         ORDER BY id DESC
-         LIMIT 1
-         FOR UPDATE'
-    );
-    mysqli_stmt_bind_param($stmt, 's', $email);
-    mysqli_stmt_execute($stmt);
-    $resultado = mysqli_stmt_get_result($stmt);
-    $verificacao = mysqli_fetch_assoc($resultado);
-    mysqli_stmt_close($stmt);
-
-    if (!$verificacao || !hash_equals($verificacao['codigo_hash'], hash('sha256', $codigo))) {
-        $con->rollback();
-        mysqli_close($con);
-        responder(400, ['error' => 'Código incorreto ou expirado.']);
-    }
-
-    $idVerificacao = (int) $verificacao['id'];
-    $stmt = mysqli_prepare(
-        $con,
-        'UPDATE verificacoes_email SET usado = 1 WHERE id = ? AND usado = 0'
-    );
-    mysqli_stmt_bind_param($stmt, 'i', $idVerificacao);
-    mysqli_stmt_execute($stmt);
-    $codigoConsumido = mysqli_stmt_affected_rows($stmt) === 1;
-    mysqli_stmt_close($stmt);
-
-    if (!$codigoConsumido) {
-        $con->rollback();
-        mysqli_close($con);
-        responder(400, ['error' => 'Este código já foi utilizado.']);
-    }
-
-    $con->commit();
-    mysqli_close($con);
-
-    session_regenerate_id(true);
-    $_SESSION['otp_cadastro_autorizado'] = true;
-    $_SESSION['otp_cadastro_email'] = $email;
-    $_SESSION['otp_cadastro_verificado_em'] = time();
-
-    responder(200, ['success' => true]);
-} catch (mysqli_sql_exception $e) {
-    if (isset($con) && $con instanceof mysqli) {
-        try {
-            $con->rollback();
-            mysqli_close($con);
-        } catch (mysqli_sql_exception $erroRollback) {
-            error_log('Falha ao reverter a validação OTP: ' . $erroRollback->getMessage());
-        }
-    }
-
-    error_log('Falha no banco ao validar OTP: ' . $e->getMessage());
-    responder(500, ['error' => 'Não foi possível validar o código agora.']);
+if (!$verificacaoValida) {
+    responder(400, ['error' => 'Código incorreto ou expirado.']);
 }
+
+unset($_SESSION['otp_email_verificacao']);
+session_regenerate_id(true);
+$_SESSION['otp_cadastro_autorizado'] = true;
+$_SESSION['otp_cadastro_email'] = $email;
+$_SESSION['otp_cadastro_verificado_em'] = time();
+
+responder(200, ['success' => true]);

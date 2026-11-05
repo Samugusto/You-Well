@@ -34,10 +34,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['setor'] = $usuario['setor'];
 
             if ($usuario['papel'] == "admin") {
-                header("Location: /You-Well/admin/");
+                header("Location: ../dashboard/");
                 exit();
             } elseif ($usuario['papel'] == "gerente") {
-                header("Location: /You-Well/dashboard/");
+                header("Location: ../dashboard/");
                 exit();
             } else {
                 $erro = "Tipo de usuário inválido.";
