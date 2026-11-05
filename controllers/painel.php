@@ -19,6 +19,9 @@ $tipoMensagemPerfil = '';
 $mensagemSetor = '';
 $tipoMensagemSetor = '';
 $nomeSetorFormulario = '';
+$idGerenteFormulario = 0;
+$mensagemGerente = '';
+$tipoMensagemGerente = '';
 $tokenDispositivo = null;
 $abaAtiva = 'panel-informacoes';
 $nomePerfilFormulario = (string) $_SESSION['nome'];
@@ -120,16 +123,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'atualiz
     }
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'criar_gerente' && $podeCriarSetores) {
+    $nomeGerente = trim((string) ($_POST['nome_gerente'] ?? ''));
+    $senhaGerente = (string) ($_POST['senha_gerente'] ?? '');
+    if ($nomeGerente === '' || $senhaGerente === '') { $mensagemGerente = 'Informe nome e senha do gerente.'; $tipoMensagemGerente = 'erro'; }
+    elseif (strlen($senhaGerente) < 8 || !preg_match('/[A-Z]/', $senhaGerente) || !preg_match('/[^A-Za-z0-9]/', $senhaGerente)) { $mensagemGerente = 'A senha deve ter 8 caracteres, uma maiúscula e um caractere especial.'; $tipoMensagemGerente = 'erro'; }
+    else {
+        $stmt = mysqli_prepare($con, 'INSERT INTO usuarios (nome, senha, papel, setor, foto_perfil) SELECT ?, ?, "gerente", NULL, NULL FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE nome = ?)');
+        $hash = password_hash($senhaGerente, PASSWORD_DEFAULT); mysqli_stmt_bind_param($stmt, 'sss', $nomeGerente, $hash, $nomeGerente);
+        if (mysqli_stmt_execute($stmt) && mysqli_stmt_affected_rows($stmt) > 0) { $mensagemGerente = 'Gerente criado com sucesso.'; $tipoMensagemGerente = 'sucesso'; } else { $mensagemGerente = 'Este nome já está cadastrado ou não foi possível criar a conta.'; $tipoMensagemGerente = 'erro'; }
+        mysqli_stmt_close($stmt);
+    }
+    $abaAtiva = 'panel-setores';
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'criar_setor') {
     $abaAtiva = 'panel-setores';
     $nomeSetorFormulario = isset($_POST['nome_setor']) && is_string($_POST['nome_setor'])
         ? trim($_POST['nome_setor'])
         : '';
+    $idGerenteFormulario = (int) ($_POST['id_gerente'] ?? 0);
 
     if (!$podeCriarSetores) {
         http_response_code(403);
         $mensagemSetor = 'Somente administradores podem criar setores.';
         $tipoMensagemSetor = 'erro';
+    } elseif ($idGerenteFormulario <= 0) {
+        $mensagemSetor = 'Selecione o gerente responsável.'; $tipoMensagemSetor = 'erro';
     } elseif ($nomeSetorFormulario === '' || strlen($nomeSetorFormulario) > 255) {
         $mensagemSetor = 'Informe um nome válido com até 255 caracteres.';
         $tipoMensagemSetor = 'erro';
@@ -137,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'criar_s
         $mensagemSetor = 'Não foi possível salvar o setor agora. Tente novamente.';
         $tipoMensagemSetor = 'erro';
     } else {
-        $resultadoCriacao = criarSetor($con, $idUsuario, $nomeSetorFormulario);
+        $resultadoCriacao = criarSetor($con, $idUsuario, $nomeSetorFormulario, $idGerenteFormulario);
         if (($resultadoCriacao['status'] ?? '') === 'duplicado') {
             $mensagemSetor = 'Já existe um setor com esse nome.';
             $tipoMensagemSetor = 'erro';
@@ -183,7 +203,12 @@ $usuario = mysqli_fetch_assoc($resultado_usuario);
 mysqli_stmt_close($stmt_usuario);
 
 try {
-    $setores = $erroTabelaSetores ? [] : listarSetores($con, $idUsuario);
+    $gerentes = [];
+    if ($podeCriarSetores) {
+        $resultadoGerentes = mysqli_query($con, "SELECT id_usuario, nome FROM usuarios WHERE papel = 'gerente' ORDER BY nome");
+        while ($resultadoGerentes && ($gerente = mysqli_fetch_assoc($resultadoGerentes))) $gerentes[] = $gerente;
+    }
+    $setores = $erroTabelaSetores ? [] : ($podeCriarSetores ? listarTodosSetores($con) : listarSetores($con, $idUsuario));
 } catch (Throwable $erro) {
     $setores = [];
     if ($mensagemSetor === '') {
@@ -745,7 +770,7 @@ if (!in_array($pagina, $paginas, true)) {
                                                 <div class="card-setor-item">
                                                     <div class="card-setor-info">
                                                         <span class="card-setor-badge"><i class="bi bi-building"></i></span>
-                                                        <span class="card-setor-nome"><?= htmlspecialchars($setor['nome'], ENT_QUOTES, 'UTF-8') ?></span>
+                                                        <span class="card-setor-nome"><?= htmlspecialchars($setor['nome'], ENT_QUOTES, 'UTF-8') ?><small>Responsável: <?= htmlspecialchars($setor['responsavel'] ?? $setor['gerente'], ENT_QUOTES, 'UTF-8') ?></small></span>
                                                     </div>
                                                     <form method="post" class="form-excluir-setor" onsubmit="return confirm('Deseja realmente excluir o setor &quot;<?= htmlspecialchars($setor['nome'], ENT_QUOTES, 'UTF-8') ?>&quot;? Todas as leituras associadas a ele serão apagadas permanentemente.');">
                                                         <input type="hidden" name="acao" value="excluir_setor">
@@ -771,6 +796,10 @@ if (!in_array($pagina, $paginas, true)) {
 
                                     <!-- Formulário para criar novo setor -->
                                     <div class="bloco-novo-setor">
+                                        <h3 class="subtitulo-painel-setores"><i class="bi bi-person-plus-fill"></i> Cadastrar gerente</h3>
+                                        <?php if ($mensagemGerente !== ''): ?><p class="perfil-mensagem <?= $tipoMensagemGerente === 'sucesso' ? 'sucesso' : 'erro' ?>"><?= htmlspecialchars($mensagemGerente, ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                        <form class="setor-form" method="post"><input type="hidden" name="acao" value="criar_gerente"><label for="nome-gerente">Nome do gerente</label><input id="nome-gerente" name="nome_gerente" type="text" maxlength="255" required><label for="senha-gerente">Senha</label><input id="senha-gerente" name="senha_gerente" type="password" minlength="8" required><button type="submit" class="perfil-salvar">Criar conta do gerente</button></form>
+                                        <div class="divisor-config-setores"></div>
                                         <h3 class="subtitulo-painel-setores">
                                             <i class="bi bi-plus-square-fill" aria-hidden="true"></i> Cadastrar Novo Setor
                                         </h3>
@@ -779,6 +808,8 @@ if (!in_array($pagina, $paginas, true)) {
                                             <label for="nome-setor">Nome do setor</label>
                                             <input id="nome-setor" name="nome_setor" type="text" maxlength="255"
                                                 placeholder="Ex.: Produção, Laboratório, Estoque..." autocomplete="off" value="<?= htmlspecialchars($nomeSetorFormulario, ENT_QUOTES, 'UTF-8') ?>" required>
+                                            <label for="gerente-setor">ID do gerente responsável</label>
+                                            <input id="gerente-setor" name="id_gerente" type="number" min="1" step="1" placeholder="Ex.: 4" value="<?= $idGerenteFormulario > 0 ? (int) $idGerenteFormulario : '' ?>" required>
                                             <button type="submit" class="perfil-salvar">
                                                 <i class="bi bi-plus-circle-fill" aria-hidden="true"></i>
                                                 Criar setor

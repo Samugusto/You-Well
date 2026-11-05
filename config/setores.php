@@ -97,7 +97,7 @@ function garantirTabelaDispositivos(mysqli $con): void
     }
 }
 
-function criarSetor(mysqli $con, int $idUsuario, string $nome): array
+function criarSetor(mysqli $con, int $idUsuario, string $nome, int $idGerente): array
 {
     try {
         garantirTabelaDispositivos($con);
@@ -108,7 +108,7 @@ function criarSetor(mysqli $con, int $idUsuario, string $nome): array
             return ['status' => 'erro', 'token' => null];
         }
 
-        mysqli_stmt_bind_param($stmtDuplicado, 'is', $idUsuario, $nome);
+        mysqli_stmt_bind_param($stmtDuplicado, 'is', $idGerente, $nome);
         if (!mysqli_stmt_execute($stmtDuplicado)) {
             mysqli_stmt_close($stmtDuplicado);
             return ['status' => 'erro', 'token' => null];
@@ -122,12 +122,12 @@ function criarSetor(mysqli $con, int $idUsuario, string $nome): array
         }
 
         // 2. Busca o nome do usuário para preencher o campo legado 'gerente'
-        $sqlGerente = 'SELECT nome FROM usuarios WHERE id_usuario = ? LIMIT 1';
+        $sqlGerente = "SELECT nome FROM usuarios WHERE id_usuario = ? AND papel = 'gerente' LIMIT 1";
         $stmtGerente = mysqli_prepare($con, $sqlGerente);
         if (!$stmtGerente) {
             return ['status' => 'erro', 'token' => null];
         }
-        mysqli_stmt_bind_param($stmtGerente, 'i', $idUsuario);
+        mysqli_stmt_bind_param($stmtGerente, 'i', $idGerente);
         if (!mysqli_stmt_execute($stmtGerente)) {
             mysqli_stmt_close($stmtGerente);
             return ['status' => 'erro', 'token' => null];
@@ -148,7 +148,7 @@ function criarSetor(mysqli $con, int $idUsuario, string $nome): array
             return 'erro';
         }
 
-        mysqli_stmt_bind_param($stmtInserir, 'iss', $idUsuario, $nome, $nomeGerente);
+        mysqli_stmt_bind_param($stmtInserir, 'iss', $idGerente, $nome, $nomeGerente);
         if (!mysqli_stmt_execute($stmtInserir)) {
             $codigoErro = mysqli_stmt_errno($stmtInserir);
             mysqli_stmt_close($stmtInserir);
@@ -187,7 +187,7 @@ function criarSetor(mysqli $con, int $idUsuario, string $nome): array
             $sqlRemover = "DELETE FROM setores WHERE id_setor = ? AND id_usuario = ?";
             $stmtRemover = mysqli_prepare($con, $sqlRemover);
             if ($stmtRemover) {
-                mysqli_stmt_bind_param($stmtRemover, 'ii', $idSetor, $idUsuario);
+                mysqli_stmt_bind_param($stmtRemover, 'ii', $idSetor, $idGerente);
                 mysqli_stmt_execute($stmtRemover);
                 mysqli_stmt_close($stmtRemover);
             }
@@ -200,7 +200,7 @@ function criarSetor(mysqli $con, int $idUsuario, string $nome): array
         $stmtDispositivo = mysqli_prepare($con, 'INSERT INTO dispositivos_esp32 (id_setor, nome, token_hash) VALUES (?, ?, ?)');
         if (!$stmtDispositivo) {
             mysqli_query($con, "DROP TABLE IF EXISTS `{$tabelaLeituras}`");
-            mysqli_query($con, "DELETE FROM setores WHERE id_setor = {$idSetor} AND id_usuario = {$idUsuario}");
+            mysqli_query($con, "DELETE FROM setores WHERE id_setor = {$idSetor} AND id_usuario = {$idGerente}");
             return ['status' => 'erro', 'token' => null];
         }
         mysqli_stmt_bind_param($stmtDispositivo, 'iss', $idSetor, $nomeDispositivo, $tokenHash);
@@ -208,7 +208,7 @@ function criarSetor(mysqli $con, int $idUsuario, string $nome): array
         mysqli_stmt_close($stmtDispositivo);
         if (!$dispositivoCriado) {
             mysqli_query($con, "DROP TABLE IF EXISTS `{$tabelaLeituras}`");
-            mysqli_query($con, "DELETE FROM setores WHERE id_setor = {$idSetor} AND id_usuario = {$idUsuario}");
+            mysqli_query($con, "DELETE FROM setores WHERE id_setor = {$idSetor} AND id_usuario = {$idGerente}");
             return ['status' => 'erro', 'token' => null];
         }
         return ['status' => 'criado', 'token' => $token];
@@ -220,7 +220,7 @@ function criarSetor(mysqli $con, int $idUsuario, string $nome): array
 function listarSetores(mysqli $con, int $idUsuario): array
 {
     // 1. Busca os setores cadastrados para o usuário, ordenados por nome
-    $sql = "SELECT id_setor, nome FROM setores WHERE id_usuario = ? ORDER BY nome";
+    $sql = "SELECT s.id_setor, s.nome, s.gerente, u.nome AS responsavel FROM setores s LEFT JOIN usuarios u ON u.id_usuario = s.id_usuario WHERE s.id_usuario = ? ORDER BY s.nome";
     $stmt = mysqli_prepare($con, $sql);
     if (!$stmt) {
         throw new RuntimeException('Não foi possível consultar os setores.');
@@ -281,6 +281,24 @@ function listarSetores(mysqli $con, int $idUsuario): array
     }
 
     mysqli_stmt_close($stmt);
+    return $setores;
+}
+
+function listarTodosSetores(mysqli $con): array
+{
+    $resultado = mysqli_query($con, "SELECT s.id_setor, s.nome, s.gerente, u.nome AS responsavel FROM setores s LEFT JOIN usuarios u ON u.id_usuario = s.id_usuario ORDER BY s.nome");
+    if (!$resultado) return [];
+    $setores = [];
+    while ($setor = mysqli_fetch_assoc($resultado)) {
+        $setor['temperatura'] = null; $setor['ruido'] = null; $setor['qualidade_ar'] = null;
+        $tabela = 'setor_' . (int) $setor['id_setor'];
+        $leitura = @mysqli_query($con, "SELECT temperatura, ruido, qualidade_ar FROM `{$tabela}` ORDER BY id_leitura DESC LIMIT 1");
+        if ($leitura && ($dados = mysqli_fetch_assoc($leitura))) {
+            $setor['temperatura'] = $dados['temperatura']; $setor['ruido'] = $dados['ruido']; $setor['qualidade_ar'] = $dados['qualidade_ar'];
+        }
+        $setores[] = $setor;
+    }
+    mysqli_free_result($resultado);
     return $setores;
 }
 

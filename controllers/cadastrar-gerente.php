@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+if (($_SESSION['papel'] ?? null) !== 'admin') {
+    header('Location: /You-Well/entrar/');
+    exit;
+}
+
 $otpVerificadoEm = $_SESSION["otp_cadastro_verificado_em"] ?? 0;
 if (
     empty($_SESSION["otp_cadastro_autorizado"])
