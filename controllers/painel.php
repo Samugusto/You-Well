@@ -2,6 +2,7 @@
 session_start();
 require_once __DIR__ . "/../config/conexao.php";
 require_once __DIR__ . "/../config/setores.php";
+require_once __DIR__ . "/../config/alertas.php";
 
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: /You-Well/entrar/");
@@ -32,12 +33,6 @@ if (empty($_SESSION['token_configuracoes'])) {
 
 $con = conectar();
 $idUsuario = (int) $_SESSION['id_usuario'];
-$alertas = [
-    ['setor' => 'Setor 1', 'texto' => 'Crítico: Problemas relacionados a temperatura do setor: 40°C', 'classe' => 'janelinhaA'],
-    ['setor' => 'Setor 2', 'texto' => 'Crítico: Problemas relacionados ao ruído do setor: 180 db', 'classe' => 'janelinhaA'],
-    ['setor' => 'Setor 3', 'texto' => 'Avisos: Ajustes relacionados a qualidade do ar do setor: Estável', 'classe' => 'janelinhaM'],
-];
-$quantidadeAlertas = count($alertas);
 $erroTabelaSetores = false;
 try {
     garantirTabelaSetores($con);
@@ -244,6 +239,7 @@ try {
         while ($resultadoGerentes && ($gerente = mysqli_fetch_assoc($resultadoGerentes))) $gerentes[] = $gerente;
     }
     $setores = $erroTabelaSetores ? [] : ($podeCriarSetores ? listarTodosSetores($con) : listarSetores($con, $idUsuario));
+    $setores = anexarUltimasMedicoes($con, $setores);
 } catch (Throwable $erro) {
     $setores = [];
     if ($mensagemSetor === '') {
@@ -252,6 +248,11 @@ try {
     }
 }
 mysqli_close($con);
+
+// Alertas de temperatura com base na última medição real de cada setor.
+$alertas = gerarAlertasTemperatura($setores);
+// O contador do cabeçalho mostra apenas os alertas que exigem atenção (alta/baixa).
+$quantidadeAlertas = count(array_filter($alertas, fn ($alerta) => $alerta['nivel'] !== 'estavel'));
 
 $fotoPerfil = null;
 if ($usuario && !empty($usuario['foto_perfil'])) {
@@ -653,18 +654,18 @@ if (!in_array($pagina, $paginas, true)) {
                 </div>
 
             <?php elseif ($pagina === 'alertas') : ?>
-                <div class="janelinhaA">
-                    <h1>Setor 1</h1>
-                    <h1 class="deta">Crítico: Problemas relacionados a temperatura do setor: 40°C</h1>
-                </div>
-                <div class="janelinhaA">
-                    <h1>Setor 2</h1>
-                    <h1 class="deta">Crítico: Problemas relacionados ao ruído do setor: 180 db</h1>
-                </div>
-                <div class="janelinhaM">
-                    <h1>Setor 3</h1>
-                    <h1 class="deta">Avisos: Ajustes relacionados a qualidade do ar do setor: Estável</h1>
-                </div>
+                <?php foreach ($alertas as $alerta): ?>
+                    <div class="<?= htmlspecialchars($alerta['classe'], ENT_QUOTES, 'UTF-8') ?>">
+                        <h1><?= htmlspecialchars($alerta['setor'], ENT_QUOTES, 'UTF-8') ?></h1>
+                        <h1 class="deta"><?= htmlspecialchars($alerta['texto'], ENT_QUOTES, 'UTF-8') ?></h1>
+                        <?php if (!empty($alerta['data_hora'])): ?>
+                            <span class="deta-hora">Última medição: <?= htmlspecialchars(date('d/m/Y H:i', strtotime($alerta['data_hora'])), ENT_QUOTES, 'UTF-8') ?></span>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+                <?php if (count($alertas) === 0): ?>
+                    <p class="aparencia-descricao">Nenhuma medição de temperatura recebida dos setores ainda.</p>
+                <?php endif; ?>
             <?php elseif ($pagina === 'configuracoes'): ?>
                 <div class="config">
                     <div class="configdiv" role="tablist" aria-label="Opções de configurações">
