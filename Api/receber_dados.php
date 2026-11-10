@@ -13,7 +13,16 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responderApi(405, ['success' => false, 'mensagem' => 'Método não permitido.']);
 }
 
-$cabecalho = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+// O Apache pode descartar o cabeçalho Authorization; tenta as alternativas.
+$cabecalho = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
+if ($cabecalho === '' && function_exists('getallheaders')) {
+    foreach (getallheaders() as $nomeCabecalho => $valorCabecalho) {
+        if (strcasecmp($nomeCabecalho, 'Authorization') === 0) {
+            $cabecalho = $valorCabecalho;
+            break;
+        }
+    }
+}
 if (!preg_match('/^Bearer\s+([^\s]+)$/i', $cabecalho, $partes)) {
     responderApi(401, ['success' => false, 'mensagem' => 'Token não informado.']);
 }

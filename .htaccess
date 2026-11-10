@@ -3,6 +3,10 @@ DirectoryIndex index.php
 
 RewriteEngine On
 
+# Repassa o cabeçalho Authorization (token do ESP32) para o PHP
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
 RewriteRule ^$ index.php [END]
 RewriteRule ^inicio/?$ views/inicio/inicio.html [END]
 RewriteRule ^codigo/?$ views/ativacao/index.html [END]
