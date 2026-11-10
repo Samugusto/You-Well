@@ -24,8 +24,6 @@ a {
     --cor-alertafundo: #bf1c1c1d;
     --cor-mid: #e2e82e;
     --cor-midfundo: #e2e82e18;
-    --cor-frio: #1c6fbf;
-    --cor-friofundo: #1c6fbf1d;
     --cor-borda: #bababa;
 }
 
@@ -465,50 +463,9 @@ body.menu-recolhido .menu-lateral ul li a.underline-desliza i {
     border: 1px solid var(--cor-mid);
 }
 
-.janelinhaE,
-.janelinhaB {
-    font-size: 12px;
-    display: grid;
-    justify-self: center;
-    width: 50%;
-    min-width: 0;
-    border: 1px solid var(--cor-borda);
-    border-radius: 20px;
-    margin-top: 1%;
-    padding: 3%;
-    cursor: pointer;
-    transition: 0.2s ease-in-out;
-}
-
-.janelinhaE {
-    color: var(--cor-hover);
-    border-left: 6px solid var(--cor-hover);
-    background-color: var(--cor-fundo);
-}
-
-.janelinhaE:hover {
-    border: 1px solid var(--cor-hover);
-}
-
-.janelinhaB {
-    color: var(--cor-frio);
-    border-left: 6px solid var(--cor-frio);
-    background-color: var(--cor-friofundo);
-}
-
-.janelinhaB:hover {
-    border: 1px solid var(--cor-frio);
-}
-
 .deta {
     font-size: 16px;
     color: var(--cor-textosInfo);
-}
-
-.deta-hora {
-    font-size: 12px;
-    color: var(--cor-textosInfo);
-    opacity: 0.8;
 }
 
 .colunaG {
@@ -1272,9 +1229,7 @@ body.menu-recolhido .menu-lateral ul li a.underline-desliza i {
 
     .janelinhaR,
     .janelinhaA,
-    .janelinhaM,
-    .janelinhaE,
-    .janelinhaB {
+    .janelinhaM {
         width: 100%;
     }
 
@@ -1298,8 +1253,6 @@ body[data-theme="dark"] {
     --cor-alertafundo: #bf1c1c24;
     --cor-mid: #f0d45c;
     --cor-midfundo: #e2e82e20;
-    --cor-frio: #7fb8ff;
-    --cor-friofundo: #1c6fbf24;
     --cor-borda: #394642;
     --cor-superficie: #141615;
     --cor-superficie-secundaria: #26312d;
