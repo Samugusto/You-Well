@@ -249,9 +249,9 @@ try {
 }
 mysqli_close($con);
 
-// Alertas de temperatura com base na última medição real de cada setor.
-$alertas = gerarAlertasTemperatura($setores);
-// O contador do cabeçalho mostra apenas os alertas que exigem atenção (alta/baixa).
+// Alertas de temperatura, qualidade do ar e ruído com base na última medição de cada setor.
+$alertas = gerarAlertasSetores($setores);
+// O contador do cabeçalho mostra apenas os alertas críticos.
 $quantidadeAlertas = count(array_filter($alertas, fn ($alerta) => $alerta['nivel'] !== 'estavel'));
 
 $fotoPerfil = null;
@@ -658,9 +658,6 @@ if (!in_array($pagina, $paginas, true)) {
                     <div class="<?= htmlspecialchars($alerta['classe'], ENT_QUOTES, 'UTF-8') ?>">
                         <h1><?= htmlspecialchars($alerta['setor'], ENT_QUOTES, 'UTF-8') ?></h1>
                         <h1 class="deta"><?= htmlspecialchars($alerta['texto'], ENT_QUOTES, 'UTF-8') ?></h1>
-                        <?php if (!empty($alerta['data_hora'])): ?>
-                            <span class="deta-hora">Última medição: <?= htmlspecialchars(date('d/m/Y H:i', strtotime($alerta['data_hora'])), ENT_QUOTES, 'UTF-8') ?></span>
-                        <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
                 <?php if (count($alertas) === 0): ?>

@@ -1,97 +1,138 @@
 <?php
 
-// Faixa de temperatura considerada estável (°C). Valores abaixo de
-// TEMPERATURA_MINIMA são "baixa" e acima de TEMPERATURA_MAXIMA são "alta".
-const TEMPERATURA_MINIMA = 35.0;
-const TEMPERATURA_MAXIMA = 45.0;
+// Faixas consideradas estáveis para cada sensor. Fora da faixa = crítico.
+// 'minimo' ou 'maximo' null significa sem limite naquele lado.
+const LIMITES_SENSORES = [
+    'temperatura' => [
+        'nome' => 'Temperatura',
+        'unidade' => '°C',
+        'minimo' => 35.0,
+        'maximo' => 45.0,
+        'alto' => 'alta',
+        'baixo' => 'baixa',
+        'estavel' => 'estável',
+    ],
+    'qualidade_ar' => [
+        'nome' => 'Qualidade do ar',
+        'unidade' => ' ppm',
+        'minimo' => null,
+        'maximo' => 1000.0,
+        'alto' => 'ruim',
+        'baixo' => 'ruim',
+        'estavel' => 'boa',
+    ],
+    'ruido' => [
+        'nome' => 'Ruído',
+        'unidade' => ' dB',
+        'minimo' => null,
+        'maximo' => 85.0, // limite de exposição de 8h (NR-15)
+        'alto' => 'alto',
+        'baixo' => 'baixo',
+        'estavel' => 'estável',
+    ],
+];
 
-// Busca a medição mais recente de um setor na tabela setor_{id}
-// (preenchida pela API do ESP32). Retorna null se não houver dados.
-function buscarUltimaMedicaoSetor(mysqli $con, int $idSetor): ?array
+// Busca o valor mais recente de um sensor (tabelas temperatura, ruido,
+// qualidade_ar: colunas id_<tabela>, id_setor, valor, data_hora).
+function buscarUltimoValorSensor(mysqli $con, string $tabela, int $idSetor): ?array
 {
-    if ($idSetor <= 0) return null;
+    if ($idSetor <= 0 || !array_key_exists($tabela, LIMITES_SENSORES)) return null;
 
-    $tabela = 'setor_' . $idSetor;
-    $sql = "SELECT temperatura, ruido, qualidade_ar, data_hora FROM `{$tabela}` ORDER BY data_hora DESC, id_medicao DESC LIMIT 1";
+    $colunaId = 'id_' . $tabela;
+    $sql = "SELECT valor, data_hora FROM `{$tabela}` WHERE id_setor = ? ORDER BY data_hora DESC, `{$colunaId}` DESC LIMIT 1";
 
     try {
-        $resultado = mysqli_query($con, $sql);
+        $stmt = mysqli_prepare($con, $sql);
+        if (!$stmt) return null;
+        mysqli_stmt_bind_param($stmt, 'i', $idSetor);
+        mysqli_stmt_execute($stmt);
+        $resultado = mysqli_stmt_get_result($stmt);
+        $medicao = $resultado ? mysqli_fetch_assoc($resultado) : null;
+        mysqli_stmt_close($stmt);
     } catch (Throwable $erro) {
-        // A tabela ainda não existe (setor sem dispositivo/medições).
+        error_log("Erro ao buscar {$tabela} do setor {$idSetor}: " . $erro->getMessage());
         return null;
     }
-    if (!$resultado) return null;
-
-    $medicao = mysqli_fetch_assoc($resultado);
-    mysqli_free_result($resultado);
 
     return $medicao ?: null;
 }
 
-// Adiciona a última medição (temperatura, ruído, qualidade do ar) a cada setor.
+// Adiciona a medição mais recente de cada sensor a cada setor.
 function anexarUltimasMedicoes(mysqli $con, array $setores): array
 {
     foreach ($setores as &$setor) {
-        $medicao = buscarUltimaMedicaoSetor($con, (int) $setor['id_setor']);
-        $setor['temperatura'] = $medicao['temperatura'] ?? null;
-        $setor['ruido'] = $medicao['ruido'] ?? null;
-        $setor['qualidade_ar'] = $medicao['qualidade_ar'] ?? null;
-        $setor['data_medicao'] = $medicao['data_hora'] ?? null;
+        foreach (array_keys(LIMITES_SENSORES) as $sensor) {
+            $medicao = buscarUltimoValorSensor($con, $sensor, (int) $setor['id_setor']);
+            $setor[$sensor] = $medicao['valor'] ?? null;
+        }
     }
     unset($setor);
 
     return $setores;
 }
 
-// Classifica a temperatura em baixa, estável ou alta.
-function classificarTemperatura(float $temperatura): array
+// Classifica um valor de sensor como alto, baixo ou estável.
+// 'excesso' indica o quanto (em %) o valor passou do limite, usado para ordenar.
+function classificarSensor(string $sensor, float $valor): array
 {
-    $valor = number_format($temperatura, 1, ',', '.') . '°C';
+    $limite = LIMITES_SENSORES[$sensor];
+    $casas = $sensor === 'qualidade_ar' ? 0 : 1;
+    $valorFormatado = number_format($valor, $casas, ',', '.') . $limite['unidade'];
+    $nome = $limite['nome'];
 
-    if ($temperatura < TEMPERATURA_MINIMA) {
+    if ($limite['maximo'] !== null && $valor > $limite['maximo']) {
         return [
-            'nivel' => 'baixa',
-            'texto' => "Aviso: a temperatura do setor está baixa: {$valor}",
-            'classe' => 'janelinhaB',
+            'nivel' => 'critico',
+            'texto' => "Crítico: {$nome} do setor {$limite['alto']}: {$valorFormatado}",
+            'classe' => 'janelinhaA',
+            'excesso' => ($valor - $limite['maximo']) / max(abs($limite['maximo']), 1),
         ];
     }
 
-    if ($temperatura > TEMPERATURA_MAXIMA) {
+    if ($limite['minimo'] !== null && $valor < $limite['minimo']) {
         return [
-            'nivel' => 'alta',
-            'texto' => "Crítico: a temperatura do setor está alta: {$valor}",
+            'nivel' => 'critico',
+            'texto' => "Crítico: {$nome} do setor {$limite['baixo']}: {$valorFormatado}",
             'classe' => 'janelinhaA',
+            'excesso' => ($limite['minimo'] - $valor) / max(abs($limite['minimo']), 1),
         ];
     }
 
     return [
         'nivel' => 'estavel',
-        'texto' => "Normal: a temperatura do setor está estável: {$valor}",
-        'classe' => 'janelinhaE',
+        'texto' => "Avisos: {$nome} do setor {$limite['estavel']}: {$valorFormatado}",
+        'classe' => 'janelinhaM',
+        'excesso' => 0.0,
     ];
 }
 
-// Gera um alerta de temperatura para cada setor que já possui medição.
-// Espera setores com a chave 'temperatura' (ver anexarUltimasMedicoes).
-function gerarAlertasTemperatura(array $setores): array
+// Gera alertas de temperatura, qualidade do ar e ruído para cada setor
+// que já possui medição. Espera setores preenchidos por anexarUltimasMedicoes.
+// Ordem: críticos primeiro, e entre eles os que mais passaram do limite.
+function gerarAlertasSetores(array $setores): array
 {
     $alertas = [];
 
     foreach ($setores as $setor) {
-        if (!isset($setor['temperatura']) || !is_numeric($setor['temperatura'])) continue;
+        foreach (array_keys(LIMITES_SENSORES) as $sensor) {
+            if (!isset($setor[$sensor]) || !is_numeric($setor[$sensor])) continue;
 
-        $classificacao = classificarTemperatura((float) $setor['temperatura']);
-        $alertas[] = [
-            'setor' => $setor['nome'],
-            'texto' => $classificacao['texto'],
-            'classe' => $classificacao['classe'],
-            'nivel' => $classificacao['nivel'],
-            'data_hora' => $setor['data_medicao'] ?? null,
-        ];
+            $classificacao = classificarSensor($sensor, (float) $setor[$sensor]);
+            $alertas[] = [
+                'setor' => $setor['nome'],
+                'sensor' => $sensor,
+                'texto' => $classificacao['texto'],
+                'classe' => $classificacao['classe'],
+                'nivel' => $classificacao['nivel'],
+                'excesso' => $classificacao['excesso'],
+            ];
+        }
     }
 
-    // Alertas que exigem atenção (alta/baixa) aparecem primeiro.
-    usort($alertas, fn ($a, $b) => ($a['nivel'] === 'estavel') <=> ($b['nivel'] === 'estavel'));
+    usort($alertas, function ($a, $b) {
+        $porNivel = ($a['nivel'] === 'estavel') <=> ($b['nivel'] === 'estavel');
+        return $porNivel !== 0 ? $porNivel : $b['excesso'] <=> $a['excesso'];
+    });
 
     return $alertas;
 }
