@@ -204,14 +204,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'excluir
     $abaAtiva = 'panel-setores';
     $idSetorExcluir = isset($_POST['id_setor']) ? (int) $_POST['id_setor'] : 0;
 
-    if ($idSetorExcluir <= 0) {
+    if (!$podeCriarSetores) {
+        $mensagemSetor = 'Somente administradores podem excluir setores.';
+        $tipoMensagemSetor = 'erro';
+    } elseif ($idSetorExcluir <= 0) {
         $mensagemSetor = 'Setor inválido para exclusão.';
         $tipoMensagemSetor = 'erro';
     } elseif ($erroTabelaSetores) {
         $mensagemSetor = 'Não foi possível excluir o setor agora. Tente novamente.';
         $tipoMensagemSetor = 'erro';
     } else {
-        if (excluirSetor($con, $idUsuario, $idSetorExcluir, $podeCriarSetores)) {
+        if (excluirSetor($con, $idSetorExcluir)) {
             $mensagemSetor = 'Setor excluído com sucesso.';
             $tipoMensagemSetor = 'sucesso';
         } else {
@@ -247,10 +250,20 @@ try {
         $tipoMensagemSetor = 'erro';
     }
 }
+
+// Alertas de temperatura, qualidade do ar e ruído: cada medição nova vira um
+// alerta e só os 10 mais recentes ficam guardados (os mais velhos são apagados).
+$alertas = [];
+try {
+    // Registra alertas de todos os setores, não só dos visíveis para este usuário.
+    $todosSetores = $podeCriarSetores ? $setores : anexarUltimasMedicoes($con, listarTodosSetores($con));
+    registrarAlertas($con, $todosSetores);
+    $alertas = listarAlertas($con, $podeCriarSetores ? null : array_column($setores, 'id_setor'));
+} catch (Throwable $erro) {
+    error_log('Erro ao processar alertas: ' . $erro->getMessage());
+}
 mysqli_close($con);
 
-// Alertas de temperatura, qualidade do ar e ruído com base na última medição de cada setor.
-$alertas = gerarAlertasSetores($setores);
 // O contador do cabeçalho mostra apenas os alertas críticos.
 $quantidadeAlertas = count(array_filter($alertas, fn ($alerta) => $alerta['nivel'] !== 'estavel'));
 
@@ -805,6 +818,7 @@ if (!in_array($pagina, $paginas, true)) {
                                                         <span class="card-setor-badge"><i class="bi bi-building"></i></span>
                                                         <span class="card-setor-nome"><?= htmlspecialchars($setor['nome'], ENT_QUOTES, 'UTF-8') ?><small>Responsável: <?= htmlspecialchars($setor['responsavel'] ?? $setor['gerente'], ENT_QUOTES, 'UTF-8') ?></small></span>
                                                     </div>
+                                                    <?php if ($podeCriarSetores): ?>
                                                     <form method="post" class="form-excluir-setor" onsubmit="return confirm('Deseja realmente excluir o setor &quot;<?= htmlspecialchars($setor['nome'], ENT_QUOTES, 'UTF-8') ?>&quot;? Todas as leituras associadas a ele serão apagadas permanentemente.');">
                                                         <input type="hidden" name="acao" value="excluir_setor">
                                                         <input type="hidden" name="id_setor" value="<?= (int) $setor['id_setor'] ?>">
@@ -813,6 +827,7 @@ if (!in_array($pagina, $paginas, true)) {
                                                             <span>Excluir</span>
                                                         </button>
                                                     </form>
+                                                    <?php endif; ?>
                                                 </div>
                                             <?php endforeach; ?>
                                         </div>

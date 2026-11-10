@@ -304,20 +304,16 @@ function executarExclusaoRelacionada(mysqli $con, string $sql, int $idSetor): vo
 }
 
 // Exclui o setor e tudo que depende dele (leituras, dispositivo ESP32,
-// vínculo com gerentes). Admin pode excluir qualquer setor; gerente só os seus.
-function excluirSetor(mysqli $con, int $idUsuario, int $idSetor, bool $ehAdmin = false): bool
+// vínculo com gerentes, alertas). Somente administradores podem chamar
+// (a permissão é verificada em controllers/painel.php).
+function excluirSetor(mysqli $con, int $idSetor): bool
 {
     if ($idSetor <= 0) return false;
 
-    $sqlSetor = $ehAdmin
-        ? 'SELECT id_setor FROM setores WHERE id_setor = ? LIMIT 1'
-        : 'SELECT id_setor FROM setores WHERE id_setor = ? AND id_usuario = ? LIMIT 1';
-
     try {
-        $stmt = mysqli_prepare($con, $sqlSetor);
+        $stmt = mysqli_prepare($con, 'SELECT id_setor FROM setores WHERE id_setor = ? LIMIT 1');
         if (!$stmt) return false;
-        if ($ehAdmin) mysqli_stmt_bind_param($stmt, 'i', $idSetor);
-        else mysqli_stmt_bind_param($stmt, 'ii', $idSetor, $idUsuario);
+        mysqli_stmt_bind_param($stmt, 'i', $idSetor);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_store_result($stmt);
         $existe = mysqli_stmt_num_rows($stmt) > 0;
@@ -330,6 +326,8 @@ function excluirSetor(mysqli $con, int $idUsuario, int $idSetor, bool $ehAdmin =
         executarExclusaoRelacionada($con, 'DELETE FROM ruido WHERE id_setor = ?', $idSetor);
         executarExclusaoRelacionada($con, 'DELETE FROM qualidade_ar WHERE id_setor = ?', $idSetor);
         executarExclusaoRelacionada($con, 'DELETE FROM dispositivos_esp32 WHERE id_setor = ?', $idSetor);
+        executarExclusaoRelacionada($con, 'DELETE FROM alertas WHERE id_setor = ?', $idSetor);
+        executarExclusaoRelacionada($con, 'DELETE FROM alertas_controle WHERE id_setor = ?', $idSetor);
         executarExclusaoRelacionada($con, 'UPDATE usuarios SET setor = NULL WHERE setor = ?', $idSetor);
 
         $stmt = mysqli_prepare($con, 'DELETE FROM setores WHERE id_setor = ?');
