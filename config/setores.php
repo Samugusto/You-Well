@@ -288,31 +288,74 @@ function listarTodosSetores(mysqli $con): array
 // ======================================================
 
 
-function excluirSetor(mysqli $con, int $idUsuario, int $idSetor): bool
+// Executa um comando com o id do setor; ignora tabelas que não existem.
+function executarExclusaoRelacionada(mysqli $con, string $sql, int $idSetor): void
 {
-    $sql = "
-        DELETE FROM setores
-        WHERE id_setor = ? AND id_usuario = ?
-    ";
+    try {
+        $stmt = mysqli_prepare($con, $sql);
+        if (!$stmt) return;
+        mysqli_stmt_bind_param($stmt, 'i', $idSetor);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    } catch (mysqli_sql_exception $erro) {
+        // 1146 = tabela não existe; 1054 = coluna não existe. Demais erros sobem.
+        if (!in_array($erro->getCode(), [1146, 1054], true)) throw $erro;
+    }
+}
 
+// Exclui o setor e tudo que depende dele (leituras, dispositivo ESP32,
+// vínculo com gerentes). Admin pode excluir qualquer setor; gerente só os seus.
+function excluirSetor(mysqli $con, int $idUsuario, int $idSetor, bool $ehAdmin = false): bool
+{
+    if ($idSetor <= 0) return false;
 
-    $stmt = mysqli_prepare($con, $sql);
+    $sqlSetor = $ehAdmin
+        ? 'SELECT id_setor FROM setores WHERE id_setor = ? LIMIT 1'
+        : 'SELECT id_setor FROM setores WHERE id_setor = ? AND id_usuario = ? LIMIT 1';
 
+    try {
+        $stmt = mysqli_prepare($con, $sqlSetor);
+        if (!$stmt) return false;
+        if ($ehAdmin) mysqli_stmt_bind_param($stmt, 'i', $idSetor);
+        else mysqli_stmt_bind_param($stmt, 'ii', $idSetor, $idUsuario);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_store_result($stmt);
+        $existe = mysqli_stmt_num_rows($stmt) > 0;
+        mysqli_stmt_close($stmt);
+        if (!$existe) return false;
 
-    if (!$stmt) {
+        mysqli_begin_transaction($con);
+
+        executarExclusaoRelacionada($con, 'DELETE FROM temperatura WHERE id_setor = ?', $idSetor);
+        executarExclusaoRelacionada($con, 'DELETE FROM ruido WHERE id_setor = ?', $idSetor);
+        executarExclusaoRelacionada($con, 'DELETE FROM qualidade_ar WHERE id_setor = ?', $idSetor);
+        executarExclusaoRelacionada($con, 'DELETE FROM dispositivos_esp32 WHERE id_setor = ?', $idSetor);
+        executarExclusaoRelacionada($con, 'UPDATE usuarios SET setor = NULL WHERE setor = ?', $idSetor);
+
+        $stmt = mysqli_prepare($con, 'DELETE FROM setores WHERE id_setor = ?');
+        mysqli_stmt_bind_param($stmt, 'i', $idSetor);
+        mysqli_stmt_execute($stmt);
+        $linhasAfetadas = mysqli_stmt_affected_rows($stmt);
+        mysqli_stmt_close($stmt);
+
+        if ($linhasAfetadas <= 0) {
+            mysqli_rollback($con);
+            return false;
+        }
+
+        mysqli_commit($con);
+    } catch (Throwable $erro) {
+        try { mysqli_rollback($con); } catch (Throwable $e) {}
+        error_log('Erro ao excluir setor ' . $idSetor . ': ' . $erro->getMessage());
         return false;
     }
 
+    // Tabela de medições criada pela API do ESP32 (fora da transação: DROP faz commit implícito).
+    try {
+        mysqli_query($con, 'DROP TABLE IF EXISTS `setor_' . $idSetor . '`');
+    } catch (Throwable $erro) {
+        error_log('Erro ao remover tabela setor_' . $idSetor . ': ' . $erro->getMessage());
+    }
 
-    mysqli_stmt_bind_param($stmt, 'ii', $idSetor, $idUsuario);
-
-
-    $executou = mysqli_stmt_execute($stmt);
-    $linhasAfetadas = mysqli_stmt_affected_rows($stmt);
-
-
-    mysqli_stmt_close($stmt);
-
-
-    return $executou && $linhasAfetadas > 0;
+    return true;
 }

@@ -211,7 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'excluir
         $mensagemSetor = 'Não foi possível excluir o setor agora. Tente novamente.';
         $tipoMensagemSetor = 'erro';
     } else {
-        if (excluirSetor($con, $idUsuario, $idSetorExcluir)) {
+        if (excluirSetor($con, $idUsuario, $idSetorExcluir, $podeCriarSetores)) {
             $mensagemSetor = 'Setor excluído com sucesso.';
             $tipoMensagemSetor = 'sucesso';
         } else {
