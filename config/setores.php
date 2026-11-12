@@ -9,14 +9,6 @@ function garantirTabelaSetores(mysqli $con): void
     if (!mysqli_query($con, $sqlDispositivos)) throw new RuntimeException('Não foi possível preparar a tabela de dispositivos.');
 }
 
-// Cria a tabela de medições usada pela API (Api/receber_dados.php).
-function garantirTabelaMedicoesSetor(mysqli $con, int $idSetor): void
-{
-    $tabela = 'setor_' . $idSetor;
-    $sql = "CREATE TABLE IF NOT EXISTS `{$tabela}` (id_medicao INT NOT NULL AUTO_INCREMENT, temperatura DECIMAL(6,2) NULL, ruido DECIMAL(6,2) NULL, qualidade_ar DECIMAL(8,2) NULL, data_hora TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (id_medicao), KEY idx_data_hora (data_hora)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-    if (!mysqli_query($con, $sql)) throw new RuntimeException('Não foi possível criar a tabela de medições do setor.');
-}
-
 // Gera um token para o ESP32, salva apenas o hash e devolve o token em texto puro.
 function gerarTokenDispositivo(mysqli $con, int $idSetor): string
 {
@@ -156,9 +148,9 @@ function criarSetor(mysqli $con, int $idGerente, string $nome): array
         mysqli_stmt_close($stmtInserir);
 
         // Gera o token do ESP32. Se falhar, remove o setor para não
-        // deixar um setor sem dispositivo.
+        // deixar um setor sem dispositivo. As medições ficam nas tabelas
+        // temperatura, ruido e qualidade_ar, separadas pelo id_setor.
         try {
-            garantirTabelaMedicoesSetor($con, $idSetor);
             $token = gerarTokenDispositivo($con, $idSetor);
         } catch (Throwable $erroToken) {
             mysqli_query($con, 'DELETE FROM setores WHERE id_setor = ' . $idSetor);

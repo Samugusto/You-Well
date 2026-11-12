@@ -77,18 +77,34 @@ try {
         responderApi(403, ['success' => false, 'mensagem' => 'Dispositivo sem setor válido.']);
     }
 
-    $tabela = 'setor_' . $idSetor;
-    $sql = "INSERT INTO `{$tabela}` (temperatura, ruido, qualidade_ar) VALUES (?, ?, ?)";
-    $stmt = mysqli_prepare($con, $sql);
-    if (!$stmt) {
-        throw new RuntimeException('Falha ao preparar o armazenamento.');
+    // Cada sensor vai para a sua tabela (colunas id_setor, valor, data_hora),
+    // identificado pelo setor em que o ESP32 está cadastrado.
+    $medicoes = [
+        'temperatura' => $temperatura,
+        'ruido' => $ruido,
+        'qualidade_ar' => $qualidadeAr,
+    ];
+
+    // Todas as leituras do envio usam o mesmo horário; grava as três ou nenhuma.
+    mysqli_begin_transaction($con);
+    try {
+        foreach ($medicoes as $tabela => $valor) {
+            $stmt = mysqli_prepare($con, "INSERT INTO `{$tabela}` (id_setor, valor, data_hora) VALUES (?, ?, NOW())");
+            if (!$stmt) {
+                throw new RuntimeException("Falha ao preparar o armazenamento em {$tabela}.");
+            }
+            mysqli_stmt_bind_param($stmt, 'id', $idSetor, $valor);
+            if (!mysqli_stmt_execute($stmt)) {
+                mysqli_stmt_close($stmt);
+                throw new RuntimeException("Falha ao armazenar medição em {$tabela}.");
+            }
+            mysqli_stmt_close($stmt);
+        }
+        mysqli_commit($con);
+    } catch (Throwable $erroInsercao) {
+        mysqli_rollback($con);
+        throw $erroInsercao;
     }
-    mysqli_stmt_bind_param($stmt, 'ddd', $temperatura, $ruido, $qualidadeAr);
-    if (!mysqli_stmt_execute($stmt)) {
-        mysqli_stmt_close($stmt);
-        throw new RuntimeException('Falha ao armazenar medição.');
-    }
-    mysqli_stmt_close($stmt);
     mysqli_close($con);
     responderApi(201, ['success' => true, 'mensagem' => 'Medição recebida.']);
 } catch (Throwable $e) {
