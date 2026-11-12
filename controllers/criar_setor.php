@@ -20,7 +20,7 @@ try {
     $idUsuario = $_POST['id_gerente'] ?? '';
 
 
-    // Validar nome
+    // Validar nome do setor
     if ($nome === '') {
         echo json_encode([
             'success' => false,
@@ -43,8 +43,8 @@ try {
     $idUsuario = (int) $idUsuario;
 
 
-    // Verificar se o usuário existe e é gerente
-    $sqlGerente = "SELECT id_usuario
+    // Buscar o gerente pelo ID e obter seu nome
+    $sqlGerente = "SELECT id_usuario, nome
                    FROM usuarios
                    WHERE id_usuario = ?
                    AND papel = 'gerente'
@@ -56,13 +56,19 @@ try {
     $stmt->execute();
 
 
-    if (!$stmt->get_result()->fetch_assoc()) {
+    $gerente = $stmt->get_result()->fetch_assoc();
+
+
+    if (!$gerente) {
         echo json_encode([
             'success' => false,
             'message' => 'Gerente não encontrado.'
         ], JSON_UNESCAPED_UNICODE);
         exit;
     }
+
+
+    $nomeGerente = $gerente['nome'];
 
 
     $stmt->close();
@@ -94,13 +100,13 @@ try {
     $stmt->close();
 
 
-    // Inserir setor
-    $sqlInserir = "INSERT INTO setores (nome, id_usuario)
-                   VALUES (?, ?)";
+    // Inserir setor com ID e nome do gerente
+    $sqlInserir = "INSERT INTO setores (nome, id_usuario, gerente)
+                   VALUES (?, ?, ?)";
 
 
     $stmt = $con->prepare($sqlInserir);
-    $stmt->bind_param("si", $nome, $idUsuario);
+    $stmt->bind_param("sis", $nome, $idUsuario, $nomeGerente);
     $stmt->execute();
 
 
