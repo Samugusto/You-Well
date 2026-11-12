@@ -1,13 +1,14 @@
 <?php
 
 // Faixas consideradas estáveis para cada sensor. Fora da faixa = crítico.
+// Valor <= 'minimo' é baixo; valor > 'maximo' é alto.
 // 'minimo' ou 'maximo' null significa sem limite naquele lado.
 const LIMITES_SENSORES = [
     'temperatura' => [
         'nome' => 'Temperatura',
         'unidade' => '°C',
-        'minimo' => 35.0,
-        'maximo' => 45.0,
+        'minimo' => 20.0, // 20°C ou menos = baixa
+        'maximo' => 36.0, // acima de 36°C = alta (ideal: 22 a 36°C)
         'alto' => 'alta',
         'baixo' => 'baixa',
         'estavel' => 'estável',
@@ -90,7 +91,7 @@ function classificarSensor(string $sensor, float $valor): array
         ];
     }
 
-    if ($limite['minimo'] !== null && $valor < $limite['minimo']) {
+    if ($limite['minimo'] !== null && $valor <= $limite['minimo']) {
         return [
             'nivel' => 'critico',
             'texto' => "Crítico: {$nome} do setor {$limite['baixo']}: {$valorFormatado}",
@@ -206,4 +207,43 @@ function listarAlertas(mysqli $con, ?array $idsSetores = null): array
     });
 
     return $alertas;
+}
+
+// Resumo da página inicial: média das últimas leituras de cada sensor entre
+// os setores informados (preenchidos por anexarUltimasMedicoes).
+// Retorna null no sensor que ainda não tem nenhuma leitura.
+function calcularResumoInicio(array $setores): array
+{
+    $resumo = [];
+    foreach (array_keys(LIMITES_SENSORES) as $sensor) {
+        $valores = array_map('floatval', array_filter(array_column($setores, $sensor), 'is_numeric'));
+        $resumo[$sensor] = $valores ? array_sum($valores) / count($valores) : null;
+    }
+    return $resumo;
+}
+
+// Média de todas as leituras de temperatura de cada setor, para os gráficos
+// da página inicial. Retorna [['local' => nome, 'media' => valor], ...].
+function calcularMediasTemperaturaSetores(mysqli $con, array $setores): array
+{
+    $ids = array_values(array_filter(array_map('intval', array_column($setores, 'id_setor')), fn ($id) => $id > 0));
+    if (!$ids) return [];
+
+    $medias = [];
+    try {
+        $resultado = mysqli_query($con, 'SELECT id_setor, AVG(valor) AS media FROM temperatura WHERE id_setor IN (' . implode(',', $ids) . ') GROUP BY id_setor');
+        while ($resultado && ($linha = mysqli_fetch_assoc($resultado))) {
+            $medias[(int) $linha['id_setor']] = round((float) $linha['media'], 1);
+        }
+    } catch (Throwable $erro) {
+        error_log('Erro ao calcular médias de temperatura: ' . $erro->getMessage());
+        return [];
+    }
+
+    $dados = [];
+    foreach ($setores as $setor) {
+        $id = (int) $setor['id_setor'];
+        if (isset($medias[$id])) $dados[] = ['local' => $setor['nome'], 'media' => $medias[$id]];
+    }
+    return $dados;
 }

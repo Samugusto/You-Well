@@ -60,6 +60,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     ];
 
+    // Na página inicial, usa os dados reais enviados pelo PHP
+    // (média de temperatura de cada setor).
+    if (Array.isArray(window.dadosGraficoInicio)) {
+        dados = window.dadosGraficoInicio;
+    }
+
     // ======================================================
     // FUNÇÕES PARA PEGAR DADOS
     // ======================================================
@@ -93,6 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function getMedColors(values) {
+        if (values.length === 0) return [];
         const menorValor = Math.min(...values);
         const maiorValor = Math.max(...values);
         const intervalo = maiorValor - menorValor || 1;

@@ -265,7 +265,21 @@ try {
 } catch (Throwable $erro) {
     error_log('Erro ao processar alertas: ' . $erro->getMessage());
 }
+
+// Dados reais da página inicial (somente dos setores visíveis para o usuário).
+$resumoInicio = calcularResumoInicio($setores);
+$dadosGraficoInicio = calcularMediasTemperaturaSetores($con, $setores);
 mysqli_close($con);
+
+$temperaturaGeral = $resumoInicio['temperatura'] !== null
+    ? number_format($resumoInicio['temperatura'], 1, ',', '.') . '°'
+    : 'Aguardando';
+$ruidoGeral = $resumoInicio['ruido'] !== null
+    ? number_format($resumoInicio['ruido'], 0, ',', '.') . ' db'
+    : 'Aguardando';
+$qualidadeArGeral = $resumoInicio['qualidade_ar'] !== null
+    ? ($resumoInicio['qualidade_ar'] > LIMITES_SENSORES['qualidade_ar']['maximo'] ? 'Ruim' : 'Boa')
+    : 'Aguardando';
 
 // O contador do cabeçalho mostra apenas os alertas críticos.
 $quantidadeAlertas = count(array_filter($alertas, fn ($alerta) => $alerta['nivel'] !== 'estavel'));
@@ -303,6 +317,12 @@ if (!in_array($pagina, $paginas, true)) {
     <link rel="stylesheet" href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/css/loader.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <?php if ($pagina === 'inicio'): ?>
+    <script>
+        // Média de temperatura de cada setor (dados reais) para os gráficos da página inicial.
+        window.dadosGraficoInicio = <?= json_encode($dadosGraficoInicio, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+    </script>
+    <?php endif; ?>
     <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/graficos.js"></script>
     <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/menu.js?v=4"></script>
 </head>
@@ -415,7 +435,7 @@ if (!in_array($pagina, $paginas, true)) {
                                 <span class="outro">Temperatura média</span>
                             </div>
                             <div class="divi"></div>
-                            <h1 class="info3">Temperatura geral: <span class="valores">23°</span></h1>
+                            <h1 class="info3">Temperatura geral: <span class="valores"><?= htmlspecialchars($temperaturaGeral, ENT_QUOTES, 'UTF-8') ?></span></h1>
                         </div>
                     </div>
                 </a>
@@ -427,7 +447,7 @@ if (!in_array($pagina, $paginas, true)) {
                                 <span class="outro">Ruído médio</span>
                             </div>
                             <div class="divi"></div>
-                            <h1 class="info3">Ruído geral: <span class="valores">24 db</span></h1>
+                            <h1 class="info3">Ruído geral: <span class="valores"><?= htmlspecialchars($ruidoGeral, ENT_QUOTES, 'UTF-8') ?></span></h1>
                         </div>
                     </div>
                 </a>
@@ -439,7 +459,7 @@ if (!in_array($pagina, $paginas, true)) {
                                 <span class="outro">Média do ar</span>
                             </div>
                             <div class="divi"></div>
-                            <h1 class="info3">Qualidade geral: <span class="valores">Boa</span></h1>
+                            <h1 class="info3">Qualidade geral: <span class="valores"><?= htmlspecialchars($qualidadeArGeral, ENT_QUOTES, 'UTF-8') ?></span></h1>
                         </div>
                     </div>
                 </a>
