@@ -1,2 +1,3 @@
-/config/resend.local.php
 /config/database.local.php
+config/resend.local.php
+config/resend.local.php.example

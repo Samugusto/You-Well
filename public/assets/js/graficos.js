@@ -160,6 +160,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (tipo === 'inicio-area') {
             return {
+                responsive: true,
+                maintainAspectRatio: false,
                 plugins: { legend: legenda, title: tituloGrafico('Últimas medições de cada setor') },
                 scales: {
                     y: { position: 'left', beginAtZero: true, title: { display: true, text: '°C / dB' } },
@@ -178,6 +180,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         if (tipo === 'sensor-area') {
             return {
+                responsive: true,
+                maintainAspectRatio: false,
                 plugins: { legend: legenda, title: tituloGrafico(`${limite(sensor).nome}: últimas leituras`) },
                 scales: { y: { beginAtZero: sensor !== 'temperatura' } }
             };

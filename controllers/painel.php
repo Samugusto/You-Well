@@ -334,7 +334,7 @@ if (!in_array($pagina, $paginas, true)) {
         window.dadosGraficosIniciais = <?= json_encode($dadosGraficos, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
     </script>
     <?php endif; ?>
-    <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/graficos.js?v=2"></script>
+    <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/graficos.js?v=3"></script>
     <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/menu.js?v=4"></script>
 </head>
 
@@ -586,7 +586,7 @@ if (!in_array($pagina, $paginas, true)) {
                             aria-selected="false" aria-controls="panel-aparencia" data-config-tab="panel-aparencia" tabindex="-1">
                             Aparência
                         </button>
-                        <button class="optionsC2 <?= $abaAtiva === 'panel-perfil' ? 'active' : '' ?>" id="tab-perfil" type="button" role="tab"
+                        <button class="optionsC3 <?= $abaAtiva === 'panel-perfil' ? 'active' : '' ?>" id="tab-perfil" type="button" role="tab"
                             aria-selected="<?= $abaAtiva === 'panel-perfil' ? 'true' : 'false' ?>" aria-controls="panel-perfil" data-config-tab="panel-perfil"
                             tabindex="<?= $abaAtiva === 'panel-perfil' ? '0' : '-1' ?>">
                             Nome e foto de perfil

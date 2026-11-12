@@ -1,13 +1,18 @@
 ﻿<?php
 
+
 header("Content-Type: application/json; charset=UTF-8");
+
 
 require_once __DIR__ . "/../config/conexao.php";
 
+
 $con = conectar();
+
 
 $nome = $_POST['nome'] ?? '';
 $senha = $_POST['senha'] ?? '';
+
 
 if (empty($nome) || empty($senha)) {
     echo json_encode([
@@ -17,9 +22,12 @@ if (empty($nome) || empty($senha)) {
     exit;
 }
 
+
 $sql = "SELECT * FROM usuarios WHERE nome = ?";
 
+
 $stmt = mysqli_prepare($con, $sql);
+
 
 if (!$stmt) {
     echo json_encode([
@@ -29,10 +37,13 @@ if (!$stmt) {
     exit;
 }
 
+
 mysqli_stmt_bind_param($stmt, "s", $nome);
 mysqli_stmt_execute($stmt);
 
+
 $result = mysqli_stmt_get_result($stmt);
+
 
 if ($usuario = mysqli_fetch_assoc($result)) {
     if (password_verify($senha, $usuario["senha"])) {
@@ -41,7 +52,10 @@ if ($usuario = mysqli_fetch_assoc($result)) {
             "id_usuario" => $usuario["id_usuario"],
             "nome" => $usuario["nome"],
             "papel" => $usuario["papel"],
-            "setor" => $usuario["setor"]
+            "setor" => $usuario["setor"],
+            "foto_perfil" => !empty($usuario["foto_perfil"])
+                ? base64_encode($usuario["foto_perfil"])
+                : null
         ]);
     } else {
         echo json_encode([
@@ -56,8 +70,9 @@ if ($usuario = mysqli_fetch_assoc($result)) {
     ]);
 }
 
+
 mysqli_stmt_close($stmt);
 mysqli_close($con);
 
-?>
 
+?>

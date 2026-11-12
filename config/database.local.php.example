@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'host' => '127.0.0.1',
-    'user' => 'SEU_USUARIO_LOCAL',
-    'password' => 'SUA_SENHA_LOCAL',
-    'database' => 'NOME_DO_BANCO_LOCAL',
+    'host' => '162.241.3.35',
+    'user' => 'devsbeecom',
+    'password' => '$Projeto26',
+    'database' => 'devsbeec_monitoramento_ambiente',
     'port' => 3306
 ];
