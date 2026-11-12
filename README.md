@@ -35,3 +35,12 @@ Youwell é uma plataforma digital (WEB) para o monitoramento de setores empresar
   <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/PHP-logo.svg/1280px-PHP-logo.svg.png" width=3%>
     <h4> 2026 YouWell © - Saúde e bem estar corporativo</h4>
 </div>
+
+## Acesso local pelo XAMPP
+
+1. Inicie o Apache e o MySQL pelo XAMPP.
+2. Configure `config/database.local.php` com os dados do banco MySQL local. O arquivo fica ignorado pelo Git; use `config/database.local.php.example` como modelo e preencha com credenciais locais.
+3. Tenha o banco e uma conta de usuário já cadastrados localmente.
+4. Abra `http://localhost/YouWell/You-Well/entrar/` e entre com essa conta. Após autenticar, o sistema abre o dashboard.
+
+O dashboard exige autenticação. Se `database.local.php` não estiver configurado, o app local informa isso em vez de tentar usar o banco da hospedagem.

@@ -4,6 +4,17 @@ function conectar(): mysqli
     $arquivoConfig = __DIR__ . '/database.local.php';
     $config = is_file($arquivoConfig) ? require $arquivoConfig : [];
 
+    $hostRequisicao = strtolower((string) parse_url(
+        'http://' . ($_SERVER['HTTP_HOST'] ?? ''),
+        PHP_URL_HOST
+    ));
+    if (
+        in_array($hostRequisicao, ['localhost', '127.0.0.1', '::1'], true)
+        && !is_file($arquivoConfig)
+    ) {
+        throw new RuntimeException('Configure o banco de dados local em config/database.local.php.');
+    }
+
     if (!is_array($config)) {
         throw new RuntimeException('A configuração local do banco de dados é inválida.');
     }

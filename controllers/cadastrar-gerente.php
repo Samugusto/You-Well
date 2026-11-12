@@ -1,8 +1,11 @@
 <?php
 session_start();
+require_once __DIR__ . "/../config/base_url.php";
+
+$basePath = youwellBasePath();
 
 if (($_SESSION['papel'] ?? null) !== 'admin') {
-    header('Location: /You-Well/entrar/');
+    header("Location: {$basePath}/entrar/");
     exit;
 }
 

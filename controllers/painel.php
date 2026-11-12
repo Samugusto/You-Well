@@ -1,16 +1,19 @@
 <?php
 session_start();
 require_once __DIR__ . "/../config/conexao.php";
+require_once __DIR__ . "/../config/base_url.php";
 require_once __DIR__ . "/../config/setores.php";
 require_once __DIR__ . "/../config/alertas.php";
 
+$basePath = youwellBasePath();
+
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: /You-Well/entrar/");
+    header("Location: {$basePath}/entrar/");
     exit();
 }
 
 if (!in_array($_SESSION['papel'] ?? null, ["admin", "gerente"], true)) {
-    header("Location: /You-Well/entrar/");
+    header("Location: {$basePath}/entrar/");
     exit();
 }
 
@@ -282,13 +285,13 @@ if (!in_array($pagina, $paginas, true)) {
     <title>YouWell - DashBoard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
-    <link href="/You-Well/public/assets/img/sem-titulo.png" rel="icon">
-    <link href="/You-Well/public/assets/css/styleP.css" rel="stylesheet">
-    <link rel="stylesheet" href="/You-Well/public/assets/css/loader.css">
+    <link href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/img/sem-titulo.png" rel="icon">
+    <link href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/css/styleP.css" rel="stylesheet">
+    <link rel="stylesheet" href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/css/loader.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/You-Well/public/assets/js/graficos.js"></script>
-    <script src="/You-Well/public/assets/js/menu.js?v=4"></script>
+    <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/graficos.js"></script>
+    <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/menu.js?v=4"></script>
 </head>
 
 <body>
@@ -297,7 +300,7 @@ if (!in_array($pagina, $paginas, true)) {
             <div class="loader-content">
                 <div class="loader-emblem">
                     <span class="loader-ring" aria-hidden="true"></span>
-                    <img src="/You-Well/public/assets/img/sem-titulo2.png" alt="" class="spinner-img">
+                    <img src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/img/sem-titulo2.png" alt="" class="spinner-img">
                 </div>
                 <p class="loader-label">Preparando sua experiência<span class="loader-dots" aria-hidden="true"></span></p>
             </div>
@@ -310,7 +313,7 @@ if (!in_array($pagina, $paginas, true)) {
                 <i class="bi bi-layout-sidebar-inset"></i>
             </button>
 
-            <button class="menu-toggle botao-alertas" type="button" aria-label="Ver alertas" onclick="window.location.href='/You-Well/dashboard/alertas/?sem_loader=1'">
+            <button class="menu-toggle botao-alertas" type="button" aria-label="Ver alertas" onclick="window.location.href='<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/dashboard/alertas/?sem_loader=1'">
                 <i class="bi bi-bell" aria-hidden="true"></i>
                 <?php if ($quantidadeAlertas > 0): ?>
                     <span class="contador-alertas" aria-label="<?= $quantidadeAlertas ?> alertas"><?= $quantidadeAlertas > 99 ? '99+' : $quantidadeAlertas ?></span>
@@ -325,7 +328,7 @@ if (!in_array($pagina, $paginas, true)) {
             <?php if (!empty($fotoPerfil)): ?>
                 <img src="<?php echo $fotoPerfil; ?>" class="perfil" alt="Foto do perfil">
             <?php else: ?>
-                <img src="/You-Well/public/assets/img/pfp.png" class="perfil" alt="Sem foto de perfil">
+                <img src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/img/pfp.png" class="perfil" alt="Sem foto de perfil">
             <?php endif; ?>
         </div>
     </header>
@@ -333,26 +336,26 @@ if (!in_array($pagina, $paginas, true)) {
     <nav class="menu-lateral">
         <ul>
             <div class="Logo">
-                <img src="/You-Well/public/assets/img/sem-titulo2.png" class="logo-menu">
+                <img src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/img/sem-titulo2.png" class="logo-menu">
                 <h1 class="tituloY">You<span class="well">Well</span></h1>
             </div>
-            <li><a href="/You-Well/dashboard/inicio/?sem_loader=1" class="underline-desliza <?= $pagina === 'inicio' ? 'active' : '' ?>"><i class="bi bi-house-fill"></i>Início</a></li>
+            <li><a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/dashboard/inicio/?sem_loader=1" class="underline-desliza <?= $pagina === 'inicio' ? 'active' : '' ?>"><i class="bi bi-house-fill"></i>Início</a></li>
 
-            <li><a href="/You-Well/dashboard/setores/?sem_loader=1" class="underline-desliza <?= $pagina === 'setores' ? 'active' : '' ?>"><i class="bi bi-building""></i>Setores</a></li>
+            <li><a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/dashboard/setores/?sem_loader=1" class="underline-desliza <?= $pagina === 'setores' ? 'active' : '' ?>"><i class="bi bi-building""></i>Setores</a></li>
 
             <div class=" diviM"></div>
 
-            <li><a href="/You-Well/dashboard/temperatura/?sem_loader=1" class="underline-desliza <?= $pagina === 'temperatura' ? 'active' : '' ?>"><i class="bi bi-thermometer"></i>Temperatura</a></li>
+            <li><a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/dashboard/temperatura/?sem_loader=1" class="underline-desliza <?= $pagina === 'temperatura' ? 'active' : '' ?>"><i class="bi bi-thermometer"></i>Temperatura</a></li>
 
-            <li><a href="/You-Well/dashboard/ruido/?sem_loader=1" class="underline-desliza <?= $pagina === 'ruido' ? 'active' : '' ?>"><i class="bi bi-volume-up-fill"></i>Ruído</a></li>
+            <li><a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/dashboard/ruido/?sem_loader=1" class="underline-desliza <?= $pagina === 'ruido' ? 'active' : '' ?>"><i class="bi bi-volume-up-fill"></i>Ruído</a></li>
 
-            <li><a href="/You-Well/dashboard/qualidadear/?sem_loader=1" class="underline-desliza <?= $pagina === 'qualidadear' ? 'active' : '' ?>"><i class="bi bi-wind"></i>Qualidade do Ar</a></li>
+            <li><a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/dashboard/qualidadear/?sem_loader=1" class="underline-desliza <?= $pagina === 'qualidadear' ? 'active' : '' ?>"><i class="bi bi-wind"></i>Qualidade do Ar</a></li>
 
             <div class="diviM"></div>
 
-            <li><a href="/You-Well/dashboard/alertas/?sem_loader=1" class="underline-desliza <?= $pagina === 'alertas' ? 'active' : '' ?>"><i class="bi bi-exclamation-circle-fill"></i>Alertas</a></li>
+            <li><a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/dashboard/alertas/?sem_loader=1" class="underline-desliza <?= $pagina === 'alertas' ? 'active' : '' ?>"><i class="bi bi-exclamation-circle-fill"></i>Alertas</a></li>
 
-            <li><a href="/You-Well/dashboard/configuracoes/?sem_loader=1" class="underline-desliza <?= $pagina === 'configuracoes' ? 'active' : '' ?>"><i class="bi bi-gear-fill"></i>Configurações</a></li>
+            <li><a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/dashboard/configuracoes/?sem_loader=1" class="underline-desliza <?= $pagina === 'configuracoes' ? 'active' : '' ?>"><i class="bi bi-gear-fill"></i>Configurações</a></li>
         </ul>
     </nav>
 
@@ -391,7 +394,7 @@ if (!in_array($pagina, $paginas, true)) {
         <!-- Página início -->
         <?php if ($pagina === 'inicio'): ?>
             <div class="containerj2">
-                <a href="/You-Well/dashboard/temperatura/">
+                <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/dashboard/temperatura/">
                     <div class="janelinha2">
                         <div class="janelinhaW">
                             <div class="inicioIcons">
@@ -403,7 +406,7 @@ if (!in_array($pagina, $paginas, true)) {
                         </div>
                     </div>
                 </a>
-                <a href="/You-Well/dashboard/ruido/">
+                <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/dashboard/ruido/">
                     <div class="janelinha2">
                         <div class="janelinhaW">
                             <div class="inicioIcons">
@@ -415,7 +418,7 @@ if (!in_array($pagina, $paginas, true)) {
                         </div>
                     </div>
                 </a>
-                <a href="/You-Well/dashboard/qualidadear/">
+                <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/dashboard/qualidadear/">
                     <div class="janelinha2">
                         <div class="janelinhaW">
                             <div class="inicioIcons">
@@ -710,7 +713,7 @@ if (!in_array($pagina, $paginas, true)) {
                                 </p>
                             <?php endif; ?>
                             <div class="perfil-config">
-                                <img src="<?php echo htmlspecialchars($fotoPerfil ?? '/You-Well/public/assets/img/pfp.png', ENT_QUOTES, 'UTF-8'); ?>"
+                                <img src="<?php echo htmlspecialchars($fotoPerfil ?? ($basePath . '/public/assets/img/pfp.png'), ENT_QUOTES, 'UTF-8'); ?>"
                                     alt="Foto de perfil de <?php echo htmlspecialchars((string) $_SESSION['nome'], ENT_QUOTES, 'UTF-8'); ?>">
                                 <div>
                                     <h3><?php echo htmlspecialchars((string) $_SESSION['nome'], ENT_QUOTES, 'UTF-8'); ?></h3>
@@ -759,17 +762,17 @@ if (!in_array($pagina, $paginas, true)) {
                             <p class="aparencia-descricao">Escolha como o painel deve ser exibido.</p>
                             <fieldset class="tema-opcoes" aria-label="Tema do painel">
                                 <label class="tema-opcao">
-                                    <img src="/You-Well/public/assets/img/icon-normal.png" class="img-theme">
+                                    <img src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/img/icon-normal.png" class="img-theme">
                                     <input type="radio" name="tema-painel" value="light">
                                     <span><i class="bi bi-sun-fill" aria-hidden="true"></i> Claro</span>
                                 </label>
                                 <label class="tema-opcao">
-                                    <img src="/You-Well/public/assets/img/icon-night.png" class="img-theme">
+                                    <img src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/img/icon-night.png" class="img-theme">
                                     <input type="radio" name="tema-painel" value="dark">
                                     <span><i class="bi bi-moon-stars-fill" aria-hidden="true"></i> Escuro</span>
                                 </label>
                                 <label class="tema-opcao">
-                                    <img src="/You-Well/public/assets/img/icon-system.png" class="img-theme">
+                                    <img src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/img/icon-system.png" class="img-theme">
                                     <input type="radio" name="tema-painel" value="system">
                                     <span><i class="bi bi-display" aria-hidden="true"></i> Sistema</span>
                                 </label>
@@ -951,8 +954,8 @@ if (!in_array($pagina, $paginas, true)) {
             </div>
     </div>
 
-    <script src="/You-Well/public/assets/js/loader.js"></script>
-    <script src="/You-Well/public/assets/js/scriptLC.js"></script>
+    <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/loader.js"></script>
+    <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/scriptLC.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
     <script>
         const gerentesPorId = <?= json_encode(array_column($gerentes ?? [], 'nome', 'id_usuario'), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;

@@ -1,13 +1,16 @@
 <?php
 session_start();
+require_once __DIR__ . "/../config/base_url.php";
+
+$basePath = youwellBasePath();
 
 if (!isset($_SESSION['id_usuario'])) {
-    header("Location: /You-Well/entrar/");
+    header("Location: {$basePath}/entrar/");
     exit();
 }
 
 if ($_SESSION['papel'] != "admin") {
-    header("Location: /You-Well/entrar/");
+    header("Location: {$basePath}/entrar/");
     exit();
 }
 ?>
@@ -27,7 +30,7 @@ if ($_SESSION['papel'] != "admin") {
 
 <p>Setor: <?php echo $_SESSION['setor']; ?></p>
 
-<a href="/You-Well/sair/">Sair</a>
+<a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/sair/">Sair</a>
 
 </body>
 </html>

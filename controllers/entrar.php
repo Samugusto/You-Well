@@ -4,7 +4,9 @@ ini_set('display_errors', 1);
 
 session_start();
 require_once __DIR__ . "/../config/conexao.php";
+require_once __DIR__ . "/../config/base_url.php";
 
+$basePath = youwellBasePath();
 $erro = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -12,45 +14,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = trim($_POST["nome"]);
     $senha = $_POST["senha"];
 
-    $con = conectar();
-
-    $sql = "SELECT * FROM usuarios WHERE nome = ?";
-
-    $stmt = mysqli_prepare($con, $sql);
-    mysqli_stmt_bind_param($stmt, "s", $nome);
-    mysqli_stmt_execute($stmt);
-
-    $resultado = mysqli_stmt_get_result($stmt);
-
-    if (mysqli_num_rows($resultado) > 0) {
-
-        $usuario = mysqli_fetch_assoc($resultado);
-
-        if (password_verify($senha, $usuario['senha'])) {
-
-            $_SESSION['id_usuario'] = $usuario['id_usuario'];
-            $_SESSION['nome'] = $usuario['nome'];
-            $_SESSION['papel'] = $usuario['papel'];
-            $_SESSION['setor'] = $usuario['setor'];
-
-            if ($usuario['papel'] == "admin") {
-                header("Location: ../dashboard/");
-                exit();
-            } elseif ($usuario['papel'] == "gerente") {
-                header("Location: ../dashboard/");
-                exit();
-            } else {
-                $erro = "Tipo de usuário inválido.";
-            }
-        } else {
-            $erro = "Usuário ou senha inválidos.";
-        }
-    } else {
-
-        $erro = "Usuário não encontrado.";
+    try {
+        $con = conectar();
+    } catch (RuntimeException $erroBanco) {
+        $erro = $erroBanco->getMessage();
     }
 
-    mysqli_close($con);
+    if (isset($con)) {
+        $sql = "SELECT * FROM usuarios WHERE nome = ?";
+
+        $stmt = mysqli_prepare($con, $sql);
+        mysqli_stmt_bind_param($stmt, "s", $nome);
+        mysqli_stmt_execute($stmt);
+
+        $resultado = mysqli_stmt_get_result($stmt);
+
+        if (mysqli_num_rows($resultado) > 0) {
+
+            $usuario = mysqli_fetch_assoc($resultado);
+
+            if (password_verify($senha, $usuario['senha'])) {
+
+                $_SESSION['id_usuario'] = $usuario['id_usuario'];
+                $_SESSION['nome'] = $usuario['nome'];
+                $_SESSION['papel'] = $usuario['papel'];
+                $_SESSION['setor'] = $usuario['setor'];
+
+                if ($usuario['papel'] == "admin") {
+                    header("Location: ../dashboard/");
+                    exit();
+                } elseif ($usuario['papel'] == "gerente") {
+                    header("Location: ../dashboard/");
+                    exit();
+                } else {
+                    $erro = "Tipo de usuário inválido.";
+                }
+            } else {
+                $erro = "Usuário ou senha inválidos.";
+            }
+        } else {
+            $erro = "Usuário não encontrado.";
+        }
+
+        mysqli_close($con);
+    }
 }
 ?>
 
@@ -61,10 +68,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouWell - Login</title>
-    <link rel="stylesheet" href="/You-Well/public/assets/css/style.css">
+    <link rel="stylesheet" href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="/You-Well/public/assets/css/loader.css">
-    <link rel="icon" href="/You-Well/public/assets/img/sem-titulo.png">
+    <link rel="stylesheet" href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/css/loader.css">
+    <link rel="icon" href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/img/sem-titulo.png">
     </head>
 
 <body>
@@ -72,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="loader-content">
             <div class="loader-emblem">
                 <span class="loader-ring" aria-hidden="true"></span>
-                <img src="/You-Well/public/assets/img/sem-titulo2.png" alt="" class="spinner-img">
+                <img src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/img/sem-titulo2.png" alt="" class="spinner-img">
             </div>
             <p class="loader-label">Preparando sua experiência<span class="loader-dots" aria-hidden="true"></span></p>
         </div>
@@ -116,8 +123,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <br>
 
     </div>
-    <script src="/You-Well/public/assets/js/script.js"></script>
-    <script src="/You-Well/public/assets/js/loader.js"></script>
+    <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/script.js"></script>
+    <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/loader.js"></script>
 </body>
 
 </html>
