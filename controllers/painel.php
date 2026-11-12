@@ -307,7 +307,7 @@ if (!in_array($pagina, $paginas, true)) {
     <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/menu.js?v=4"></script>
 </head>
 
-<body>
+<body data-medicoes-url="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/controllers/buscar_medicoes.php">
     <?php if (!$semLoader): ?>
         <div id="loader" role="status" aria-live="polite">
             <div class="loader-content">
@@ -469,7 +469,7 @@ if (!in_array($pagina, $paginas, true)) {
                 <div class="containerj">
                     <?php foreach ($setores as $setor): ?>
                         <div class="janelinha2">
-                            <div class="janelinha">
+                            <div class="janelinha" data-setor-id="<?= (int) $setor['id_setor'] ?>">
                                 <div class="containerQIIO">
                                     <div class="quadradoIcon">
                                         <i class="bi bi-building iconS"></i>
@@ -479,15 +479,15 @@ if (!in_array($pagina, $paginas, true)) {
                                 <div class="divi"></div>
                                 <div class="quadradoInfo">
                                     <h1 class="textoInfom">Temperatura:</h1>
-                                    <h1 class="textoInfomD"><?= $setor['temperatura'] !== null ? htmlspecialchars($setor['temperatura'], ENT_QUOTES, 'UTF-8') . 'º' : 'Aguardando' ?></h1>
+                                    <h1 class="textoInfomD" data-medicao="temperatura"><?= $setor['temperatura'] !== null ? htmlspecialchars($setor['temperatura'], ENT_QUOTES, 'UTF-8') . 'º' : 'Aguardando' ?></h1>
                                 </div>
                                 <div class="quadradoInfo">
                                     <h1 class="textoInfom">Ruído:</h1>
-                                    <h1 class="textoInfomD"><?= $setor['ruido'] !== null ? htmlspecialchars($setor['ruido'], ENT_QUOTES, 'UTF-8') . ' db' : 'Aguardando' ?></h1>
+                                    <h1 class="textoInfomD" data-medicao="ruido"><?= $setor['ruido'] !== null ? htmlspecialchars($setor['ruido'], ENT_QUOTES, 'UTF-8') . ' db' : 'Aguardando' ?></h1>
                                 </div>
                                 <div class="quadradoInfo">
                                     <h1 class="textoInfom">Ar:</h1>
-                                    <h1 class="textoInfomD"><?= $setor['qualidade_ar'] !== null ? htmlspecialchars($setor['qualidade_ar'], ENT_QUOTES, 'UTF-8') : 'Aguardando' ?></h1>
+                                    <h1 class="textoInfomD" data-medicao="qualidade_ar"><?= $setor['qualidade_ar'] !== null ? htmlspecialchars($setor['qualidade_ar'], ENT_QUOTES, 'UTF-8') : 'Aguardando' ?></h1>
                                 </div>
                             </div>
                         </div>
@@ -985,6 +985,75 @@ if (!in_array($pagina, $paginas, true)) {
             campoIdGerente.addEventListener('input', atualizarNomeGerente);
             atualizarNomeGerente();
         }
+    </script>
+    <script>
+        (() => {
+            const url = document.body.dataset.medicoesUrl;
+            const cardsSetor = document.querySelectorAll('.janelinha[data-setor-id]');
+            if (!url || cardsSetor.length === 0) return;
+
+            const formatarValor = (valor) => (
+                valor === null || !Number.isFinite(Number(valor))
+                    ? 'Aguardando'
+                    : new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 }).format(Number(valor))
+            );
+
+            let atualizacaoEmAndamento = false;
+            const atualizarMedicoes = async () => {
+                if (atualizacaoEmAndamento || document.hidden) return;
+                atualizacaoEmAndamento = true;
+
+                try {
+                    const resposta = await fetch(url, {
+                        cache: 'no-store',
+                        credentials: 'same-origin',
+                        headers: { Accept: 'application/json' }
+                    });
+                    if (!resposta.ok) {
+                        throw new Error(`Falha ao consultar medições (${resposta.status}).`);
+                    }
+
+                    const dados = await resposta.json();
+                    if (!dados.success || !Array.isArray(dados.setores)) {
+                        throw new Error(dados.mensagem || 'Resposta inválida ao consultar medições.');
+                    }
+
+                    const setoresPorId = new Map(
+                        dados.setores.map((setor) => [String(setor.id_setor), setor])
+                    );
+                    const sensores = {
+                        temperatura: 'º',
+                        ruido: ' db',
+                        qualidade_ar: ''
+                    };
+
+                    cardsSetor.forEach((card) => {
+                        const setor = setoresPorId.get(card.dataset.setorId);
+                        if (!setor) return;
+
+                        Object.entries(sensores).forEach(([sensor, unidade]) => {
+                            const elemento = card.querySelector(`[data-medicao="${sensor}"]`);
+                            if (elemento) {
+                                const valor = setor[sensor];
+                                elemento.textContent = valor === null
+                                    ? 'Aguardando'
+                                    : formatarValor(valor) + unidade;
+                            }
+                        });
+                    });
+                } catch (erro) {
+                    console.error('Não foi possível atualizar as medições automaticamente:', erro);
+                } finally {
+                    atualizacaoEmAndamento = false;
+                }
+            };
+
+            atualizarMedicoes();
+            window.setInterval(atualizarMedicoes, 5000);
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) atualizarMedicoes();
+            });
+        })();
     </script>
 </body>
 
