@@ -268,7 +268,18 @@ try {
 
 // Dados reais da página inicial (somente dos setores visíveis para o usuário).
 $resumoInicio = calcularResumoInicio($setores);
-$dadosGraficoInicio = calcularMediasTemperaturaSetores($con, $setores);
+
+// Páginas com gráficos e o sensor que cada uma mostra.
+$sensoresPorPagina = ['temperatura' => 'temperatura', 'ruido' => 'ruido', 'qualidadear' => 'qualidade_ar'];
+$paginaAtual = $_GET['pagina'] ?? 'inicio';
+$dadosGraficos = null;
+if ($paginaAtual === 'inicio' || isset($sensoresPorPagina[$paginaAtual])) {
+    try {
+        $dadosGraficos = montarDadosGraficos($con, $setores);
+    } catch (Throwable $erro) {
+        error_log('Erro ao montar dados dos gráficos: ' . $erro->getMessage());
+    }
+}
 mysqli_close($con);
 
 $temperaturaGeral = $resumoInicio['temperatura'] !== null
@@ -317,17 +328,17 @@ if (!in_array($pagina, $paginas, true)) {
     <link rel="stylesheet" href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/css/loader.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <?php if ($pagina === 'inicio'): ?>
+    <?php if ($dadosGraficos !== null): ?>
     <script>
-        // Média de temperatura de cada setor (dados reais) para os gráficos da página inicial.
-        window.dadosGraficoInicio = <?= json_encode($dadosGraficoInicio, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+        // Dados reais iniciais dos gráficos; graficos.js atualiza a cada 10 minutos.
+        window.dadosGraficosIniciais = <?= json_encode($dadosGraficos, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
     </script>
     <?php endif; ?>
-    <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/graficos.js"></script>
+    <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/graficos.js?v=2"></script>
     <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/menu.js?v=4"></script>
 </head>
 
-<body data-medicoes-url="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/controllers/buscar_medicoes.php">
+<body data-medicoes-url="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/controllers/buscar_medicoes.php" data-graficos-url="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/controllers/dados_graficos.php">
     <?php if (!$semLoader): ?>
         <div id="loader" role="status" aria-live="polite">
             <div class="loader-content">
@@ -363,6 +374,10 @@ if (!in_array($pagina, $paginas, true)) {
             <?php else: ?>
                 <img src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/img/pfp.png" class="perfil" alt="Sem foto de perfil">
             <?php endif; ?>
+            <button class="menu-toggle botao-sair" type="button" aria-label="Sair da conta" title="Sair da conta"
+                onclick="if (confirm('Deseja sair da conta?')) window.location.href='<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/sair/'">
+                <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+            </button>
         </div>
     </header>
 
@@ -435,7 +450,7 @@ if (!in_array($pagina, $paginas, true)) {
                                 <span class="outro">Temperatura média</span>
                             </div>
                             <div class="divi"></div>
-                            <h1 class="info3">Temperatura geral: <span class="valores"><?= htmlspecialchars($temperaturaGeral, ENT_QUOTES, 'UTF-8') ?></span></h1>
+                            <h1 class="info3">Temperatura geral: <span class="valores" data-resumo="temperatura"><?= htmlspecialchars($temperaturaGeral, ENT_QUOTES, 'UTF-8') ?></span></h1>
                         </div>
                     </div>
                 </a>
@@ -447,7 +462,7 @@ if (!in_array($pagina, $paginas, true)) {
                                 <span class="outro">Ruído médio</span>
                             </div>
                             <div class="divi"></div>
-                            <h1 class="info3">Ruído geral: <span class="valores"><?= htmlspecialchars($ruidoGeral, ENT_QUOTES, 'UTF-8') ?></span></h1>
+                            <h1 class="info3">Ruído geral: <span class="valores" data-resumo="ruido"><?= htmlspecialchars($ruidoGeral, ENT_QUOTES, 'UTF-8') ?></span></h1>
                         </div>
                     </div>
                 </a>
@@ -459,7 +474,7 @@ if (!in_array($pagina, $paginas, true)) {
                                 <span class="outro">Média do ar</span>
                             </div>
                             <div class="divi"></div>
-                            <h1 class="info3">Qualidade geral: <span class="valores"><?= htmlspecialchars($qualidadeArGeral, ENT_QUOTES, 'UTF-8') ?></span></h1>
+                            <h1 class="info3">Qualidade geral: <span class="valores" data-resumo="qualidade_ar"><?= htmlspecialchars($qualidadeArGeral, ENT_QUOTES, 'UTF-8') ?></span></h1>
                         </div>
                     </div>
                 </a>
@@ -469,7 +484,7 @@ if (!in_array($pagina, $paginas, true)) {
                 <div class="graficoArea">
                     <div class="col-md-12">
                         <div class="card p-3">
-                            <canvas id="area"></canvas>
+                            <canvas id="area" data-grafico="inicio-area"></canvas>
                         </div>
                     </div>
                 </div>
@@ -478,7 +493,7 @@ if (!in_array($pagina, $paginas, true)) {
                     <div class="col-md-6">
                         <div class="row g-4">
                             <div class="card p-3">
-                                <canvas id="pizza"></canvas>
+                                <canvas id="pizza" data-grafico="inicio-pizza"></canvas>
                             </div>
                         </div>
                     </div>
@@ -516,177 +531,37 @@ if (!in_array($pagina, $paginas, true)) {
                         <p class="aparencia-descricao">Nenhum setor cadastrado ainda.</p>
                     <?php endif; ?>
                 </div>
-            <?php elseif ($pagina === 'temperatura'): ?>
+            <?php elseif (isset($sensoresPorPagina[$pagina])): ?>
+                <?php $sensorPagina = $sensoresPorPagina[$pagina]; ?>
                 <div class="colunaG">
-                    <h1 class="tituloSetor">Setor 1</h1>
-                    <div class="graficos">
-                        <div class="graficoArea">
-                            <div class="col-md-12">
-                                <div class="card p-3">
-                                    <canvas id="area-setor-1"></canvas>
+                    <?php foreach ($setores as $indiceSetor => $setor): ?>
+                        <?php if ($indiceSetor > 0): ?>
+                            <div class="linha"></div>
+                        <?php endif; ?>
+                        <h1 class="tituloSetor"><?= htmlspecialchars($setor['nome'], ENT_QUOTES, 'UTF-8') ?></h1>
+                        <div class="graficos">
+                            <div class="graficoArea">
+                                <div class="col-md-12">
+                                    <div class="card p-3">
+                                        <canvas id="area-setor-<?= (int) $setor['id_setor'] ?>" data-grafico="sensor-area" data-setor-id="<?= (int) $setor['id_setor'] ?>" data-sensor="<?= htmlspecialchars($sensorPagina, ENT_QUOTES, 'UTF-8') ?>"></canvas>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="graficoPizza">
-                            <div class="col-md-6">
-                                <div class="row g-4">
-                                    <div class="card p-3">
-                                        <canvas id="pizza-setor-1"></canvas>
+                            <div class="graficoPizza">
+                                <div class="col-md-6">
+                                    <div class="row g-4">
+                                        <div class="card p-3">
+                                            <canvas id="pizza-setor-<?= (int) $setor['id_setor'] ?>" data-grafico="sensor-pizza" data-setor-id="<?= (int) $setor['id_setor'] ?>" data-sensor="<?= htmlspecialchars($sensorPagina, ENT_QUOTES, 'UTF-8') ?>"></canvas>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="linha"></div>
-                    <h1 class="tituloSetor">Setor 2</h1>
-                    <div class="graficos">
-                        <div class="graficoArea">
-                            <div class="col-md-12">
-                                <div class="card p-3">
-                                    <canvas id="area-setor-3"></canvas>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="graficoPizza">
-                            <div class="col-md-6">
-                                <div class="row g-4">
-                                    <div class="card p-3">
-                                        <canvas id="pizza-setor-3"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="linha"></div>
-                    <h1 class="tituloSetor">Setor 3</h1>
-                    <div class="graficos">
-                        <div class="graficoArea">
-                            <div class="col-md-12">
-                                <div class="card p-3">
-                                    <canvas id="area-setor-4"></canvas>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="graficoPizza">
-                            <div class="col-md-6">
-                                <div class="row g-4">
-                                    <div class="card p-3">
-                                        <canvas id="pizza-setor-4"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="linha"></div>
-                    <h1 class="tituloSetor">Setor 4</h1>
-                    <div class="graficos">
-                        <div class="graficoArea">
-                            <div class="col-md-12">
-                                <div class="card p-3">
-                                    <canvas id="area-setor-5"></canvas>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="graficoPizza">
-                            <div class="col-md-6">
-                                <div class="row g-4">
-                                    <div class="card p-3">
-                                        <canvas id="pizza-setor-5"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            <?php elseif ($pagina === 'ruido'): ?>
-                <div class="colunaG">
-                    <h1 class="tituloSetor">Setor 1</h1>
-                    <div class="graficos">
-                        <div class="graficoArea">
-                            <div class="col-md-12">
-                                <div class="card p-3">
-                                    <canvas id="area-setor-1"></canvas>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="graficoPizza">
-                            <div class="col-md-6">
-                                <div class="row g-4">
-                                    <div class="card p-3">
-                                        <canvas id="pizza-setor-1"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="linha"></div>
-                    <h1 class="tituloSetor">Setor 2</h1>
-                    <div class="graficos">
-                        <div class="graficoArea">
-                            <div class="col-md-12">
-                                <div class="card p-3">
-                                    <canvas id="area-setor-3"></canvas>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="graficoPizza">
-                            <div class="col-md-6">
-                                <div class="row g-4">
-                                    <div class="card p-3">
-                                        <canvas id="pizza-setor-3"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="linha"></div>
-                    <h1 class="tituloSetor">Setor 3</h1>
-                    <div class="graficos">
-                        <div class="graficoArea">
-                            <div class="col-md-12">
-                                <div class="card p-3">
-                                    <canvas id="area-setor-4"></canvas>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="graficoPizza">
-                            <div class="col-md-6">
-                                <div class="row g-4">
-                                    <div class="card p-3">
-                                        <canvas id="pizza-setor-4"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="linha"></div>
-                    <h1 class="tituloSetor">Setor 4</h1>
-                    <div class="graficos">
-                        <div class="graficoArea">
-                            <div class="col-md-12">
-                                <div class="card p-3">
-                                    <canvas id="area-setor-5"></canvas>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="graficoPizza">
-                            <div class="col-md-6">
-                                <div class="row g-4">
-                                    <div class="card p-3">
-                                        <canvas id="pizza-setor-5"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <?php endforeach; ?>
+                    <?php if (count($setores) === 0): ?>
+                        <p class="aparencia-descricao">Nenhum setor cadastrado ainda.</p>
+                    <?php endif; ?>
                 </div>
 
             <?php elseif ($pagina === 'alertas') : ?>

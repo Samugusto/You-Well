@@ -222,28 +222,74 @@ function calcularResumoInicio(array $setores): array
     return $resumo;
 }
 
-// Média de todas as leituras de temperatura de cada setor, para os gráficos
-// da página inicial. Retorna [['local' => nome, 'media' => valor], ...].
-function calcularMediasTemperaturaSetores(mysqli $con, array $setores): array
+// Últimas $limite leituras de um sensor de um setor, da mais antiga para a mais nova.
+function buscarHistoricoSensor(mysqli $con, string $tabela, int $idSetor, int $limite = 24): array
 {
-    $ids = array_values(array_filter(array_map('intval', array_column($setores, 'id_setor')), fn ($id) => $id > 0));
-    if (!$ids) return [];
+    if ($idSetor <= 0 || !array_key_exists($tabela, LIMITES_SENSORES)) return [];
 
-    $medias = [];
+    $colunaId = 'id_' . $tabela;
+    $sql = "SELECT valor, data_hora FROM `{$tabela}` WHERE id_setor = ? ORDER BY data_hora DESC, `{$colunaId}` DESC LIMIT ?";
+
+    $historico = [];
     try {
-        $resultado = mysqli_query($con, 'SELECT id_setor, AVG(valor) AS media FROM temperatura WHERE id_setor IN (' . implode(',', $ids) . ') GROUP BY id_setor');
+        $stmt = mysqli_prepare($con, $sql);
+        if (!$stmt) return [];
+        mysqli_stmt_bind_param($stmt, 'ii', $idSetor, $limite);
+        mysqli_stmt_execute($stmt);
+        $resultado = mysqli_stmt_get_result($stmt);
         while ($resultado && ($linha = mysqli_fetch_assoc($resultado))) {
-            $medias[(int) $linha['id_setor']] = round((float) $linha['media'], 1);
+            $historico[] = ['valor' => (float) $linha['valor'], 'data_hora' => $linha['data_hora']];
         }
+        mysqli_stmt_close($stmt);
     } catch (Throwable $erro) {
-        error_log('Erro ao calcular médias de temperatura: ' . $erro->getMessage());
+        error_log("Erro ao buscar histórico de {$tabela} do setor {$idSetor}: " . $erro->getMessage());
         return [];
     }
 
-    $dados = [];
-    foreach ($setores as $setor) {
-        $id = (int) $setor['id_setor'];
-        if (isset($medias[$id])) $dados[] = ['local' => $setor['nome'], 'media' => $medias[$id]];
+    return array_reverse($historico);
+}
+
+// Conta quantas leituras do histórico ficaram baixas, estáveis ou altas.
+function calcularDistribuicaoSensor(string $sensor, array $historico): array
+{
+    $limite = LIMITES_SENSORES[$sensor];
+    $distribuicao = ['baixo' => 0, 'estavel' => 0, 'alto' => 0];
+    foreach ($historico as $leitura) {
+        $valor = (float) $leitura['valor'];
+        if ($limite['maximo'] !== null && $valor > $limite['maximo']) $distribuicao['alto']++;
+        elseif ($limite['minimo'] !== null && $valor <= $limite['minimo']) $distribuicao['baixo']++;
+        else $distribuicao['estavel']++;
     }
-    return $dados;
+    return $distribuicao;
+}
+
+// Monta os dados dos gráficos (página inicial e páginas de cada sensor)
+// para os setores informados (preenchidos por anexarUltimasMedicoes).
+function montarDadosGraficos(mysqli $con, array $setores): array
+{
+    $dadosSetores = [];
+    foreach ($setores as $setor) {
+        $idSetor = (int) $setor['id_setor'];
+        $item = ['id_setor' => $idSetor, 'nome' => $setor['nome'], 'atual' => [], 'historico' => [], 'distribuicao' => []];
+        foreach (array_keys(LIMITES_SENSORES) as $sensor) {
+            $historico = buscarHistoricoSensor($con, $sensor, $idSetor);
+            $item['atual'][$sensor] = is_numeric($setor[$sensor] ?? null) ? (float) $setor[$sensor] : null;
+            $item['historico'][$sensor] = $historico;
+            $item['distribuicao'][$sensor] = calcularDistribuicaoSensor($sensor, $historico);
+        }
+        $dadosSetores[] = $item;
+    }
+
+    $limites = [];
+    foreach (LIMITES_SENSORES as $sensor => $limite) {
+        $limites[$sensor] = ['nome' => $limite['nome'], 'unidade' => trim($limite['unidade']), 'minimo' => $limite['minimo'], 'maximo' => $limite['maximo']];
+    }
+
+    return [
+        'success' => true,
+        'atualizado_em' => date('Y-m-d H:i:s'),
+        'medias' => calcularResumoInicio($setores),
+        'limites' => $limites,
+        'setores' => $dadosSetores,
+    ];
 }
