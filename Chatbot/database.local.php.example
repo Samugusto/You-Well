@@ -1,0 +1,9 @@
+<?php
+return [
+    'host' => 'localhost',
+    'user' => 'usuario_mysql',
+    'password' => 'senha_mysql',
+    'database' => 'nome_do_banco',
+    'port' => 3306,
+    'api_token' => 'substitua_por_um_token_aleatorio_de_64_caracteres'
+];

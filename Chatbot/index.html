@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beea - testes</title>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="page">
+
+  <!-- CHAT CONTAINER PRINCIPAL (CENTRALIZADO NA TELA) -->
+  <div class="chat-shell">
+
+    <!-- CABEÇALHO DO CHAT -->
+    <div class="chat-header">
+      <div class="avatar-wrap">
+        <img id="header-avatar" src="" alt="Foto do Bot" class="header-avatar">
+        <span class="online-indicator"></span>
+      </div>
+      <div class="bot-details">
+        <h1 id="header-name" class="bot-name">--</h1>
+        <p class="bot-status">
+          <span class="online-dot"></span>
+          <span>Online</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- ÁREA DE MENSAGENS COM ROLAGEM -->
+    <div id="chat-messages" class="chat-messages">
+      <!-- Mensagem inicial do bot inserida via JS -->
+    </div>
+
+    <!-- INDICADOR DE DIGITAÇÃO E MENSAGEM DE ESPERA -->
+    <div id="typing-indicator" class="typing-indicator is-hidden fade-in-up">
+      <div class="message-row">
+        <img src="" class="bot-avatar">
+        <div class="typing-content">
+          <div class="typing-bubble">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+          <p id="typing-hint" class="typing-hint is-hidden" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAMPO DE ENTRADA (INPUT + BOTÃO ENVIAR) -->
+    <div class="composer">
+      <div class="composer-form">
+        <input type="text" id="user-input" placeholder="Digite sua mensagem..." class="message-input"
+          onkeydown="if(event.key === 'Enter') sendMessage()">
+
+        <button id="send-button" onclick="sendMessage()" class="send-button">
+          <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ============================================================
+    // CONFIGURAÇÕES DE PERSONALIZAÇÃO SIMPLES
+    // ============================================================
+    const BOT_NAME = "Beea";
+
+    // Foto do Bot (pode ser URL ou caminho local ex: "minha_foto.png")
+    const BOT_AVATAR = "img/beea-pagini.png";
+    const BOT_GREETING_GIF = "img/beeawave.gif";
+
+    const conversationHistory = [];
+    let isSending = false;
+    let typingHintTimeout;
+    let typingFinishingTimeout;
+
+    // ============================================================
+    // CLASSE DE ANIMAÇÃO DE CARACTERES SORTEADOS (TEXT SCRAMBLE)
+    // ============================================================
+    class TextScrambler {
+      constructor(element) {
+        this.el = element;
+        this.chars = '!<>-_\\/[]{}—=+*^?#________ABCDEF0123456789';
+        this.update = this.update.bind(this);
+      }
+
+      scrambleTo(targetText) {
+        return new Promise((resolve) => {
+          this.resolve = resolve;
+          this.queue = [];
+
+          for (let i = 0; i < targetText.length; i++) {
+            const charTo = targetText[i];
+            const start = Math.floor(Math.random() * 6);
+            const end = start + Math.floor(Math.random() * 12) + 8;
+            this.queue.push({ to: charTo, start, end, char: '' });
+          }
+
+          cancelAnimationFrame(this.frameRequest);
+          this.frame = 0;
+          this.update();
+        });
+      }
+
+      update() {
+        let output = '';
+        let complete = 0;
+
+        for (let i = 0; i < this.queue.length; i++) {
+          let { to, start, end, char } = this.queue[i];
+
+          if (this.frame >= end) {
+            complete++;
+            output += to;
+          } else if (this.frame >= start) {
+            if (!char || Math.random() < 0.35) {
+              char = this.chars[Math.floor(Math.random() * this.chars.length)];
+              this.queue[i].char = char;
+            }
+            output += `<span class="scramble-character">${escapeHTML(char)}</span>`;
+          } else {
+            output += ' ';
+          }
+        }
+
+        this.el.innerHTML = output;
+
+        if (complete === this.queue.length) {
+          this.el.innerHTML = formatAssistantMessage(this.queue.map(q => q.to).join(''));
+          this.resolve();
+        } else {
+          this.frameRequest = requestAnimationFrame(this.update);
+          this.frame++;
+        }
+      }
+    }
+
+    // ============================================================
+    // LÓGICA DO CHATBOT
+    // ============================================================
+    window.onload = function () {
+      // Inicializar dados de cabeçalho
+      document.getElementById('header-name').innerText = BOT_NAME;
+      document.getElementById('header-avatar').src = BOT_AVATAR;
+
+      // Mensagem inicial de boas-vindas do bot
+      addInitialBotGreeting(`Olá! Eu sou o ${BOT_NAME}. Digite uma mensagem para conversar comigo!`);
+    };
+
+    async function sendMessage() {
+      const input = document.getElementById('user-input');
+      const text = input.value.trim();
+      if (!text || isSending) return;
+
+      input.value = '';
+      addUserMessage(text);
+      showTypingIndicator(true);
+
+      isSending = true;
+      input.disabled = true;
+      document.getElementById('send-button').disabled = true;
+
+      try {
+        const messages = [...conversationHistory.slice(-18), { role: 'user', text }];
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages, stream: true })
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || 'A solicitação ao Gemini falhou.');
+        }
+
+        if (!response.body) {
+          throw new Error('O navegador não conseguiu receber a resposta em fluxo.');
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let reply = '';
+        let replyElement = null;
+
+        const processLine = line => {
+          if (!line.trim()) return;
+          const event = JSON.parse(line);
+          if (typeof event.error === 'string') {
+            throw new Error(event.error);
+          }
+          if (typeof event.text !== 'string') {
+            throw new Error('O servidor retornou um trecho de resposta inválido.');
+          }
+
+          reply += event.text;
+          if (!replyElement) {
+            replyElement = addStreamingBotMessage();
+          }
+          replyElement.textContent = reply;
+          scrollToBottom();
+        };
+
+        while (true) {
+          const { value, done } = await reader.read();
+          buffer += decoder.decode(value, { stream: !done });
+          let newlineIndex = buffer.indexOf('\n');
+          while (newlineIndex !== -1) {
+            processLine(buffer.slice(0, newlineIndex));
+            buffer = buffer.slice(newlineIndex + 1);
+            newlineIndex = buffer.indexOf('\n');
+          }
+          if (done) break;
+        }
+        processLine(buffer);
+
+        if (!reply.trim()) {
+          throw new Error('O Gemini retornou uma resposta vazia.');
+        }
+
+        conversationHistory.push(
+          { role: 'user', text },
+          { role: 'assistant', text: reply }
+        );
+        replyElement.innerHTML = formatAssistantMessage(reply);
+      } catch (error) {
+        console.error('Erro ao conversar com o Gemini:', error);
+        const errorMessage = error instanceof TypeError
+          ? 'Não consegui conectar ao servidor do chat. Confira se ele está rodando e recarregue a página.'
+          : error.message || 'Não consegui responder agora. Tente novamente em alguns instantes.';
+        addBotMessageWithScramble(errorMessage);
+      } finally {
+        showTypingIndicator(false);
+        isSending = false;
+        input.disabled = false;
+        document.getElementById('send-button').disabled = false;
+        input.focus();
+      }
+    }
+
+    function addUserMessage(text) {
+      const container = document.getElementById('chat-messages');
+      const msgHTML = `
+        <div class="message-row user-message fade-in-up">
+          <div class="message-bubble user-bubble">
+            ${escapeHTML(text)}
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', msgHTML);
+      scrollToBottom();
+    }
+
+    function addInitialBotGreeting(text) {
+      const container = document.getElementById('chat-messages');
+      const msgHTML = `
+        <div class="message-row fade-in-up">
+          <img src="${BOT_AVATAR}" class="bot-avatar">
+          <div class="message-bubble bot-bubble">
+            ${escapeHTML(text)}
+            <img src="${BOT_GREETING_GIF}" alt="GIF de boas-vindas" class="greeting-gif" loading="eager">
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', msgHTML);
+      scrollToBottom();
+    }
+
+    function addBotMessageWithScramble(targetText) {
+      const container = document.getElementById('chat-messages');
+      const msgId = 'bot-msg-' + Date.now();
+
+      const msgHTML = `
+        <div class="message-row fade-in-up">
+          <img src="${BOT_AVATAR}" class="bot-avatar">
+          <div class="message-bubble bot-bubble">
+            <span id="${msgId}"></span>
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', msgHTML);
+      scrollToBottom();
+
+      const msgElement = document.getElementById(msgId);
+      const scrambler = new TextScrambler(msgElement);
+      scrambler.scrambleTo(targetText).then(() => {
+        scrollToBottom();
+      });
+    }
+
+    function addStreamingBotMessage() {
+      const container = document.getElementById('chat-messages');
+      container.insertAdjacentHTML('beforeend', `
+        <div class="message-row fade-in-up">
+          <img src="${BOT_AVATAR}" class="bot-avatar">
+          <div class="message-bubble bot-bubble"></div>
+        </div>
+      `);
+      scrollToBottom();
+      return container.lastElementChild.querySelector('.bot-bubble');
+    }
+
+    function showTypingIndicator(show) {
+      const indicator = document.getElementById('typing-indicator');
+      const hint = document.getElementById('typing-hint');
+      const imgs = indicator.querySelectorAll('.bot-avatar');
+      imgs.forEach(img => img.src = BOT_AVATAR);
+
+      if (show) {
+        window.clearTimeout(typingHintTimeout);
+        window.clearTimeout(typingFinishingTimeout);
+        hint.textContent = '';
+        hint.classList.add('is-hidden');
+        hint.classList.remove('typing-hint-visible');
+        indicator.classList.remove('is-hidden');
+        typingHintTimeout = window.setTimeout(() => {
+          if (indicator.classList.contains('is-hidden')) return;
+          showTypingHint('Às vezes demoro para responder.');
+          typingHintTimeout = window.setTimeout(() => {
+            if (indicator.classList.contains('is-hidden')) return;
+            showTypingHint('Pensando mais um pouquinho...');
+            typingFinishingTimeout = window.setTimeout(() => {
+              if (indicator.classList.contains('is-hidden')) return;
+              showTypingHint('Estou quase terminando.');
+            }, 5000);
+          }, 3000);
+        }, 1000);
+          scrollToBottom();
+        } else {
+          window.clearTimeout(typingHintTimeout);
+          window.clearTimeout(typingFinishingTimeout);
+          indicator.classList.add('is-hidden');
+        }
+    }
+
+      function showTypingHint(message) {
+        const hint = document.getElementById('typing-hint');
+        hint.textContent = message;
+        hint.classList.remove('is-hidden', 'typing-hint-visible');
+        void hint.offsetWidth;
+        hint.classList.add('typing-hint-visible');
+        scrollToBottom();
+      }
+
+      function scrollToBottom() {
+        const container = document.getElementById('chat-messages');
+        container.scrollTop = container.scrollHeight;
+      }
+
+      function escapeHTML(str) {
+        return str.replace(/[&<>'"]/g,
+          tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+        );
+      }
+
+      function formatAssistantMessage(text) {
+        const colorClasses = {
+          cyan: 'message-color-cyan',
+          violet: 'message-color-violet',
+          emerald: 'message-color-emerald',
+          amber: 'message-color-amber',
+          yellow: 'message-color-yellow'
+        };
+
+        let formatted = escapeHTML(text);
+        formatted = formatted.replace(
+          /\[color=(cyan|violet|emerald|amber|yellow)\]([\s\S]*?)\[\/color\]/gi,
+          (_, color, content) => `<span class="message-color ${colorClasses[color.toLowerCase()]}">${content}</span>`
+        );
+        formatted = formatted.replace(/\*\*([^*\n]+)\*\*/g, '<strong class="message-strong">$1</strong>');
+        formatted = formatted.replace(/==([^=\n]+)==/g, '<mark class="message-highlight">$1</mark>');
+
+        return formatted.replace(/\n/g, '<br>');
+      }
+  </script>
+</body>
+
+</html>

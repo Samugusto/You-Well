@@ -307,6 +307,9 @@ if ($usuario && isset($usuario['nome'])) {
 }
 
 $paginas = ['inicio', 'setores', 'temperatura', 'ruido', 'qualidadear', 'alertas', 'configuracoes'];
+if ($_SESSION['papel'] === 'admin') {
+    $paginas[] = 'chatbot';
+}
 $pagina = $_GET['pagina'] ?? 'inicio';
 $semLoader = ($_GET['sem_loader'] ?? null) === '1';
 
@@ -404,6 +407,10 @@ if (!in_array($pagina, $paginas, true)) {
             <li><a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/dashboard/alertas/?sem_loader=1" class="underline-desliza <?= $pagina === 'alertas' ? 'active' : '' ?>"><i class="bi bi-exclamation-circle-fill"></i>Alertas</a></li>
 
             <li><a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/dashboard/configuracoes/?sem_loader=1" class="underline-desliza <?= $pagina === 'configuracoes' ? 'active' : '' ?>"><i class="bi bi-gear-fill"></i>Configurações</a></li>
+
+            <?php if ($_SESSION['papel'] === 'admin'): ?>
+                <li><a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/dashboard/chatbot/?sem_loader=1" class="underline-desliza <?= $pagina === 'chatbot' ? 'active' : '' ?>"><i class="bi bi-chat-dots-fill"></i>Beea IA</a></li>
+            <?php endif; ?>
         </ul>
     </nav>
 
@@ -426,6 +433,41 @@ if (!in_array($pagina, $paginas, true)) {
             <h1 class="TextoOla">Acompanhe o nível do ar dos setores</h1>
         <?php elseif ($pagina === 'configuracoes'): ?>
             <h1 class="TextoBoas">Configurações</h1>
+        <?php elseif ($pagina === 'chatbot' && $_SESSION['papel'] === 'admin'): ?>
+            <div class="chatbot-page">
+                <div class="chat-shell">
+                    <div class="chat-header">
+                        <div class="avatar-wrap">
+                            <img id="header-avatar" src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/Chatbot/img/beea-pagini.png" alt="Beea" class="header-avatar">
+                            <span class="online-indicator"></span>
+                        </div>
+                        <div class="bot-details">
+                            <h1 id="header-name" class="bot-name">Beea</h1>
+                            <p class="bot-status"><span class="online-dot"></span><span>Online</span></p>
+                        </div>
+                    </div>
+                    <div id="chat-messages" class="chat-messages" aria-live="polite"></div>
+                    <div id="typing-indicator" class="typing-indicator is-hidden">
+                        <div class="message-row">
+                            <img src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/Chatbot/img/beea-pagini.png" class="bot-avatar" alt="">
+                            <div class="typing-content">
+                                <div class="typing-bubble" aria-label="Beea está digitando">
+                                    <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+                                </div>
+                                <p id="typing-hint" class="typing-hint is-hidden"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="composer">
+                        <form id="chat-form" class="composer-form">
+                            <input type="text" id="user-input" class="message-input" maxlength="5000" placeholder="Digite sua mensagem..." autocomplete="off">
+                            <button id="send-button" type="submit" class="send-button" aria-label="Enviar mensagem">
+                                <i class="bi bi-send-fill" aria-hidden="true"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         <?php else: ?>
             <div class="linhaflex">
                 <div class="coluna">
@@ -439,6 +481,7 @@ if (!in_array($pagina, $paginas, true)) {
             </div>
         <?php endif; ?>
 
+        <?php if ($pagina !== 'chatbot'): ?>
         <!-- Página início -->
         <?php if ($pagina === 'inicio'): ?>
             <div class="containerj2">
@@ -773,93 +816,8 @@ if (!in_array($pagina, $paginas, true)) {
                         </section>
                     </div>
                 </div>
-            <?php else: ?>
-                <div class="colunaG">
-                    <h1 class="tituloSetor">Setor 1</h1>
-                    <div class="graficos">
-                        <div class="graficoArea">
-                            <div class="col-md-12">
-                                <div class="card p-3">
-                                    <canvas id="area-setor-1"></canvas>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="graficoPizza">
-                            <div class="col-md-6">
-                                <div class="row g-4">
-                                    <div class="card p-3">
-                                        <canvas id="pizza-setor-1"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="linha"></div>
-                    <h1 class="tituloSetor">Setor 2</h1>
-                    <div class="graficos">
-                        <div class="graficoArea">
-                            <div class="col-md-12">
-                                <div class="card p-3">
-                                    <canvas id="area-setor-3"></canvas>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="graficoPizza">
-                            <div class="col-md-6">
-                                <div class="row g-4">
-                                    <div class="card p-3">
-                                        <canvas id="pizza-setor-3"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="linha"></div>
-                    <h1 class="tituloSetor">Setor 3</h1>
-                    <div class="graficos">
-                        <div class="graficoArea">
-                            <div class="col-md-12">
-                                <div class="card p-3">
-                                    <canvas id="area-setor-4"></canvas>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="graficoPizza">
-                            <div class="col-md-6">
-                                <div class="row g-4">
-                                    <div class="card p-3">
-                                        <canvas id="pizza-setor-4"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="linha"></div>
-                    <h1 class="tituloSetor">Setor 4</h1>
-                    <div class="graficos">
-                        <div class="graficoArea">
-                            <div class="col-md-12">
-                                <div class="card p-3">
-                                    <canvas id="area-setor-5"></canvas>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="graficoPizza">
-                            <div class="col-md-6">
-                                <div class="row g-4">
-                                    <div class="card p-3">
-                                        <canvas id="pizza-setor-5"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             <?php endif; ?>
+        <?php endif; ?>
 
             </div>
     </div>
@@ -867,6 +825,143 @@ if (!in_array($pagina, $paginas, true)) {
     <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/loader.js"></script>
     <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/scriptLC.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+    <?php if ($pagina === 'chatbot' && $_SESSION['papel'] === 'admin'): ?>
+    <script>
+        (() => {
+            const chatEndpoint = <?= json_encode($basePath . '/Chatbot/chatbot-api.php', JSON_UNESCAPED_SLASHES) ?>;
+            const botAvatar = <?= json_encode($basePath . '/Chatbot/img/beea-pagini.png', JSON_UNESCAPED_SLASHES) ?>;
+            const greetingGif = <?= json_encode($basePath . '/Chatbot/img/beeawave.gif', JSON_UNESCAPED_SLASHES) ?>;
+            const nomeConta = <?= json_encode((string) ($_SESSION['nome'] ?? ''), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+            const messages = document.getElementById('chat-messages');
+            const form = document.getElementById('chat-form');
+            const input = document.getElementById('user-input');
+            const sendButton = document.getElementById('send-button');
+            const typing = document.getElementById('typing-indicator');
+            const history = [];
+            let sending = false;
+
+            const escapeHTML = (text) => text.replace(/[&<>'"]/g, char => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[char]));
+
+            const formatMessage = (text) => {
+                let formatted = escapeHTML(text);
+                formatted = formatted.replace(/\[color=(cyan|violet|emerald|amber|yellow)\]([\s\S]*?)\[\/color\]/gi,
+                    (_, color, content) => `<span class="message-color message-color-${color.toLowerCase()}">${content}</span>`);
+                formatted = formatted.replace(/\*\*([^*\n]+)\*\*/g, '<strong class="message-strong">$1</strong>');
+                formatted = formatted.replace(/==([^=\n]+)==/g, '<mark class="message-highlight">$1</mark>');
+                return formatted.replace(/\n/g, '<br>');
+            };
+
+            const scrollBottom = () => { messages.scrollTop = messages.scrollHeight; };
+
+            const addInitialMessage = () => {
+                const primeiroNome = nomeConta.trim().split(/\s+/)[0];
+                const saudacao = primeiroNome
+                    ? `Olá, ${escapeHTML(primeiroNome)}!`
+                    : 'Olá!';
+                messages.insertAdjacentHTML('beforeend', `
+                    <div class="message-row fade-in-up">
+                        <img src="${botAvatar}" class="bot-avatar" alt="">
+                        <div class="message-bubble bot-bubble">
+                            ${saudacao} Eu sou a Beea. Digite uma mensagem para conversar comigo!
+                            <img src="${greetingGif}" alt="Beea acenando" class="greeting-gif" loading="eager">
+                        </div>
+                    </div>`);
+                scrollBottom();
+            };
+
+            const addUserMessage = (text) => {
+                messages.insertAdjacentHTML('beforeend', `
+                    <div class="message-row user-message fade-in-up">
+                        <div class="message-bubble user-bubble">${escapeHTML(text)}</div>
+                    </div>`);
+                scrollBottom();
+            };
+
+            const addBotStream = () => {
+                messages.insertAdjacentHTML('beforeend', `
+                    <div class="message-row fade-in-up">
+                        <img src="${botAvatar}" class="bot-avatar" alt="">
+                        <div class="message-bubble bot-bubble"></div>
+                    </div>`);
+                scrollBottom();
+                return messages.lastElementChild.querySelector('.bot-bubble');
+            };
+
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const text = input.value.trim();
+                if (!text || sending) return;
+
+                input.value = '';
+                addUserMessage(text);
+                typing.classList.remove('is-hidden');
+                sending = true;
+                input.disabled = true;
+                sendButton.disabled = true;
+
+                try {
+                    const payload = [...history.slice(-18), { role: 'user', text }];
+                    const response = await fetch(chatEndpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/x-ndjson' },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ messages: payload, stream: true })
+                    });
+                    if (!response.ok) {
+                        const error = await response.json().catch(() => null);
+                        throw new Error(error?.error || `Falha ao conectar ao chat (${response.status}).`);
+                    }
+                    if (!response.body) throw new Error('O navegador não conseguiu receber a resposta em fluxo.');
+
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let buffer = '';
+                    let reply = '';
+                    let replyElement = null;
+
+                    while (true) {
+                        const { value, done } = await reader.read();
+                        buffer += decoder.decode(value, { stream: !done });
+                        let newline = buffer.indexOf('\n');
+                        while (newline !== -1) {
+                            const line = buffer.slice(0, newline).trim();
+                            buffer = buffer.slice(newline + 1);
+                            if (line) {
+                                const eventData = JSON.parse(line);
+                                if (eventData.error) throw new Error(eventData.error);
+                                if (typeof eventData.text === 'string') {
+                                    reply += eventData.text;
+                                    if (!replyElement) replyElement = addBotStream();
+                                    replyElement.textContent = reply;
+                                    scrollBottom();
+                                }
+                            }
+                            newline = buffer.indexOf('\n');
+                        }
+                        if (done) break;
+                    }
+                    if (!reply.trim()) throw new Error('A Beea não retornou uma resposta.');
+                    replyElement.innerHTML = formatMessage(reply);
+                    history.push({ role: 'user', text }, { role: 'assistant', text: reply });
+                } catch (error) {
+                    console.error(error);
+                    const bubble = addBotStream();
+                    bubble.textContent = error.message || 'Não consegui responder agora. Tente novamente.';
+                } finally {
+                    typing.classList.add('is-hidden');
+                    sending = false;
+                    input.disabled = false;
+                    sendButton.disabled = false;
+                    input.focus();
+                }
+            });
+
+            addInitialMessage();
+        })();
+    </script>
+    <?php endif; ?>
     <script>
         const gerentesPorId = <?= json_encode(array_column($gerentes ?? [], 'nome', 'id_usuario'), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
         const campoIdGerente = document.getElementById('gerente-setor');

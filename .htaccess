@@ -19,7 +19,7 @@ RewriteCond %{REQUEST_URI} ^(.*/)controllers/(?:cadastro|cadastrar)\.php$
 RewriteRule ^controllers/(?:cadastro|cadastrar)\.php$ %1cadastro-admin/ [R=302,L]
 RewriteRule ^cadastro-admin/?$ controllers/cadastrar-admin.php [END]
 RewriteRule ^entrar/?$ controllers/entrar.php [END]
-RewriteRule ^dashboard/(inicio|setores|temperatura|ruido|qualidadear|alertas|configuracoes)/?$ controllers/painel.php?pagina=$1 [END,QSA]
+RewriteRule ^dashboard/(inicio|setores|temperatura|ruido|qualidadear|alertas|configuracoes|chatbot)/?$ controllers/painel.php?pagina=$1 [END,QSA]
 RewriteRule ^dashboard/?$ controllers/painel.php [END]
 RewriteRule ^admin/?$ controllers/adm.php [END]
 RewriteRule ^sair/?$ controllers/logout.php [END]

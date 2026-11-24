@@ -1,0 +1,3 @@
+<FilesMatch "^(database\.local\.php|database\.local\.php\.example|gemini\.local\.php|gemini\.local\.php\.example|\.env)$">
+    Require all denied
+</FilesMatch>

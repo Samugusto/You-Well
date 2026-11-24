@@ -1,0 +1,4 @@
+node_modules/
+.env
+database.local.php
+gemini.local.php
