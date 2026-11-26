@@ -472,9 +472,9 @@ if (!in_array($pagina, $paginas, true)) {
             <div class="linhaflex">
                 <div class="coluna">
                     <h1 class="TextoBoas">Alertas</h1>
-                    <h1 class="TextoOla">Confira os alertas dos setores e faça downloads dos relatórios semanais</h1>
+                    <h1 class="TextoOla">Confira os alertas dos setores e baixe o relatório dos últimos 30 dias em PDF</h1>
                 </div>
-                <button class="relatorio">
+                <button class="relatorio" type="button" data-relatorio-url="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/controllers/relatorio_alertas.php">
                     <i class="bi bi-download" aria-hidden="true"></i>
                     <span>Baixar Relatório</span>
                 </button>
@@ -825,6 +825,11 @@ if (!in_array($pagina, $paginas, true)) {
     <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/loader.js"></script>
     <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/scriptLC.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+    <?php if ($pagina === 'alertas'): ?>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/relatorio.js?v=1"></script>
+    <?php endif; ?>
     <?php if ($pagina === 'chatbot' && $_SESSION['papel'] === 'admin'): ?>
     <script>
         (() => {
