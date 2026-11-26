@@ -81,7 +81,7 @@ $configPath = __DIR__ . '/gemini.local.php';
 $localConfig = is_file($configPath) ? require $configPath : [];
 if (!is_array($localConfig)) {
     error_log('A configuração local do Gemini precisa retornar um array.');
-    responder(503, ['error' => 'A configuração local do Gemini é inválida.']);
+    responder(503, ['error' => 'Puxa, dei uma voada longe e esqueci o caminho por um instante! Me dê um segundinho para recuperar o fôlego e já volto a te atender. :)']);
     exit;
 }
 
@@ -91,13 +91,13 @@ $fallbackModel = getenv('GEMINI_FALLBACK_MODEL')
     ?: ($localConfig['fallback_model'] ?? 'gemini-3.5-flash-lite');
 
 if (!is_string($apiKey) || trim($apiKey) === '') {
-    responder(503, ['error' => 'Configure a chave da API Gemini no ambiente ou em gemini.local.php.']);
+    responder(503, ['error' => 'Sabe quando a gente acorda meio desorientada? Foi o que aconteceu aqui no meu jardim. Preciso só de um minutinho para reorganizar minhas ideias!']);
     exit;
 }
 
 foreach ([$model, $fallbackModel] as $configuredModel) {
     if (!is_string($configuredModel) || !preg_match('/^[A-Za-z0-9._-]+$/', $configuredModel)) {
-        responder(503, ['error' => 'O nome do modelo Gemini configurado é inválido.']);
+        responder(503, ['error' => 'Ops, acabei batendo as anteninhas em algo que não conheço! Vou precisar de uma ajuda rápida para voltar ao nosso foco.']);
         exit;
     }
 }
@@ -121,7 +121,7 @@ $systemInstruction = <<<'PROMPT'
 ## 3. Regras de Formatação e Emoticons
 - Use **emoticons de teclado** (ex.: ':)', ': D', ':/', '>:)') para manter o tom leve e amigável.
 - Use os emoticons com moderação estratégica para não poluir a leitura ou parecer informal demais frente a cargos de diretoria.
-- Destaque palavras ou frases importantes com **negrito** ou ==destaque==; use [color=green]texto[/color], [color=violet]texto[/color], [color=emerald]texto[/color], [color=amber]texto[/color] ou [color=yellow]texto[/color] com moderação para dar cor a trechos relevantes.
+- Destaque palavras ou frases importantes com **negrito** ou ==destaque==; use [color=violet]texto[/color], [color=emerald]texto[/color], [color=amber]texto[/color] ou [color=yellow]texto[/color] com moderação para dar cor a trechos relevantes.
 - Use somente essas marcações de formatação; não escreva HTML.
 
 ## 4. Gestão de Escopo e Redirecionamento

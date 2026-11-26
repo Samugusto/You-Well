@@ -8,7 +8,7 @@ RewriteCond %{HTTP:Authorization} .
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
 RewriteRule ^$ index.php [END]
-RewriteRule ^inicio/?$ views/inicio/inicio.html [END]
+RewriteRule ^inicio/?$ /youwell/ [R=301,L]
 RewriteRule ^codigo/?$ views/ativacao/index.html [END]
 RewriteRule ^views/ativacao/?$ views/ativacao/index.html [END]
 RewriteRule ^codigo/gerar/?$ views/ativacao/gerar_otp.php [END]
