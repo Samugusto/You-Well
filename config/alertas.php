@@ -1,6 +1,6 @@
 <?php
 
-// Faixas consideradas estáveis para cada sensor. Fora da faixa = crítico.
+// As leituras próximas dos limites geram avisos instáveis; as que os excedem são críticas.
 // Valor <= 'minimo' é baixo; valor > 'maximo' é alto.
 // 'minimo' ou 'maximo' null significa sem limite naquele lado.
 const LIMITES_SENSORES = [
@@ -73,19 +73,22 @@ function anexarUltimasMedicoes(mysqli $con, array $setores): array
     return $setores;
 }
 
-// Classifica um valor de sensor como alto, baixo ou estável.
-// 'excesso' indica o quanto (em %) o valor passou do limite, usado para ordenar.
+// Classifica leituras fora ou próximas dos limites; leituras normais não geram aviso.
 function classificarSensor(string $sensor, float $valor): array
 {
     $limite = LIMITES_SENSORES[$sensor];
     $casas = $sensor === 'qualidade_ar' ? 0 : 1;
     $valorFormatado = number_format($valor, $casas, ',', '.') . $limite['unidade'];
     $nome = $limite['nome'];
+    $amplitude = $limite['minimo'] !== null && $limite['maximo'] !== null
+        ? $limite['maximo'] - $limite['minimo']
+        : abs($limite['maximo'] ?? $limite['minimo'] ?? 0);
+    $faixaInstavel = $amplitude * 0.1;
 
     if ($limite['maximo'] !== null && $valor > $limite['maximo']) {
         return [
             'nivel' => 'critico',
-            'texto' => "Crítico: {$nome} do setor {$limite['alto']}: {$valorFormatado}",
+            'texto' => "Crítico: {$nome} {$limite['alto']}: {$valorFormatado}",
             'classe' => 'janelinhaA',
             'excesso' => ($valor - $limite['maximo']) / max(abs($limite['maximo']), 1),
         ];
@@ -94,16 +97,34 @@ function classificarSensor(string $sensor, float $valor): array
     if ($limite['minimo'] !== null && $valor <= $limite['minimo']) {
         return [
             'nivel' => 'critico',
-            'texto' => "Crítico: {$nome} do setor {$limite['baixo']}: {$valorFormatado}",
+            'texto' => "Crítico: {$nome} {$limite['baixo']}: {$valorFormatado}",
             'classe' => 'janelinhaA',
             'excesso' => ($limite['minimo'] - $valor) / max(abs($limite['minimo']), 1),
         ];
     }
 
+    if ($limite['maximo'] !== null && $faixaInstavel > 0 && $valor >= $limite['maximo'] - $faixaInstavel) {
+        return [
+            'nivel' => 'instavel',
+            'texto' => "Instável: {$nome} próximo do limite superior: {$valorFormatado}",
+            'classe' => 'janelinhaM',
+            'excesso' => ($valor - ($limite['maximo'] - $faixaInstavel)) / max($faixaInstavel, 1),
+        ];
+    }
+
+    if ($limite['minimo'] !== null && $faixaInstavel > 0 && $valor <= $limite['minimo'] + $faixaInstavel) {
+        return [
+            'nivel' => 'instavel',
+            'texto' => "Instável: {$nome} próximo do limite inferior: {$valorFormatado}",
+            'classe' => 'janelinhaM',
+            'excesso' => (($limite['minimo'] + $faixaInstavel) - $valor) / max($faixaInstavel, 1),
+        ];
+    }
+
     return [
         'nivel' => 'estavel',
-        'texto' => "Avisos: {$nome} do setor {$limite['estavel']}: {$valorFormatado}",
-        'classe' => 'janelinhaM',
+        'texto' => '',
+        'classe' => '',
         'excesso' => 0.0,
     ];
 }
@@ -137,6 +158,7 @@ function registrarAlertas(mysqli $con, array $setores): void
         $controle[$linha['id_setor'] . '|' . $linha['sensor']] = $linha['ultima_medicao'];
     }
 
+    $leiturasNovas = [];
     $novos = [];
     foreach ($setores as $setor) {
         $idSetor = (int) $setor['id_setor'];
@@ -148,31 +170,48 @@ function registrarAlertas(mysqli $con, array $setores): void
             $ultima = $controle[$idSetor . '|' . $sensor] ?? null;
             if ($ultima !== null && strtotime($dataMedicao) <= strtotime($ultima)) continue;
 
-            $novos[] = ['id_setor' => $idSetor, 'sensor' => $sensor, 'data' => $dataMedicao]
-                + classificarSensor($sensor, (float) $valor);
+            $leitura = ['id_setor' => $idSetor, 'sensor' => $sensor, 'data' => $dataMedicao];
+            $leiturasNovas[] = $leitura;
+            $classificacao = classificarSensor($sensor, (float) $valor);
+            if ($classificacao['nivel'] !== 'estavel') {
+                $novos[] = $leitura + $classificacao;
+            }
         }
     }
-    if (!$novos) return;
+    if (!$leiturasNovas) return;
 
-    // Insere da medição mais antiga para a mais nova, para que o id reflita a idade do alerta.
-    usort($novos, fn ($a, $b) => strtotime($a['data']) <=> strtotime($b['data']));
+    if ($novos) {
+        // Insere da medição mais antiga para a mais nova, para que o id reflita a idade do alerta.
+        usort($novos, fn ($a, $b) => strtotime($a['data']) <=> strtotime($b['data']));
+    }
 
     mysqli_begin_transaction($con);
     try {
-        $stmtAlerta = mysqli_prepare($con, 'INSERT INTO alertas (id_setor, sensor, nivel, texto, classe, excesso, data_medicao) VALUES (?, ?, ?, ?, ?, ?, ?)');
         $stmtControle = mysqli_prepare($con, 'INSERT INTO alertas_controle (id_setor, sensor, ultima_medicao) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE ultima_medicao = VALUES(ultima_medicao)');
+        if (!$stmtControle) throw new RuntimeException('Não foi possível preparar o controle das medições.');
+
+        $stmtAlerta = $novos
+            ? mysqli_prepare($con, 'INSERT INTO alertas (id_setor, sensor, nivel, texto, classe, excesso, data_medicao) VALUES (?, ?, ?, ?, ?, ?, ?)')
+            : null;
+        if ($novos && !$stmtAlerta) throw new RuntimeException('Não foi possível preparar o registro dos alertas.');
+
+        foreach ($leiturasNovas as $leitura) {
+            mysqli_stmt_bind_param($stmtControle, 'iss', $leitura['id_setor'], $leitura['sensor'], $leitura['data']);
+            mysqli_stmt_execute($stmtControle);
+        }
+
         foreach ($novos as $alerta) {
             $excesso = (float) $alerta['excesso'];
             mysqli_stmt_bind_param($stmtAlerta, 'issssds', $alerta['id_setor'], $alerta['sensor'], $alerta['nivel'], $alerta['texto'], $alerta['classe'], $excesso, $alerta['data']);
             mysqli_stmt_execute($stmtAlerta);
-            mysqli_stmt_bind_param($stmtControle, 'iss', $alerta['id_setor'], $alerta['sensor'], $alerta['data']);
-            mysqli_stmt_execute($stmtControle);
         }
-        mysqli_stmt_close($stmtAlerta);
+        if ($stmtAlerta) mysqli_stmt_close($stmtAlerta);
         mysqli_stmt_close($stmtControle);
 
-        // Mantém apenas os LIMITE_ALERTAS mais recentes; apaga os mais velhos.
-        mysqli_query($con, 'DELETE FROM alertas WHERE id_alerta NOT IN (SELECT id_alerta FROM (SELECT id_alerta FROM alertas ORDER BY id_alerta DESC LIMIT ' . (int) LIMITE_ALERTAS . ') AS recentes)');
+        if ($novos) {
+            // Mantém apenas os LIMITE_ALERTAS mais recentes; apaga os mais velhos.
+            mysqli_query($con, 'DELETE FROM alertas WHERE id_alerta NOT IN (SELECT id_alerta FROM (SELECT id_alerta FROM alertas ORDER BY id_alerta DESC LIMIT ' . (int) LIMITE_ALERTAS . ') AS recentes)');
+        }
 
         mysqli_commit($con);
     } catch (Throwable $erro) {
@@ -188,11 +227,11 @@ function listarAlertas(mysqli $con, ?array $idsSetores = null): array
 {
     garantirTabelasAlertas($con);
 
-    $sql = 'SELECT a.id_alerta, a.id_setor, s.nome AS setor, a.sensor, a.nivel, a.texto, a.classe, a.excesso, a.data_medicao FROM alertas a INNER JOIN setores s ON s.id_setor = a.id_setor';
+    $sql = "SELECT a.id_alerta, a.id_setor, s.nome AS setor, a.sensor, a.nivel, a.texto, a.classe, a.excesso, a.data_medicao FROM alertas a INNER JOIN setores s ON s.id_setor = a.id_setor WHERE a.nivel IN ('critico', 'instavel')";
     if ($idsSetores !== null) {
         $idsSetores = array_values(array_filter(array_map('intval', $idsSetores), fn ($id) => $id > 0));
         if (!$idsSetores) return [];
-        $sql .= ' WHERE a.id_setor IN (' . implode(',', $idsSetores) . ')';
+        $sql .= ' AND a.id_setor IN (' . implode(',', $idsSetores) . ')';
     }
 
     $resultado = mysqli_query($con, $sql);
@@ -200,7 +239,8 @@ function listarAlertas(mysqli $con, ?array $idsSetores = null): array
     while ($resultado && ($linha = mysqli_fetch_assoc($resultado))) $alertas[] = $linha;
 
     usort($alertas, function ($a, $b) {
-        $porNivel = ($a['nivel'] === 'estavel') <=> ($b['nivel'] === 'estavel');
+        $prioridade = ['critico' => 0, 'instavel' => 1];
+        $porNivel = ($prioridade[$a['nivel']] ?? 2) <=> ($prioridade[$b['nivel']] ?? 2);
         if ($porNivel !== 0) return $porNivel;
         $porExcesso = (float) $b['excesso'] <=> (float) $a['excesso'];
         return $porExcesso !== 0 ? $porExcesso : (int) $b['id_alerta'] <=> (int) $a['id_alerta'];

@@ -292,8 +292,13 @@ $qualidadeArGeral = $resumoInicio['qualidade_ar'] !== null
     ? ($resumoInicio['qualidade_ar'] > LIMITES_SENSORES['qualidade_ar']['maximo'] ? 'Ruim' : 'Boa')
     : 'Aguardando';
 
-// O contador do cabeçalho mostra apenas os alertas críticos.
-$quantidadeAlertas = count(array_filter($alertas, fn ($alerta) => $alerta['nivel'] !== 'estavel'));
+$quantidadeAlertas = count($alertas);
+$avisosRecentes = $alertas;
+usort($avisosRecentes, function ($a, $b) {
+    $porData = strcmp((string) $b['data_medicao'], (string) $a['data_medicao']);
+    return $porData !== 0 ? $porData : (int) $b['id_alerta'] <=> (int) $a['id_alerta'];
+});
+$avisosRecentes = array_slice($avisosRecentes, 0, 3);
 
 $fotoPerfil = null;
 if ($usuario && !empty($usuario['foto_perfil'])) {
@@ -327,7 +332,7 @@ if (!in_array($pagina, $paginas, true)) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
     <link href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/img/sem-titulo.png" rel="icon">
-    <link href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/css/styleP.css" rel="stylesheet">
+    <link href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/css/styleP.css?v=20261126-alerts" rel="stylesheet">
     <link rel="stylesheet" href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/css/loader.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -338,7 +343,7 @@ if (!in_array($pagina, $paginas, true)) {
     </script>
     <?php endif; ?>
     <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/graficos.js?v=3"></script>
-    <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/menu.js?v=4"></script>
+    <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/public/assets/js/menu.js?v=5"></script>
 </head>
 
 <body data-medicoes-url="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/controllers/buscar_medicoes.php" data-graficos-url="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/controllers/dados_graficos.php">
@@ -360,12 +365,15 @@ if (!in_array($pagina, $paginas, true)) {
                 <i class="bi bi-layout-sidebar-inset"></i>
             </button>
 
-            <button class="menu-toggle botao-alertas" type="button" aria-label="Ver alertas" onclick="window.location.href='<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/dashboard/alertas/?sem_loader=1'">
-                <i class="bi bi-bell" aria-hidden="true"></i>
-                <?php if ($quantidadeAlertas > 0): ?>
-                    <span class="contador-alertas" aria-label="<?= $quantidadeAlertas ?> alertas"><?= $quantidadeAlertas > 99 ? '99+' : $quantidadeAlertas ?></span>
-                <?php endif; ?>
-            </button>
+            <div class="notificacoes">
+                <button class="menu-toggle botao-alertas" type="button" aria-label="Abrir avisos recentes" aria-haspopup="dialog"
+                    aria-expanded="false" aria-controls="painel-notificacoes">
+                    <i class="bi bi-bell" aria-hidden="true"></i>
+                    <?php if ($quantidadeAlertas > 0): ?>
+                        <span class="contador-alertas" aria-label="<?= $quantidadeAlertas ?> alertas"><?= $quantidadeAlertas > 99 ? '99+' : $quantidadeAlertas ?></span>
+                    <?php endif; ?>
+                </button>
+            </div>
             <div class="infos">
                 <h1 class="nome"><?php echo htmlspecialchars((string) $_SESSION['nome'], ENT_QUOTES, 'UTF-8'); ?></h1>
                 <span class="papel-usuario">
@@ -381,6 +389,34 @@ if (!in_array($pagina, $paginas, true)) {
                 onclick="if (confirm('Deseja sair da conta?')) window.location.href='<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/sair/'">
                 <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
             </button>
+        </div>
+        <div class="notificacoes-popup" id="painel-notificacoes" role="dialog" aria-label="Avisos recentes" hidden>
+            <div class="notificacoes-cabecalho">
+                <h2>Avisos recentes</h2>
+                <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/dashboard/alertas/?sem_loader=1">Ver todos</a>
+            </div>
+            <?php if (!$avisosRecentes): ?>
+                <p class="notificacoes-vazio">Nenhum aviso ativo no momento.</p>
+            <?php else: ?>
+                <div class="notificacoes-lista">
+                    <?php foreach ($avisosRecentes as $aviso): ?>
+                        <?php
+                        $avisoCritico = $aviso['nivel'] === 'critico';
+                        $instanteAviso = strtotime((string) $aviso['data_medicao']);
+                        $dataAviso = $instanteAviso === false ? (string) $aviso['data_medicao'] : date('d/m/Y H:i', $instanteAviso);
+                        ?>
+                        <a class="notificacao-item <?= $avisoCritico ? 'notificacao-critica' : 'notificacao-instavel' ?>"
+                            href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/dashboard/alertas/?sem_loader=1">
+                            <i class="bi <?= $avisoCritico ? 'bi-exclamation-octagon-fill' : 'bi-exclamation-triangle-fill' ?>" aria-hidden="true"></i>
+                            <span class="notificacao-conteudo">
+                                <strong><?= htmlspecialchars($aviso['setor'], ENT_QUOTES, 'UTF-8') ?></strong>
+                                <span><?= htmlspecialchars($aviso['texto'], ENT_QUOTES, 'UTF-8') ?></span>
+                                <time><?= htmlspecialchars($dataAviso, ENT_QUOTES, 'UTF-8') ?></time>
+                            </span>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
         </div>
     </header>
 
@@ -609,13 +645,17 @@ if (!in_array($pagina, $paginas, true)) {
 
             <?php elseif ($pagina === 'alertas') : ?>
                 <?php foreach ($alertas as $alerta): ?>
-                    <div class="<?= htmlspecialchars($alerta['classe'], ENT_QUOTES, 'UTF-8') ?>">
-                        <h1><?= htmlspecialchars($alerta['setor'], ENT_QUOTES, 'UTF-8') ?></h1>
-                        <h1 class="deta"><?= htmlspecialchars($alerta['texto'], ENT_QUOTES, 'UTF-8') ?></h1>
+                    <?php $alertaCritico = $alerta['nivel'] === 'critico'; ?>
+                    <div class="<?= htmlspecialchars($alerta['classe'], ENT_QUOTES, 'UTF-8') ?> alerta-com-icone">
+                        <i class="bi <?= $alertaCritico ? 'bi-exclamation-octagon-fill' : 'bi-exclamation-triangle-fill' ?> alerta-icone" aria-hidden="true"></i>
+                        <div class="alerta-conteudo">
+                            <h1><?= htmlspecialchars($alerta['setor'], ENT_QUOTES, 'UTF-8') ?></h1>
+                            <h1 class="deta"><?= htmlspecialchars($alerta['texto'], ENT_QUOTES, 'UTF-8') ?></h1>
+                        </div>
                     </div>
                 <?php endforeach; ?>
                 <?php if (count($alertas) === 0): ?>
-                    <p class="aparencia-descricao">Nenhuma medição de temperatura recebida dos setores ainda.</p>
+                    <p class="aparencia-descricao">Nenhum aviso ativo no momento.</p>
                 <?php endif; ?>
             <?php elseif ($pagina === 'configuracoes'): ?>
                 <div class="config">

@@ -1,7 +1,37 @@
 document.addEventListener('DOMContentLoaded', () => {
     const toggle = document.querySelector('.menu-toggle');
+    const notificationButton = document.querySelector('.botao-alertas');
+    const notificationPopup = document.getElementById('painel-notificacoes');
     const temaOpcoes = document.querySelectorAll('input[name="tema-painel"]');
     const mobile = window.matchMedia('(max-width: 700px)');
+
+    if (notificationButton && notificationPopup) {
+        const closeNotifications = () => {
+            notificationPopup.hidden = true;
+            notificationButton.setAttribute('aria-expanded', 'false');
+            notificationButton.setAttribute('aria-label', 'Abrir avisos recentes');
+        };
+
+        notificationButton.addEventListener('click', () => {
+            const opening = notificationPopup.hidden;
+            notificationPopup.hidden = !opening;
+            notificationButton.setAttribute('aria-expanded', String(opening));
+            notificationButton.setAttribute('aria-label', opening ? 'Fechar avisos recentes' : 'Abrir avisos recentes');
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!notificationButton.contains(event.target) && !notificationPopup.contains(event.target)) {
+                closeNotifications();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !notificationPopup.hidden) {
+                closeNotifications();
+                notificationButton.focus();
+            }
+        });
+    }
 
     if (toggle) {
         const atualizarEstado = (recolhido) => {
