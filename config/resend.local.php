@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'api_key' => 're_iZofjUDa_DPyYvRT5zU6H89QyVyuCNnVV',
+    'api_key' => '',
     'from' => 'YouWell <otp@devsbee.com.br>'
 ];
